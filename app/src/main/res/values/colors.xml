@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main">#1e1e1e</color>
+    <color name="mainDark">#161616</color>
+    <color name="primary">#1e88e5</color>
+    <color name="success">#43a047</color>
+    <color name="warning">#f57f17</color>
+    <color name="danger">#e53935</color>
+
+    <color name="white">#ffffff</color>
+</resources>

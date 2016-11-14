@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Cuberite</string>
+    <string name="do_install_cuberite">Install Cuberite</string>
+    <string name="do_start_cuberite">Start Server</string>
+    <string name="do_stop_cuberite">Stop Server</string>
+    <string name="do_kill_cuberite">Kill Server (If stopping doesn\'t work)</string>
+    <string name="do_cancel_install">Cancel</string>
+    <string name="do_execute_line">Execute!</string>
+    <string name="do_ok">Ok</string>
+
+    <string name="status_downloading_server">Downloading Server directory...</string>
+    <string name="status_unpacking_server">Unpacking and installing Server directory...</string>
+    <string name="status_downloading_binary">Downloading Cuberite...</string>
+    <string name="status_unpacking_binary">Unpacking and installing Cuberite...</string>
+    <string name="status_downloading_cuberite">Downloading Cuberite...</string>
+    <string name="status_download_error">Download error: </string>
+    <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
+    <string name="status_program_exited">Info: Cuberite exited with code: </string>
+    <string name="status_permissions_needed">Permissions needed</string>
+
+    <string name="inputLine_hint">Enter commands...</string>
+
+    <string name="message_externalstorage_permission">Cuberite stores it\'s worlds by default on the external storage, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"don\'t ask again\" option and Cuberite will use the apps private storage.</string>
+</resources>
