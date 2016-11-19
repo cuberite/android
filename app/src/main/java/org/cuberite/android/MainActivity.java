@@ -15,6 +15,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -44,7 +45,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     // Helper functions
-    public void unzip(final String file, String _targetLocation, final State state, String message) {
+    public void unzip(final String file, String _targetLocation, final InstallState installState, String message) {
         Log.d(TAG, "Unzipping " + file + " to " + _targetLocation);
         Log.v(TAG, "Acquiring wakeLock");
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
@@ -67,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Log.v(TAG, "Finished unzipping");
-                        if (state == org.cuberite.android.State.DOWNLOAD_BOTH) {
-                            doInstall(org.cuberite.android.State.DOWNLOAD_BINARY);
+                        if (installState == InstallState.DOWNLOAD_BOTH) {
+                            doInstall(InstallState.DOWNLOAD_BINARY);
                         } else {
                             doWeNeedToInstall();
                         }
@@ -82,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
         });
         unzipThread.start();
     }
-    private State getState() {
-        State state = null;
+    private InstallState getInstallState() {
+        InstallState installState = null;
         boolean hasBinary = false;
         boolean hasServer = false;
         if (new File(PRIVATE_DIR + "/" + preferences.getString("executableName", "")).exists())
@@ -92,17 +93,17 @@ public class MainActivity extends AppCompatActivity {
             hasServer = true;
 
         if (hasBinary && hasServer)
-            state = State.OK;
+            installState = InstallState.OK;
         if (!hasServer && !hasBinary)
-            state = State.DOWNLOAD_BOTH;
+            installState = InstallState.DOWNLOAD_BOTH;
         if (!hasServer)
-            state = State.DOWNLOAD_SERVER;
+            installState = InstallState.DOWNLOAD_SERVER;
         if (!hasBinary)
-            state = State.DOWNLOAD_BINARY;
+            installState = InstallState.DOWNLOAD_BINARY;
 
-        Log.v(TAG, "Getting State: " + state.toString());
+        Log.v(TAG, "Getting InstallState: " + installState.toString());
 
-        return state;
+        return installState;
     }
     private String getPreferredABI() {
         String abi;
@@ -132,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
         mainButtonColor = colorTo;
     }
 
-    protected void doInstall(final State state) {
-        Log.v(TAG, "Installing " + state.toString());
+    protected void doInstall(final InstallState installState) {
+        Log.v(TAG, "Installing " + installState.toString());
         final String downloadedServerFileName = "server.zip";
         final String downloadedBinaryFileName = preferences.getString("executableName", "") + ".zip";
         final ProgressDialog progress = new ProgressDialog(context);
@@ -234,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (state == State.DOWNLOAD_SERVER || state == State.DOWNLOAD_BOTH) {
+        if (installState == InstallState.DOWNLOAD_SERVER || installState == InstallState.DOWNLOAD_BOTH) {
             progress.setMessage(getString(R.string.status_downloading_server));
             final DownloadTask downloadTask = new DownloadTask(context);
             downloadTask.execute(preferences.getString("downloadServerLink", ""), downloadedServerFileName);
@@ -256,14 +257,14 @@ public class MainActivity extends AppCompatActivity {
                             Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_delete_file_error), Snackbar.LENGTH_SHORT).show();
                     } else {
                         // Unzipping file
-                        unzip(PRIVATE_DIR + "/" + downloadedServerFileName, preferences.getString("cuberiteLocation", ""), state, getString(R.string.status_unpacking_server));
+                        unzip(PRIVATE_DIR + "/" + downloadedServerFileName, preferences.getString("cuberiteLocation", ""), installState, getString(R.string.status_unpacking_server));
                     }
                     doWeNeedToInstall();
                 }
             });
         }
 
-        if (state == State.DOWNLOAD_BINARY) {
+        if (installState == InstallState.DOWNLOAD_BINARY) {
             progress.setMessage(getString(R.string.status_downloading_binary));
             final DownloadTask downloadTask = new DownloadTask(context);
             downloadTask.execute(preferences.getString("downloadBinaryLink", ""), downloadedBinaryFileName);
@@ -283,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!deleted)
                             Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_delete_file_error), Snackbar.LENGTH_SHORT).show();
                     } else {
-                        unzip(PRIVATE_DIR + "/" + downloadedBinaryFileName, PRIVATE_DIR, state, getString(R.string.status_unpacking_binary));
+                        unzip(PRIVATE_DIR + "/" + downloadedBinaryFileName, PRIVATE_DIR, installState, getString(R.string.status_unpacking_binary));
                     }
                     doWeNeedToInstall();
                 }
@@ -294,94 +295,14 @@ public class MainActivity extends AppCompatActivity {
     protected void doStart() {
         Log.v(TAG, "Starting cuberite");
         checkPermissions();
-
-        if(Build.VERSION.SDK_INT > 20) {
-            // Animate start
-            int cx = runningLayout.getWidth() / 2;
-            int cy = runningLayout.getHeight() / 2;
-            float finalRadius = (float) Math.hypot(cx, cy);
-
-            startstopLayout.setVisibility(View.INVISIBLE);
-            runningLayout.setVisibility(View.VISIBLE);
-            runningLayout.setBackgroundColor(mainButtonColor);
-
-            Animator anim = ViewAnimationUtils.createCircularReveal(runningLayout, cx, cy, 0, finalRadius);
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    runningLayout.setBackgroundColor(0xFFFFFFFF);
-                }
-            });
-            anim.start();
-        } else {
-            startstopLayout.setVisibility(View.INVISIBLE);
-            runningLayout.setVisibility(View.VISIBLE);
-        }
+        isCuberiteRunning = true;
 
         cuberiteTask = new CuberiteTask(logView, preferences.getString("cuberiteLocation", ""), PRIVATE_DIR + "/" + preferences.getString("executableName", ""), new CuberiteTask.OnEndListener() {
             @Override
             public void run() {
                 Log.v(TAG, "Cuberite exited");
-                doWeNeedToInstall();
-                inputLine.setEnabled(false);
-                executeLine.setEnabled(false);
-                mainButton.requestFocus();
-
-                if(Build.VERSION.SDK_INT > 20) {
-                    // Animate start
-                    int cx = runningLayout.getWidth() / 2;
-                    int cy = runningLayout.getHeight() / 2;
-                    float initialRadius = (float) Math.hypot(cx, cy);
-
-                    runningLayout.setBackgroundColor(mainButtonColor);
-
-                    Animator anim = ViewAnimationUtils.createCircularReveal(runningLayout, cx, cy, initialRadius, 0);
-                    anim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            runningLayout.setBackgroundColor(0xFFFFFFFF);
-                            runningLayout.setVisibility(View.INVISIBLE);
-                            startstopLayout.setVisibility(View.VISIBLE);
-                            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                            inputMethodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), 0);
-                        }
-                    });
-                    anim.start();
-                } else {
-                    runningLayout.setVisibility(View.INVISIBLE);
-                    startstopLayout.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        inputLine.setEnabled(true);
-        // Rename enter key :P
-        inputLine.setImeActionLabel(getString(R.string.do_execute_line), KeyEvent.KEYCODE_ENTER);
-        inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    cuberiteTask.executeLine(inputLine.getText().toString());
-                    inputLine.setText("");
-                    // return true makes sure the keyboard doesn't close
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        executeLine.setEnabled(true);
-        executeLine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String line = inputLine.getText().toString();
-                if(!line.isEmpty()) {
-                    Log.v(TAG, "Executing " + line);
-                    cuberiteTask.executeLine(line);
-                    inputLine.setText("");
-                }
+                isCuberiteRunning = false;
+                doWeNeedToInstall(); // Sets the start button color correctly
             }
         });
 
@@ -392,30 +313,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 doStop();
-
-                int colorTo = ContextCompat.getColor(context, R.color.danger);
-                animateColorChange(mainButton, mainButtonColor, colorTo, 500);
-                mainButton.setText(getText(R.string.do_kill_cuberite));
-                mainButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        doKill();
-                    }
-                });
-
             }
         });
         logView.setText("");
-
         cuberiteTask.execute();
     }
 
-    private void doStop() {
+    protected void doStop() {
         Log.v(TAG, "Stopping Cuberite");
         cuberiteTask.stop();
+        int colorTo = ContextCompat.getColor(context, R.color.danger);
+        animateColorChange(mainButton, mainButtonColor, colorTo, 500);
+        mainButton.setText(getText(R.string.do_kill_cuberite));
+        mainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doKill();
+            }
+        });
     }
 
-    private void doKill() {
+    protected void doKill() {
         if(cuberiteTask != null) {
             Log.v(TAG, "Killing Cuberite");
             cuberiteTask.kill();
@@ -424,17 +342,67 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showLogLayout() {
+        if (Build.VERSION.SDK_INT > 20) {
+            // Animate start
+            int cx = (int) openLogButton.getX() + openLogButton.getWidth() / 2;
+            int cy = (int) openLogButton.getY() + openLogButton.getHeight() / 2;
+            float finalRadius = (float) Math.hypot(cx, cy);
+
+            startstopLayout.setVisibility(View.INVISIBLE);
+            logLayout.setVisibility(View.VISIBLE);
+
+            Animator anim = ViewAnimationUtils.createCircularReveal(logLayout, cx, cy, 0, finalRadius);
+            anim.start();
+        } else {
+            startstopLayout.setVisibility(View.INVISIBLE);
+            logLayout.setVisibility(View.VISIBLE);
+        }
+
+        inputLine.setEnabled(true);
+        executeLine.setEnabled(true);
+    }
+
+    private void hideLogLayout() {
+        inputLine.setEnabled(false);
+        executeLine.setEnabled(false);
+        mainButton.requestFocus();
+
+        if(Build.VERSION.SDK_INT > 20) {
+            // Animate start
+            int cx = (int) openLogButton.getX() + openLogButton.getWidth() / 2;
+            int cy = (int) openLogButton.getY() + openLogButton.getHeight() / 2;
+            float initialRadius = (float) Math.hypot(cx, cy);
+
+            Animator anim = ViewAnimationUtils.createCircularReveal(logLayout, cx, cy, initialRadius, 0);
+            anim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    logLayout.setVisibility(View.INVISIBLE);
+                    startstopLayout.setVisibility(View.VISIBLE);
+                }
+            });
+            anim.start();
+        } else {
+            logLayout.setVisibility(View.INVISIBLE);
+            startstopLayout.setVisibility(View.VISIBLE);
+        }
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), 0);
+    }
+
     private void doWeNeedToInstall() {
         checkPermissions();
-        final State state = getState();
-        if (state != State.OK) {
+        final InstallState installState = getInstallState();
+        if (installState != InstallState.OK) {
             int colorTo = ContextCompat.getColor(context, R.color.primary);
             animateColorChange(mainButton, mainButtonColor, colorTo, 500);
             mainButton.setText(getText(R.string.do_install_cuberite));
             mainButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    doInstall(state);
+                    doInstall(installState);
                 }
             });
         } else {
@@ -476,11 +444,14 @@ public class MainActivity extends AppCompatActivity {
     private int mainButtonColor;
     private TextView statusTextView;
     private RelativeLayout startstopLayout;
-    private RelativeLayout runningLayout;
+    private RelativeLayout logLayout;
     private TextView logView;
     private CuberiteTask cuberiteTask;
     private EditText inputLine;
     private Button executeLine;
+    private Button openLogButton;
+    private boolean isCuberiteRunning = false;
+    private boolean hasPressedBackBefore = false;
     final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
     static final String TAG = "Cuberite";
 
@@ -494,11 +465,50 @@ public class MainActivity extends AppCompatActivity {
         mainButtonColor = ContextCompat.getColor(context, R.color.main);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         startstopLayout = (RelativeLayout) findViewById(R.id.startStopLayout);
-        runningLayout = (RelativeLayout) findViewById(R.id.runningLayout);
+        logLayout = (RelativeLayout) findViewById(R.id.logLayout);
         logView = (TextView) findViewById(R.id.logView);
         logView.setMovementMethod(new ScrollingMovementMethod());
+
         inputLine = (EditText) findViewById(R.id.inputLine);
+        // Rename enter key :P
+        inputLine.setImeActionLabel(getString(R.string.do_execute_line), KeyEvent.KEYCODE_ENTER);
+        inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                String line = inputLine.getText().toString();
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if(!line.isEmpty() && isCuberiteRunning) {
+                        Log.v(TAG, "Executing " + line);
+                        cuberiteTask.executeLine(line);
+                        inputLine.setText("");
+                    }
+                    // return true makes sure the keyboard doesn't close
+                    return true;
+                }
+                return false;
+            }
+        });
+
         executeLine = (Button) findViewById(R.id.executeLine);
+        executeLine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String line = inputLine.getText().toString();
+                if(!line.isEmpty() && isCuberiteRunning) {
+                    Log.v(TAG, "Executing " + line);
+                    cuberiteTask.executeLine(line);
+                    inputLine.setText("");
+                }
+            }
+        });
+
+        openLogButton = (Button) findViewById(R.id.openLogButton);
+        openLogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLogLayout();
+            }
+        });
 
         // PACKAGE_NAME: org.cuberite.android
         // PRIVATE_DIR: /data/data/org.cuberite.android/files
@@ -556,4 +566,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); Back button should not act like it normally does
+
+        // hasPressedBackBefore is by default false, becomes true when this method is called the first time and becomes false when the method is called the second time within 5 seconds
+        hasPressedBackBefore = !hasPressedBackBefore;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hasPressedBackBefore = false;
+            }
+        }, 5000);
+
+        if(logLayout.getVisibility() == View.VISIBLE) {
+            hideLogLayout();
+            hasPressedBackBefore = false;
+        } else if (isCuberiteRunning) {
+            if(!hasPressedBackBefore)
+                doStop();
+            else
+                Snackbar.make(findViewById(R.id.activity_main), getString(R.string.press_back_twice_started), Snackbar.LENGTH_LONG).show();
+        } else if (!isCuberiteRunning) {
+            if(!hasPressedBackBefore)
+                finish();
+            else
+                Snackbar.make(findViewById(R.id.activity_main), getString(R.string.press_back_twice_stopped), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
 }

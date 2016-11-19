@@ -7,6 +7,9 @@
     <string name="do_cancel_install">Cancel</string>
     <string name="do_execute_line">Execute!</string>
     <string name="do_ok">Ok</string>
+    <string name="do_open_log">Open Console</string>
+    <string name="press_back_twice_started">Please press BACK again to stop Cuberite</string>
+    <string name="press_back_twice_stopped">Please press BACK again to exit the Application</string>
 
     <string name="status_downloading_server">Downloading Server directory...</string>
     <string name="status_unpacking_server">Unpacking and installing Server directory...</string>

@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.cuberite.android.MainActivity">
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:id="@+id/startStopLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,24 +34,35 @@
             android:animateLayoutChanges="true"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
+
+        <Button
+            android:text="@string/do_open_log"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:id="@+id/openLogButton"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
     </RelativeLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/runningLayout"
+    <RelativeLayout
+        android:id="@+id/logLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        android:visibility="invisible"
-        android:background="@color/white">
+        android:visibility="invisible">
 
         <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/logVerticalScrollView"
+            android:id="@+id/logScrollView"
             android:layout_above="@+id/inputLine"
             android:paddingBottom="15dp"
             android:layout_alignParentEnd="true"
@@ -94,4 +104,5 @@
             android:id="@+id/executeLine"
             android:enabled="false" />
     </RelativeLayout>
+
 </RelativeLayout>

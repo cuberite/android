@@ -1,6 +1,6 @@
 package org.cuberite.android;
 
-enum State {
+enum InstallState {
     DOWNLOAD_SERVER,
     DOWNLOAD_BINARY,
     DOWNLOAD_BOTH,
