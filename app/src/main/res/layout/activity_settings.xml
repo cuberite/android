@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="org.cuberite.android.MainActivity"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:text="@string/settings_install_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installHeading"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:text="@string/settings_install_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installUpdate"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_update_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installUpdateExplanation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:text="@string/settings_install_update_binary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installUpdateBinary"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+
+        <Button
+            android:text="@string/settings_install_update_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installUpdateServer"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_no_sha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installNoSha"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_no_sha_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installNoShaExplanation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:text="@string/settings_install_no_sha_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installNoShaButton"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_manually"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installZipManually"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_manually_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installExplanation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_install_manually_abi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installABI"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:text="@string/settings_install_select_binary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installBinary"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:text="@string/settings_install_select_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/installServer"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_webadmin_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/webadminHeading"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:text="@string/settings_webadmin_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/webadminExplenation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:text="@string/settings_webadmin_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/webadminLogin"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_troubleshooting_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/troubleShootingHeading"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:text="@string/settings_authentication_errors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/troubleshootingAuthenticationErrors" />
+
+        <TextView
+            android:text="@string/settings_authentication_errors_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/troubleshootingAuthenticationErrorsExplanation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/troubleshootingAuthenticationToggle"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/settings_authentication_toggle" />
+
+        <TextView
+            android:text="@string/settings_info_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_margin="20dp"
+            android:id="@+id/infoHeading" />
+
+        <TextView
+            android:text="@string/settings_info_debug"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/infoDebug" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/infoDebugInfo"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/settings_info_libraries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_margin="20dp"
+            android:id="@+id/thirdPartyLibraries" />
+
+        <TextView
+            android:text="@string/settings_info_libraries_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/infoLibrariesExplanation"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/ini4j_license"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/infoIni4j" />
+
+        <TextView
+            android:text="@string/ini4j_license_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/infoIni4jLicense"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="@string/pathutils_license"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/infoPathutils" />
+
+        <TextView
+            android:text="@string/pathutils_license_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/infoPathutilsLicense"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp" />
+
+    </LinearLayout>
+</ScrollView>
