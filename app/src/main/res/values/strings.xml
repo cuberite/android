@@ -29,7 +29,7 @@
 
     <string name="inputLine_hint">Enter commands…</string>
 
-    <string name="message_externalstorage_permission">Cuberite stores it\'s worlds by default on the external storage, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"don\'t ask again\" option and Cuberite will use the apps private storage.</string>
+    <string name="message_externalstorage_permission">Cuberite stores its worlds by default on the external storage, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"don\'t ask again\" option and Cuberite will use the app\'s private storage.</string>
     <string name="message_shasum_not_matching">SHA-1 sums doesn\'t match. This can indicate someone trying to spoof you or just a download error. Please retry and if the error persists, you may turn off the check by installing Cuberite via the Settings</string>
 
     <string name="title_activity_settings">Settings</string>
