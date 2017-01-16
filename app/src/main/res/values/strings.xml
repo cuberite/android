@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Cuberite</string>
+    <string name="app_name" translatable="false">Cuberite</string>
     <string name="do_install_cuberite">Install Cuberite</string>
     <string name="do_start_cuberite">Start Server</string>
     <string name="do_stop_cuberite">Stop Server</string>
     <string name="do_kill_cuberite">Kill Server (If stopping doesn\'t work)</string>
     <string name="do_execute_line">Execute!</string>
-    <string name="cancel">@android:string/cancel</string>
-    <string name="ok">@android:string/ok</string>
+    <string name="cancel" translatable="false">@android:string/cancel</string>
+    <string name="ok" translatable="false">@android:string/ok</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="enabled">enabled</string>
@@ -71,7 +71,7 @@
     <string name="settings_info_libraries_explanation">This app uses third-party libraries to provide certain features. Below is some info about these libraries as well as their respective licenses</string>
 
     <string name="ini4j_license">License for the [ini4j] library (used for manipulating Cuberite settings)</string>
-    <string name="ini4j_license_description">Copyright 2005,2009 Ivan SZKIBA\n\n
+    <string name="ini4j_license_description" translatable="false">Copyright 2005,2009 Ivan SZKIBA\n\n
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ limitations under the License.
     </string>
 
     <string name="pathutils_license">License for the PathUtils functions (used for installing Cuberite manually to select binaries)</string>
-    <string name="pathutils_license_description">A few edits were made to wrap some functions into a new class. Below is a copy of the original license.\n\n
+    <string name="pathutils_license_description" translatable="false">A few edits were made to wrap some functions into a new class. Below is a copy of the original license.\n\n
 
 Copyright © 2011 - 2013 Paul Burke\n\n
 
