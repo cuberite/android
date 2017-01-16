@@ -1,0 +1,74 @@
+<resources>
+    <string name="do_install_cuberite">Instalar o Cuberite</string>
+    <string name="do_start_cuberite">Iniciar o servidor</string>
+    <string name="do_stop_cuberite">Encerrar o servidor</string>
+    <string name="do_kill_cuberite">Forçar encerramento do servidor (se encerrar não estiver funcionando)</string>
+    <string name="do_execute_line">Executar!</string>
+    <string name="username">Nome de usuário</string>
+    <string name="password">Senha</string>
+    <string name="enabled">ativado</string>
+    <string name="disabled">desativado</string>
+    <string name="do_open_log">Abrir o Console</string>
+    <string name="do_open_settings">Configurações</string>
+
+    <string name="status_downloading_cuberite">Transferindo o Cuberite…</string>
+    <string name="status_download_error">Erro na transferência: </string>
+    <string name="status_delete_file_error">Algo deu errado: Não foi possível apagar o arquivo</string>
+ <!-- yet unused -->   <string name="status_program_exited">Info: Encerrou com o código: </string>
+    <string name="status_permissions_needed">Permissões necessarias</string>
+    <string name="status_shasum_error">Erro ao executar a validação SHA-1</string>
+    <string name="status_missing_filemanager">Nenhum explorador de arquivos encontrado: Por favor instale um</string>
+
+    <string name="notification_cuberite_running">Cuberite está rodando!</string>
+
+    <string name="service_description">Este serviço roda o Cuberite e se certifica que o sistema não irá encerrar o processo.</string>
+    <string name="installservice_description">Este serviço transfere, descompacta e instala o Cuberite.</string>
+
+    <string name="inputLine_hint">Insira comandos…</string>
+
+    <string name="message_externalstorage_permission">Cuberite armazena seus mundos por padrão no armazenamento externo, que é acessível por qualquer aplicativo. Para isso, você precisa permitir que o Cuberite escreva no armazenamento externo. Se você não quiser dar a permissão necessária para isso, por favor selecione a opção \"Não perguntar novamente\". Assim, o Cuberite irá usar o armazenamento privado do aplicativo</string>
+    <string name="message_shasum_not_matching">As somas SHA-1 não batem. Isso pode significar que alguém está tentanto te enganar ou pode simplesmente ser um erro na transferência. Tente baixar novamente, caso o erro persista você pode desabilitar essa verificação instalando Cuberite através das Configurações</string>
+
+    <string name="title_activity_settings">Configurações</string>
+    <string name="settings_download_host">Baixar o servidor</string>
+    <string name="settings_download_host_summary">O servidor pelo qual o Cuberite será baixado. Se você estiver rodando suas próprias compilações (automatizadas), você pode alterar essa configuração para que o Cuberite use seu servidor. Por favor notr que as atualizações automáticas só irão funcionar se o servidor prover arquivos SHA-1 válidos</string>
+
+    <string name="settings_install_heading">Opções de instalação</string>
+    <string name="settings_install_update">Atualizar o Cuberite</string>
+    <string name="settings_install_update_explanation">Um sistema de atualização automatizado para o Cuberite ainda precisa ser feito. Use essa seção de tempos em tempos para atualizar a sua instalação do Cuberite. Por favor note que se você fizer a atualização do server.zip algumas configurações customizadas podem ser perdidas.</string>
+    <string name="settings_install_update_binary">Baixar e instalar o binário do Cuberite</string>
+    <string name="settings_install_update_server">Baixar e instalar o server.zip</string>
+    <string name="settings_install_manually">Instalar arquivos zip manualmente</string>
+    <string name="settings_install_manually_explanation">Em vez de baixar o Cuberite você pode usar seus próprios binários. Use essa opção apenas se você souber o que você está fazendo.</string>
+    <string name="settings_install_manually_abi">ABI exigida pelo seu dispositivo: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
+    <string name="settings_install_select_binary">Selecionar e instalar o arquivo zip do binário</string>
+    <string name="settings_install_select_server">Selecionar e instalar o server.zip</string>
+    <string name="settings_install_no_sha">Instalar sem a verificação SHA-1</string>
+    <string name="settings_install_no_sha_explanation">Normalmente, o Cuberite verifica os executáveis baixados para ter certeza que o Cuberite foi baixado corretamente. Use esse botão se a verificação falhar, mas note que você está desativando um função de segurança ao fazer isso.</string>
+    <string name="settings_install_no_sha_button">Baixar e instalar o Cuberite</string>
+
+    <string name="settings_webadmin_heading">Configurações do Webadmin</string>
+    <string name="settings_webadmin_explanation">Para ajustar outros detalhes do seu servidor, você poderá usar o Webadmin embutido. Use as configurações aqui para definir um nome de usuário e senha para isso</string>
+    <string name="settings_webadmin_login">Alterar credenciais de acesso</string>
+    <string name="settings_webadmin_not_installed_title">Cuberite não está instalado</string>
+    <string name="settings_webadmin_not_installed">Antes de congiruar as credenciais no Webadmin o Cuberite precisa estar instalado. Você pode instalar ele agora ou fechar essa mensagen</string>
+    <string name="settings_webadmin_error">Algo deu errado ao acessar a configuração do Webadmin</string>
+    <string name="settings_webadmin_success">Sucesso! As novas credenciais serão ativadas na próxima vez que você iniciar o Cuberite</string>
+
+    <string name="settings_troubleshooting_heading">Solução de problemas</string>
+    <string name="settings_authentication_errors">Erros de autenticação</string>
+    <string name="settings_authentication_errors_explanation">Em alguns dispositivos, a autenticação com os servidores da Mojang não funciona. Nós sabemos sobre esse problema mas ainda não conseguimos arrumar. Se você tiver problemas para conectar ao Cuberite e recebe a mensagem \"Failed to authenticate!\" você pode querer desativar a autenticação usando o botão abaixo.</string>
+    <string name="settings_authentication_toggle">Ativar/desativar a autenticação</string>
+    <string name="settings_authentication_toggle_error">Algo deu errado ao acessar a configuração do servidor</string>
+    <string name="settings_authentication_toggle_success">Sucesso, %1$s a autenticação! Reinicie o servidor para ativar a alteração</string>
+
+    <string name="settings_info_heading">Info</string>
+    <string name="settings_info_debug">Informações de Depuração</string>
+    <string name="settings_info_libraries">Bibliotecas de terceiros</string>
+    <string name="settings_info_libraries_explanation">Este aplicativo usa bibliotecas de terceiros para prover certas funções. Abaixo algumas informações sobre essas bibliotecas e suas respectivas licenças</string>
+
+    <string name="ini4j_license">Licença para a biblioteca [ini4j] (usada para manipular as configurações do Cuberite)</string>
+
+    <string name="pathutils_license">Licença para a biblioteca PathUtils (usada para instalar o Cuberite manualmente, para selecionar os binários)</string>
+
+</resources>

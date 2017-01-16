@@ -14,7 +14,7 @@
     <string name="do_open_log">Open Console</string>
     <string name="do_open_settings">Settings</string>
 
-    <string name="status_downloading_cuberite">Downloading Cuberite&#8230;</string>
+    <string name="status_downloading_cuberite">Downloading Cuberite…</string>
     <string name="status_download_error">Download error: </string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite exited with code: </string>
@@ -27,7 +27,7 @@
     <string name="service_description">This service runs Cuberite and ensures that it is not killed by the system.</string>
     <string name="installservice_description">This service downloads, unzips and installs Cuberite.</string>
 
-    <string name="inputLine_hint">Enter commands&#8230;</string>
+    <string name="inputLine_hint">Enter commands…</string>
 
     <string name="message_externalstorage_permission">Cuberite stores it\'s worlds by default on the external storage, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"don\'t ask again\" option and Cuberite will use the apps private storage.</string>
     <string name="message_shasum_not_matching">SHA-1 sums doesn\'t match. This can indicate someone trying to spoof you or just a download error. Please retry and if the error persists, you may turn off the check by installing Cuberite via the Settings</string>
@@ -60,7 +60,7 @@
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
     <string name="settings_authentication_errors">Authentication errors</string>
-    <string name="settings_authentication_errors_explanation">On some devices the authentication with Mojang servers doesn\'t work, we know the problem but haven\'t been able to fix it yet. If you have troubles connecting to Cuberite and get the message "Failed to authenticate!", you might want to disable authentication using the button below.</string>
+    <string name="settings_authentication_errors_explanation">On some devices the authentication with Mojang servers doesn\'t work, we know the problem but haven\'t been able to fix it yet. If you have troubles connecting to Cuberite and get the message \"Failed to authenticate!\", you might want to disable authentication using the button below.</string>
     <string name="settings_authentication_toggle">Toggle authentication</string>
     <string name="settings_authentication_toggle_error">Something went wrong while accessing the Server configuration</string>
     <string name="settings_authentication_toggle_success">Success! Authentication is now %1$s! Restart the server to activate the change</string>
@@ -89,7 +89,7 @@ limitations under the License.
     <string name="pathutils_license">License for the PathUtils functions (used for installing Cuberite manually to select binaries)</string>
     <string name="pathutils_license_description">A few edits were made to wrap some functions into a new class. Below is a copy of the original license.\n\n
 
-Copyright &#169; 2011 - 2013 Paul Burke\n\n
+Copyright © 2011 - 2013 Paul Burke\n\n
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
