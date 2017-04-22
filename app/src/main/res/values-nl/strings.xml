@@ -1,0 +1,73 @@
+<resources>
+    <string name="do_install_cuberite">Installeer Cuberite</string>
+    <string name="do_start_cuberite">Start Server</string>
+    <string name="do_stop_cuberite">Stop Server</string>
+    <string name="do_kill_cuberite">Forceer stop Server (Als gewoon stoppen niet werkt)</string>
+    <string name="do_execute_line">Voer uit!</string>
+    <string name="username">Gebruikersnaam</string>
+    <string name="password">Paswoord</string>
+    <string name="enabled">Ingeschakeld</string>
+    <string name="disabled">Uitgeschakeld</string>
+    <string name="do_open_log">Open Console</string>
+    <string name="do_open_settings">Instellingen</string>
+
+    <string name="status_downloading_cuberite">Downloaden Cuberite…</string>
+    <string name="status_download_error">Download fout: </string>
+    <string name="status_delete_file_error">Er ging iets fout: kon het bestand niet verwijderen</string>
+ <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite stopte met code: </string>
+    <string name="status_permissions_needed">Toestemming nodig</string>
+    <string name="status_shasum_error">SHA-1 validatie fout</string>
+    <string name="status_missing_filemanager">Geen bestandsbeheerder gevonden: installeer er a.u.b een</string>
+
+    <string name="notification_cuberite_running">Cuberite draait!</string>
+
+    <string name="service_description">Deze service draait Cuberite and zorgt ervoor dat deze niet wordt gestopt door het systeem.</string>
+    <string name="installservice_description">Deze service download, unzipt en installeert Cuberite.</string>
+
+    <string name="inputLine_hint">Voer commando's in…</string>
+
+    <string name="message_externalstorage_permission">Cuberite bewaart de werelden standaard op externe opslagmedia, die lees- en schrijfbaar zijn door iedere app. Hiervoor moet u Cuberite toestaan om te schrijven naar het externe medium. Als u de nodige toestemming niet wilt geven, selecteer de \"vraag niet opnieuw\" optie en Cuberite zal de app zijn privé opslag gebruiken.</string>
+    <string name="message_shasum_not_matching">SHA-1 sommen komen zijn niet gelijk. Dit kan gewoon een download fout zijn of iemand probeert uw download te vervalsen. Probeer a.u.b opnieuw, als de fout opnieuw gebeurt kan u de controle afzetten door Cuberite te installeren via de Instellingen.</string>
+
+    <string name="title_activity_settings">Instellingen</string>
+    <string name="settings_download_host">Download Server</string>
+    <string name="settings_download_host_summary">De server waar Cuberite van gedownload zal worden. Als u uw eigen (automatische) builds maakt kan u deze instelling aanpassen en Cuberite zal uw eigen server gebruiken. Opmerking: voor automatische updates moet de server geldige SHA-1 bestanden voorzien.</string>
+
+    <string name="settings_install_heading">Installatie opties</string>
+    <string name="settings_install_update">Update Cuberite</string>
+    <string name="settings_install_update_explanation">Er is voorlopig nog geen automatische updater, gebruike deze sectie van tijd tot tijd om uw Cuberite installatie te updaten. Opmerking: als u een server.zip update uitvoert is er een kans dat uw server instellingen verloren gaan.</string>
+    <string name="settings_install_update_binary">Download en installeer de Cuberite binary</string>
+    <string name="settings_install_update_server">Download en installeer server.zip</string>
+    <string name="settings_install_manually">Installeer zip bestanden manueel</string>
+    <string name="settings_install_manually_explanation">In plaats van Cuberite te downloaden kan u ervoor kiezen om uw eigen gecompliceerde binaries te gebruiken. Gebruik dit enkel als u weet wat u doet.</string>
+    <string name="settings_install_manually_abi">Benodigde ABI voor dit apparaat: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
+    <string name="settings_install_select_binary">Selecteer and installeer binary zip bestand</string>
+    <string name="settings_install_select_server">Selecteer and installeer server.zip</string>
+    <string name="settings_install_no_sha">Installeer zonder SHA-1 controle</string>
+    <string name="settings_install_no_sha_explanation">Normaal verifieerd Cuberite de gedownloade uitvoerbare bestanden om er zeker van te zijn dat ze correct gedownload zijn. Gebruik deze optie als de verificatie mislukt, maar merk op dat u een beveiligingsfunctie uitschakeldt.</string>
+    <string name="settings_install_no_sha_button">Download and installeer Cuberite</string>
+
+    <string name="settings_webadmin_heading">Webadmin instellingen</string>
+    <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en paswoord voor de Webadmin in te stellen.</string>
+    <string name="settings_webadmin_login">Verander gebruikersnaam en paswoord</string>
+    <string name="settings_webadmin_not_installed_title">Cuberite is nog niet geïnstalleerd</string>
+    <string name="settings_webadmin_not_installed">Voor de gebruikersnaam en paswoord aan te passen moet Cuberite geïnstalleerd zijn. U kan kiezen om dit nu te doen of om dit dialoog venster te sluiten.</string>
+    <string name="settings_webadmin_error">Er ging iets fout tijdens het aanpassen van de Webadmin configuratie</string>
+    <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en paswoord zijn geldig nadat u Cuberite herstart</string>
+
+    <string name="settings_troubleshooting_heading">Troubleshooting</string>
+    <string name="settings_authentication_errors">Authenticatie fouten</string>
+    <string name="settings_authentication_errors_explanation">Op sommige apparaten werkt de authenticatie met de Mojang servers niet, we kennen het probleem, maar hebben het nog niet kunnen oplossen. Als u problemen heeft met het verbinden met Cuberite en het bericht \"Authenticatie mislukt!\" krijgt moet u misshien de authenticatie uitschakelen met de knop hieronder.</string>
+    <string name="settings_authentication_toggle">Authenticatie</string>
+    <string name="settings_authentication_toggle_error">Er ging iets fout tijdens het aanpassen van de Server configuratie.</string>
+    <string name="settings_authentication_toggle_success">Success! Authenticatie is nu %1$s! Herstart de server om de verandering toe te passen.</string>
+
+    <string name="settings_info_heading">Info</string>
+    <string name="settings_info_debug">Debug informatie</string>
+    <string name="settings_info_libraries">Bibliotheken van derden</string>
+    <string name="settings_info_libraries_explanation">Deze app gebruikt bibliotheken van derden voor bepaalde functies. Hieronder is informatie over deze bibliotheken en hun licenties</string>
+
+    <string name="ini4j_license">Licentie voor de [ini4j] bibliotheken (gebruikt voor het aanpassen van de Cuberite instellingen)</string>
+
+    <string name="pathutils_license">Licentie voor de PathUtils functies (gebruikt voor het manueel selecteren van binaries voor de Cuberite installatie)</string>
+</resources>
