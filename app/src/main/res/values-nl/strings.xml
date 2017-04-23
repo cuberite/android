@@ -5,9 +5,9 @@
     <string name="do_kill_cuberite">Forceer stop Server (Als gewoon stoppen niet werkt)</string>
     <string name="do_execute_line">Voer uit!</string>
     <string name="username">Gebruikersnaam</string>
-    <string name="password">Paswoord</string>
-    <string name="enabled">Ingeschakeld</string>
-    <string name="disabled">Uitgeschakeld</string>
+    <string name="password">Wachtwoord</string>
+    <string name="enabled">ingeschakeld</string>
+    <string name="disabled">uitgeschakeld</string>
     <string name="do_open_log">Open Console</string>
     <string name="do_open_settings">Instellingen</string>
 
@@ -26,7 +26,7 @@
 
     <string name="inputLine_hint">Voer commando's in…</string>
 
-    <string name="message_externalstorage_permission">Cuberite bewaart de werelden standaard op externe opslagmedia, die lees- en schrijfbaar zijn door iedere app. Hiervoor moet u Cuberite toestaan om te schrijven naar het externe medium. Als u de nodige toestemming niet wilt geven, selecteer de \"vraag niet opnieuw\" optie en Cuberite zal de app zijn privé opslag gebruiken.</string>
+    <string name="message_externalstorage_permission">Cuberite bewaart de werelden standaard op externe opslagmedia die lees- en schrijfbaar zijn door iedere app. Hiervoor moet u Cuberite toestaan om te schrijven naar het externe medium. Als u de nodige toestemming niet wilt geven, selecteer de \"vraag niet opnieuw\" optie en Cuberite zal de app zijn privé opslag gebruiken.</string>
     <string name="message_shasum_not_matching">SHA-1 sommen komen zijn niet gelijk. Dit kan gewoon een download fout zijn of iemand probeert uw download te vervalsen. Probeer a.u.b opnieuw, als de fout opnieuw gebeurt kan u de controle afzetten door Cuberite te installeren via de Instellingen.</string>
 
     <string name="title_activity_settings">Instellingen</string>
@@ -39,7 +39,7 @@
     <string name="settings_install_update_binary">Download en installeer de Cuberite binary</string>
     <string name="settings_install_update_server">Download en installeer server.zip</string>
     <string name="settings_install_manually">Installeer zip bestanden manueel</string>
-    <string name="settings_install_manually_explanation">In plaats van Cuberite te downloaden kan u ervoor kiezen om uw eigen gecompliceerde binaries te gebruiken. Gebruik dit enkel als u weet wat u doet.</string>
+    <string name="settings_install_manually_explanation">In plaats van Cuberite te downloaden kan u ervoor kiezen om uw eigen gecompileerde binaries te gebruiken. Gebruik dit enkel als u weet wat u doet.</string>
     <string name="settings_install_manually_abi">Benodigde ABI voor dit apparaat: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
     <string name="settings_install_select_binary">Selecteer and installeer binary zip bestand</string>
     <string name="settings_install_select_server">Selecteer and installeer server.zip</string>
@@ -48,12 +48,12 @@
     <string name="settings_install_no_sha_button">Download and installeer Cuberite</string>
 
     <string name="settings_webadmin_heading">Webadmin instellingen</string>
-    <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en paswoord voor de Webadmin in te stellen.</string>
-    <string name="settings_webadmin_login">Verander gebruikersnaam en paswoord</string>
+    <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de Webadmin in te stellen.</string>
+    <string name="settings_webadmin_login">Verander gebruikersnaam en wachtwoord</string>
     <string name="settings_webadmin_not_installed_title">Cuberite is nog niet geïnstalleerd</string>
-    <string name="settings_webadmin_not_installed">Voor de gebruikersnaam en paswoord aan te passen moet Cuberite geïnstalleerd zijn. U kan kiezen om dit nu te doen of om dit dialoog venster te sluiten.</string>
+    <string name="settings_webadmin_not_installed">Voor de gebruikersnaam en wachtwoord aan te passen moet Cuberite geïnstalleerd zijn. U kan kiezen om dit nu te doen of om dit dialoog venster te sluiten.</string>
     <string name="settings_webadmin_error">Er ging iets fout tijdens het aanpassen van de Webadmin configuratie</string>
-    <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en paswoord zijn geldig nadat u Cuberite herstart</string>
+    <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en wachtwoord zijn geldig nadat u Cuberite herstart</string>
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
     <string name="settings_authentication_errors">Authenticatie fouten</string>
