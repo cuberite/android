@@ -1,14 +1,14 @@
 <resources>
     <string name="do_install_cuberite">Installiere Cuberite</string>
-    <string name="do_start_cuberite">Server Starten</string>
-    <string name="do_stop_cuberite">Server Stoppen</string>
-    <string name="do_kill_cuberite">Server komplett Stoppen (falls Stopp nicht reicht)</string>
+    <string name="do_start_cuberite">Server starten</string>
+    <string name="do_stop_cuberite">Server stoppen</string>
+    <string name="do_kill_cuberite">Stopp erzwingen (falls Stopp nicht reicht)</string>
     <string name="do_execute_line">Ausführen!</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
     <string name="enabled">aktiv</string>
     <string name="disabled">inaktiv</string>
-    <string name="do_open_log">Console Öffen</string>
+    <string name="do_open_log">Console öffnen</string>
     <string name="do_open_settings">Einstellungen</string>
 
     <string name="status_downloading_cuberite">Lade Cuberite herunter…</string>
@@ -16,7 +16,7 @@
     <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite beendet, Code: </string>
     <string name="status_permissions_needed">Berechtigung benötigt</string>
-    <string name="status_shasum_error">Integritäts Fehler</string>
+    <string name="status_shasum_error">Integritätsfehler</string>
     <string name="status_missing_filemanager">Kein Dateimanager gefunden: bitte einen Installieren</string>
 
     <string name="notification_cuberite_running">Cuberite Läuft!</string>
@@ -33,18 +33,18 @@
     <string name="settings_download_host">Download Server</string>
     <string name="settings_download_host_summary">Der Server, von welchem Cuberite heruntergeladen wird. Wenn sie eigene Versionen bereitstellen, können Sie diese Einstellung entsprechend anpassen, für automatische Aktualisierung muss der Server gültige SHA-1 Dateien bereit stellten.</string>
 
-    <string name="settings_install_heading">Installations Einstellungen</string>
+    <string name="settings_install_heading">Installations Optionen</string>
     <string name="settings_install_update">Cuberite aktuallisieren</string>
-    <string name="settings_install_update_explanation">An automatischen Aktuallisierungen wird noch gearbeitet. Bis dahin kann über diese funktion Cuberite Aktualisiert werden. Achten Sie drauf, dass eine Aktualisierung Server Einstellungen überschreiben kann.</string>
+    <string name="settings_install_update_explanation">An automatischen Aktualisierungen wird noch gearbeitet. Bis dahin kann über diese Funktion Cuberite aktualisiert werden. Achten Sie drauf, dass eine Aktualisierung Server Einstellungen überschreiben kann.</string>
     <string name="settings_install_update_binary">Cuberite Programdatei herunterladen und installieren</string>
     <string name="settings_install_update_server">Cuberite Daten herunter laden und entpacken</string>
     <string name="settings_install_manually">Daten manuell installieren</string>
-    <string name="settings_install_manually_explanation">Sie können eigene Dateien auswählen, stat diese automatisch herunter zuladen. Tun Sie dies nur, wenn sie Wissen, was sie tun.</string>
+    <string name="settings_install_manually_explanation">Sie können eigene Dateien auswählen, statt diese automatisch herunterzuladen. Tun Sie dies nur, wenn sie wissen, was sie tun.</string>
     <string name="settings_install_manually_abi">Benötigte ABI: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
     <string name="settings_install_select_binary">Wähle und installiere cuberite zip-Datei.</string>
     <string name="settings_install_select_server">Wähle und installiere server.zip</string>
     <string name="settings_install_no_sha">Installiere ohne SHA-1 Kontrolle</string>
-    <string name="settings_install_no_sha_explanation">Normalerweise, werden alle Dateien auf korrektheit geprüft. Diese Schaltfläche deaktiviert die überprüfung und damit die Sicherheit.</string>
+    <string name="settings_install_no_sha_explanation">Normalerweise, werden alle Dateien auf Korrektheit geprüft. Diese Schaltfläche deaktiviert die Überprüfung und damit die Sicherheit.</string>
     <string name="settings_install_no_sha_button">Cuberite herunterladen und installieren</string>
 
     <string name="settings_webadmin_heading">Webadmin Einstellungen</string>
@@ -56,17 +56,17 @@
     <string name="settings_webadmin_success">Fertig! Einstellungen werden nach einem neustart von Cuberite übernommen.</string>
 
     <string name="settings_troubleshooting_heading">Fehlerbehebung</string>
-    <string name="settings_authentication_errors">Authentifizierungs Fehler</string>
+    <string name="settings_authentication_errors">Authentifizierungsfehler</string>
     <string name="settings_authentication_errors_explanation">Auf einigen Geräten funktionieren Mojangs-Authentifizierungs-Server nicht. Das problem ist bekannt, konnte aber ncoh nicht behoben werden. Wenn Sie beim verbinden den Fehler \"Failed to authenticate!\" erhalten, könnte diese Einstellung helfen.</string>
     <string name="settings_authentication_toggle">Authentifizierung umschalten.</string>
     <string name="settings_authentication_toggle_error">Beim Zugreiffen auf die Einstellungen ist ein Fehler aufgetreten.</string>
-    <string name="settings_authentication_toggle_success">Fertig! Authentifizierung ist nun %1$s! Bitte Server neustarten um änderungen zu übernehmen.</string>
+    <string name="settings_authentication_toggle_success">Fertig! Authentifizierung ist nun %1$s! Bitte Server neustarten um Änderungen zu übernehmen.</string>
 
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Debug information</string>
-    <string name="settings_info_libraries">Third-party Libraries</string>
-    <string name="settings_info_libraries_explanation">Diese App nutzt dritte Biboltheken, hier ist eine Liste aller genutzten Biblotheken und die zugehörigen Lizenzen.</string>
+    <string name="settings_info_libraries">Bibliotheken Dritter</string>
+    <string name="settings_info_libraries_explanation">Diese App nutzt Biblioltheken Dritter, hier ist eine Liste aller genutzten Bibliotheken und die zugehörigen Lizenzen.</string>
 
-    <string name="ini4j_license">Lizenz der [ini4j] Biblothek (zum ändern von Cuberite Einstellungen)</string>
-    <string name="pathutils_license">Lizenz der PathUtils Funktionen (genuzt um Datein für die Manuelle Installation zu wählen)</string>
+    <string name="ini4j_license">Lizenz der [ini4j] Bibliothek (zum Ändern von Cuberite Einstellungen)</string>
+    <string name="pathutils_license">Lizenz der PathUtils Funktionen (genuzt um Datein für die manuelle Installation zu wählen)</string>
 </resources>
