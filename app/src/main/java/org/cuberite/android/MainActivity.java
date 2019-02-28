@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         } else if(preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)){
             Log.d(Tags.MAIN_ACTIVITY, "Cuberite has permissions for external storage, but is still in the private dir");
         } else if(preferences.getString("cuberiteLocation", null) == null) {
-            preferences.edit().putString("cuberiteLocation", "/sdcard/cuberite-server").apply();
+preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
         }
     }
 
