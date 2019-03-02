@@ -64,7 +64,7 @@
 
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Debuginformationen</string>
-    <string name="settings_info_libraries">Bibliotheken Dritter</string>
+    <string name="settings_info_libraries">Open-Source Bibliotheken</string>
     <string name="settings_info_libraries_explanation">Diese App nutzt Biblioltheken Dritter, hier ist eine Liste aller genutzten Bibliotheken und die zugehörigen Lizenzen.</string>
 
     <string name="ini4j_license">Lizenz der [ini4j] Bibliothek (zum Ändern von Cuberite Einstellungen)</string>
