@@ -1,5 +1,5 @@
 <resources>
-    <string name="do_install_cuberite">Installiere Cuberite</string>
+    <string name="do_install_cuberite">Cuberite installieren</string>
     <string name="do_start_cuberite">Server starten</string>
     <string name="do_stop_cuberite">Server stoppen</string>
     <string name="do_kill_cuberite">Stopp erzwingen (falls Stopp nicht reicht)</string>
