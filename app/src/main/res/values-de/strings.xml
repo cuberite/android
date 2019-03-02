@@ -63,7 +63,7 @@
     <string name="settings_authentication_toggle_success">Fertig! Authentifizierung ist nun %1$s! Bitte Server neustarten um Änderungen zu übernehmen.</string>
 
     <string name="settings_info_heading">Info</string>
-    <string name="settings_info_debug">Debug information</string>
+    <string name="settings_info_debug">Debuginformationen</string>
     <string name="settings_info_libraries">Bibliotheken Dritter</string>
     <string name="settings_info_libraries_explanation">Diese App nutzt Biblioltheken Dritter, hier ist eine Liste aller genutzten Bibliotheken und die zugehörigen Lizenzen.</string>
 
