@@ -24,7 +24,7 @@
     <string name="service_description">Deze service draait Cuberite and zorgt ervoor dat deze niet wordt gestopt door het systeem.</string>
     <string name="installservice_description">Deze service download, unzipt en installeert Cuberite.</string>
 
-    <string name="inputLine_hint">Voer commando's in…</string>
+    <string name="inputLine_hint">Voer commando\'s in…</string>
 
     <string name="message_externalstorage_permission">Cuberite bewaart de werelden standaard op externe opslagmedia die lees- en schrijfbaar zijn door iedere app. Hiervoor moet u Cuberite toestaan om te schrijven naar het externe medium. Als u de nodige toestemming niet wilt geven, selecteer de \"vraag niet opnieuw\" optie en Cuberite zal de app zijn privé opslag gebruiken.</string>
     <string name="message_shasum_not_matching">SHA-1 sommen komen zijn niet gelijk. Dit kan gewoon een download fout zijn of iemand probeert uw download te vervalsen. Probeer a.u.b opnieuw, als de fout opnieuw gebeurt kan u de controle afzetten door Cuberite te installeren via de Instellingen.</string>
