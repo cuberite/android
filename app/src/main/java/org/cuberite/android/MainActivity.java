@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR) &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			showPermissionPopup();
+            showPermissionPopup();
         } else if(preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)) {
             Log.d(Tags.MAIN_ACTIVITY, "Cuberite has permissions for external storage, but is still in the private dir");
         }
