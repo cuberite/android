@@ -312,22 +312,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showPermissionPopup() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.status_permissions_needed));
+        builder.setMessage(R.string.message_externalstorage_permission);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Log.d(Tags.MAIN_ACTIVITY, "Requesting permissions for external storage");
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+            }
+        });
+        builder.create().show();
+    }
+
     private void checkPermissions() {
-        if (Build.VERSION.SDK_INT < 23) {
-            // Set public dir in Lollipop and earlier, since permissions are granted when the app is installed
-            preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.status_permissions_needed));
-            builder.setMessage(R.string.message_externalstorage_permission);
-            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Log.d(Tags.MAIN_ACTIVITY, "Requesting permissions for external storage");
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-                }
-            });
-            builder.create().show();
-        } else if(preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)){
+        if(preferences.getString("cuberiteLocation", null) == null) {
+            if(Build.VERSION.SDK_INT < 23) {
+                // Always use public dir in Lollipop and earlier, since permissions are granted when the app is installed
+                preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
+            } else {
+                showPermissionPopup();
+            }
+        } else if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR) &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			showPermissionPopup();
+        } else if(preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)) {
             Log.d(Tags.MAIN_ACTIVITY, "Cuberite has permissions for external storage, but is still in the private dir");
         }
     }
