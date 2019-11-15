@@ -2,14 +2,17 @@ package org.cuberite.android;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.app.NotificationCompat;
+
+import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 
@@ -58,12 +61,20 @@ public class CuberiteService extends IntentService {
         final String ip = intent.getStringExtra("ip");
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
+        final String CHANNEL_ID = "cuberiteservice";
         CharSequence text = getText(R.string.notification_cuberite_running);
-
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-        Notification notification = new NotificationCompat.Builder(this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Cuberite";
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_shape)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setTicker(text)
                 .setContentTitle(text)
                 .setContentText(ip)
