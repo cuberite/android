@@ -313,7 +313,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT < 23) {
+            // Set public dir in Lollipop and earlier, since permissions are granted when the app is installed
+            preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.status_permissions_needed));
             builder.setMessage(R.string.message_externalstorage_permission);
