@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void doStart() {
-        logView.setText("started");
+        logView.setText("");
         Log.d(Tags.MAIN_ACTIVITY, "Starting cuberite");
         checkPermissions();
 
