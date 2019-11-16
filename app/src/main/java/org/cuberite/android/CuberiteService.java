@@ -86,7 +86,7 @@ public class CuberiteService extends IntentService {
             // Make sure we can execute the binary
             new File(binary).setExecutable(true, true);
             // Initiate ProcessBuilder with the command at the given location
-            ProcessBuilder processBuilder = new ProcessBuilder(binary);
+            ProcessBuilder processBuilder = new ProcessBuilder(binary, "--no-output-buffering");
             processBuilder.directory(new File(location).getAbsoluteFile());
             processBuilder.redirectErrorStream(true);
             addLog("Info: Cuberite is starting...");
