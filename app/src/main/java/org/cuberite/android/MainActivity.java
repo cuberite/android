@@ -19,7 +19,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -29,12 +34,14 @@ import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -114,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (SocketException e) {
             return e.toString();
         }
-        return null;
+        return "localhost";
     }
     public static String generateSha1(String location) {
         try {
@@ -208,21 +215,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showLogLayout() {
-        if (Build.VERSION.SDK_INT > 20) {
-            // Animate start
-            int cx = (int) openLogButton.getX() + openLogButton.getWidth() / 2;
-            int cy = (int) openLogButton.getY() + openLogButton.getHeight() / 2;
-            float finalRadius = (float) Math.hypot(cx, cy);
-
-            startstopLayout.setVisibility(View.INVISIBLE);
-            logLayout.setVisibility(View.VISIBLE);
-
-            Animator anim = ViewAnimationUtils.createCircularReveal(logLayout, cx, cy, 0, finalRadius);
-            anim.start();
-        } else {
-            startstopLayout.setVisibility(View.INVISIBLE);
-            logLayout.setVisibility(View.VISIBLE);
-        }
+        startstopLayout.setVisibility(View.INVISIBLE);
+        logLayout.setVisibility(View.VISIBLE);
 
         inputLine.setEnabled(true);
         executeLine.setEnabled(true);
@@ -233,28 +227,8 @@ public class MainActivity extends AppCompatActivity {
         executeLine.setEnabled(false);
         mainButton.requestFocus();
 
-        if(Build.VERSION.SDK_INT > 20) {
-            // Animate start
-            int cx = (int) openLogButton.getX() + openLogButton.getWidth() / 2;
-            int cy = (int) openLogButton.getY() + openLogButton.getHeight() / 2;
-            float initialRadius = (float) Math.hypot(cx, cy);
-
-            Animator anim = ViewAnimationUtils.createCircularReveal(logLayout, cx, cy, initialRadius, 0);
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    logLayout.setVisibility(View.INVISIBLE);
-                    startstopLayout.setVisibility(View.VISIBLE);
-                }
-            });
-            anim.start();
-        } else {
-            logLayout.setVisibility(View.INVISIBLE);
-            startstopLayout.setVisibility(View.VISIBLE);
-        }
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), 0);
+        logLayout.setVisibility(View.INVISIBLE);
+        startstopLayout.setVisibility(View.VISIBLE);
     }
 
     private void checkState() {
@@ -354,19 +328,18 @@ public class MainActivity extends AppCompatActivity {
     private TextView logView;
     private Intent serviceIntent;
     private EditText inputLine;
-    private Button executeLine;
-    private Button openLogButton;
-    private Button openSettingsButton;
+    private ImageView executeLine;
     final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
         context = this;
         mainButton = (Button) findViewById(R.id.mainButton);
-        mainButtonColor = ContextCompat.getColor(this, R.color.main);
+        mainButtonColor = ContextCompat.getColor(this, R.color.primary);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         startstopLayout = (RelativeLayout) findViewById(R.id.startStopLayout);
         logLayout = (RelativeLayout) findViewById(R.id.logLayout);
@@ -374,8 +347,6 @@ public class MainActivity extends AppCompatActivity {
         logView.setMovementMethod(new ScrollingMovementMethod());
 
         inputLine = (EditText) findViewById(R.id.inputLine);
-        // Rename enter key :P
-        inputLine.setImeActionLabel(getString(R.string.do_execute_line), KeyEvent.KEYCODE_ENTER);
         inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -392,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        executeLine = (Button) findViewById(R.id.executeLine);
+        executeLine = (ImageView) findViewById(R.id.executeLine);
         executeLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -404,22 +375,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        openLogButton = (Button) findViewById(R.id.openLogButton);
-        openLogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLogLayout();
-            }
-        });
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
 
-        openSettingsButton = (Button) findViewById(R.id.openSettingsButton);
-        openSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.openControl:
+                                hideLogLayout();
+                                break;
+                            case R.id.openLogButton:
+                                showLogLayout();
+                                break;
+                            case R.id.openSettingsButton:
+                                Intent intent = new Intent(context, SettingsActivity.class);
+                                startActivity(intent);
+                                break;
+                        }
+                        return true;
+                    }
+                });
 
         // PACKAGE_NAME: org.cuberite.android
         // PRIVATE_DIR: /data/data/org.cuberite.android/files

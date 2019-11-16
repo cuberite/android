@@ -22,7 +22,7 @@ import java.util.Scanner;
 
 public class CuberiteService extends IntentService {
 
-    private String log;
+    private String log = "";
 
     public CuberiteService() {
         super("CuberiteService");
@@ -46,7 +46,11 @@ public class CuberiteService extends IntentService {
                 curText = "<font color=\"#8B0000\">" + curText + "</font>";
             }
 
-            logLine += "<br>" + curText;
+            if (log.isEmpty()) {
+                logLine = curText;
+            } else {
+                logLine += "<br>" + curText;
+            }
         }
         log += logLine;
         Intent intent = new Intent("addLog");

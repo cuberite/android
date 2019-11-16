@@ -3,15 +3,16 @@
     <string name="do_install_cuberite">Install Cuberite</string>
     <string name="do_start_cuberite">Start Server</string>
     <string name="do_stop_cuberite">Stop Server</string>
-    <string name="do_kill_cuberite">Kill Server (If stopping doesn\'t work)</string>
-    <string name="do_execute_line">Execute!</string>
+    <string name="do_kill_cuberite">Kill Server\n(If stopping doesn\'t work)</string>
+    <string name="do_execute_line">Execute</string>
     <string name="cancel" translatable="false">@android:string/cancel</string>
     <string name="ok" translatable="false">@android:string/ok</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="enabled">enabled</string>
     <string name="disabled">disabled</string>
-    <string name="do_open_log">Open Console</string>
+    <string name="do_open_control">Control</string>
+    <string name="do_open_log">Console</string>
     <string name="do_open_settings">Settings</string>
 
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>

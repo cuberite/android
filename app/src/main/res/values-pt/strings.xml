@@ -2,8 +2,8 @@
     <string name="do_install_cuberite">Instalar o Cuberite</string>
     <string name="do_start_cuberite">Iniciar o servidor</string>
     <string name="do_stop_cuberite">Encerrar o servidor</string>
-    <string name="do_kill_cuberite">Forçar encerramento do servidor (se encerrar não estiver funcionando)</string>
-    <string name="do_execute_line">Executar!</string>
+    <string name="do_kill_cuberite">Forçar encerramento do servidor\n(se encerrar não estiver funcionando)</string>
+    <string name="do_execute_line">Executar</string>
     <string name="username">Nome de usuário</string>
     <string name="password">Senha</string>
     <string name="enabled">ativado</string>
