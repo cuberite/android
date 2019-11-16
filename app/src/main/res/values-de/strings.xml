@@ -2,8 +2,8 @@
     <string name="do_install_cuberite">Cuberite installieren</string>
     <string name="do_start_cuberite">Server starten</string>
     <string name="do_stop_cuberite">Server stoppen</string>
-    <string name="do_kill_cuberite">Stopp erzwingen (falls Stopp nicht reicht)</string>
-    <string name="do_execute_line">Ausführen!</string>
+    <string name="do_kill_cuberite">Stopp erzwingen\n(falls Stopp nicht reicht)</string>
+    <string name="do_execute_line">Ausführen</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
     <string name="enabled">aktiv</string>

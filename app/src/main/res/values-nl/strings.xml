@@ -2,13 +2,13 @@
     <string name="do_install_cuberite">Installeer Cuberite</string>
     <string name="do_start_cuberite">Start Server</string>
     <string name="do_stop_cuberite">Stop Server</string>
-    <string name="do_kill_cuberite">Forceer stop Server (Als gewoon stoppen niet werkt)</string>
-    <string name="do_execute_line">Voer uit!</string>
+    <string name="do_kill_cuberite">Forceer stop Server\n(Als gewoon stoppen niet werkt)</string>
+    <string name="do_execute_line">Voer uit</string>
     <string name="username">Gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
     <string name="enabled">ingeschakeld</string>
     <string name="disabled">uitgeschakeld</string>
-    <string name="do_open_log">Open Console</string>
+    <string name="do_open_log">Console</string>
     <string name="do_open_settings">Instellingen</string>
 
     <string name="status_downloading_cuberite">Downloaden Cuberite…</string>
