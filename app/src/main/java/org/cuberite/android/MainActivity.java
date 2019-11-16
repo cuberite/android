@@ -229,9 +229,6 @@ public class MainActivity extends AppCompatActivity {
 
         logLayout.setVisibility(View.INVISIBLE);
         startstopLayout.setVisibility(View.VISIBLE);
-
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), 0);
     }
 
     private void checkState() {
