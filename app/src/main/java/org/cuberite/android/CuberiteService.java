@@ -58,6 +58,11 @@ public class CuberiteService extends IntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private void showStartupError() {
+        Intent intent = new Intent("showStartupError");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(Tags.SERVICE, "Starting service...");
@@ -89,6 +94,7 @@ public class CuberiteService extends IntentService {
                 .setContentText(ip)
                 .setContentIntent(contentIntent)
                 .build();
+
         startForeground(1, notification);
 
         try {
@@ -110,6 +116,7 @@ public class CuberiteService extends IntentService {
                 @Override
                 public void run() {
                     Log.d(Tags.SERVICE, "Starting logging thread...");
+                    final long logTimeStart = System.currentTimeMillis();
                     Scanner processScanner = new Scanner(process.getInputStream());
                     while (processScanner.hasNextLine()) {
                         String line = processScanner.nextLine();
@@ -117,6 +124,11 @@ public class CuberiteService extends IntentService {
                         addLog(line);
                     }
                     processScanner.close();
+
+                    final long logTimeEnd = System.currentTimeMillis();
+                    if ((logTimeEnd - logTimeStart) < 500) {
+                        showStartupError();
+                    }
                 }
             }).start();
 
@@ -174,6 +186,8 @@ public class CuberiteService extends IntentService {
             stopSelf();
         } catch (Exception e) {
             Log.wtf(Tags.SERVICE, "An error occurred when starting Cuberite", e);
+            showStartupError();
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("callback"));
         }
     }
 }

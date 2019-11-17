@@ -1,11 +1,8 @@
 package org.cuberite.android;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,9 +33,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -416,6 +411,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(fullLog, new IntentFilter("fullLog"));
         LocalBroadcastManager.getInstance(this).registerReceiver(addLog, new IntentFilter("addLog"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(showStartupError, new IntentFilter("showStartupError"));
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("getLog"));
         checkState();
     }
@@ -459,6 +455,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private BroadcastReceiver showStartupError = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_failed_start) + " " + getPreferredABI(), Snackbar.LENGTH_LONG)
+                    .show();
+        }
+    };
+
     private void sendExecuteLine(String line) {
         Log.d(Tags.MAIN_ACTIVITY, "Executing " + line);
         Intent intent = new Intent("executeLine");
@@ -471,6 +475,7 @@ public class MainActivity extends AppCompatActivity {
         // Unregister since the activity is not visible
         LocalBroadcastManager.getInstance(this).unregisterReceiver(fullLog);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(addLog);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(showStartupError);
         super.onPause();
     }
 
