@@ -283,7 +283,7 @@ public class InstallService extends IntentService {
         try {
             noMedia.createNewFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Tags.INSTALL_SERVICE, "Something went wrong while creating the .nomedia file", e);
         }
     }
 }
