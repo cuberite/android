@@ -5,14 +5,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <ScrollView
-        android:layout_above="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/activity_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/bottom_navigation"
             tools:context="org.cuberite.android.MainActivity"
             android:orientation="vertical"
             android:weightSum="1">
