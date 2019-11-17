@@ -12,7 +12,7 @@
     <string name="do_open_settings">Instellingen</string>
 
     <string name="status_downloading_cuberite">Downloaden Cuberite…</string>
-    <string name="status_download_error">Download fout: </string>
+    <string name="status_download_error">Download fout:</string>
     <string name="status_delete_file_error">Er ging iets fout: kon het bestand niet verwijderen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite stopte met code: </string>
     <string name="status_permissions_needed">Toestemming nodig</string>
