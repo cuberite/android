@@ -66,6 +66,7 @@ public class CuberiteService extends IntentService {
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
         final String CHANNEL_ID = "cuberiteservice";
+        int icon = R.drawable.ic_cuberite;
         CharSequence text = getText(R.string.notification_cuberite_running);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
@@ -77,8 +78,12 @@ public class CuberiteService extends IntentService {
             notificationManager.createNotificationChannel(channel);
         }
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            icon = R.mipmap.ic_launcher;
+        }
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_shape)
+                .setSmallIcon(icon)
                 .setTicker(text)
                 .setContentTitle(text)
                 .setContentText(ip)
