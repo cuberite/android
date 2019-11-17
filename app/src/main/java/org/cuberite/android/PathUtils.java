@@ -32,41 +32,37 @@ import android.provider.MediaStore;
 class PathUtils {
 
     static String getPath(final Context context, final Uri uri) {
-
         // DocumentProvider
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
-
             if (isExternalStorageDocument(uri)) {// ExternalStorageProvider
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
                 String storageDefinition;
 
-
-                if("primary".equalsIgnoreCase(type)){
-
+                if("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
-
                 } else {
-
                     if(Environment.isExternalStorageRemovable()){
                         storageDefinition = "EXTERNAL_STORAGE";
-
-                    } else{
+                    } else {
                         storageDefinition = "SECONDARY_STORAGE";
                     }
-
                     return System.getenv(storageDefinition) + "/" + split[1];
                 }
-
             } else if (isDownloadsDocument(uri)) {// DownloadsProvider
+                String column = MediaStore.MediaColumns.DISPLAY_NAME;
+                String fileName = getDataColumn(column, context, uri, null, null);
+                if (fileName != null) {
+                    return Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
+                }
 
+                column = "_data";
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
-                return getDataColumn(context, contentUri, null, null);
-
+                return getDataColumn(column, context, contentUri, null, null);
             } else if (isMediaDocument(uri)) {// MediaProvider
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -86,28 +82,22 @@ class PathUtils {
                         split[1]
                 };
 
-                return getDataColumn(context, contentUri, selection, selectionArgs);
+                return getDataColumn("_data", context, contentUri, selection, selectionArgs);
             }
-
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {// MediaStore (and general)
-
             // Return the remote address
             if (isGooglePhotosUri(uri))
                 return uri.getLastPathSegment();
 
-            return getDataColumn(context, uri, null, null);
-
+            return getDataColumn("_data", context, uri, null, null);
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {// File
             return uri.getPath();
         }
-
         return null;
     }
 
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
-
+    private static String getDataColumn(String column, Context context, Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
-        final String column = "_data";
         final String[] projection = {
                 column
         };
@@ -125,11 +115,9 @@ class PathUtils {
         return null;
     }
 
-
     private static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
-
 
     private static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
