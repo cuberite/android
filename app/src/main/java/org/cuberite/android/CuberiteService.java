@@ -18,6 +18,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class CuberiteService extends IntentService {
