@@ -235,6 +235,9 @@ public class InstallService extends IntentService {
         if (!targetLocation.exists())
             targetLocation.mkdir();
 
+        // Create a .nomedia file in the server directory to prevent images from showing in gallery
+        createNoMediaFile(targetLocation.getAbsolutePath());
+
         String result = null;
 
         try {
@@ -273,5 +276,14 @@ public class InstallService extends IntentService {
         wakeLock.release();
         receiver.send(DownloadReceiver.PROGRESS_END, null);
         return result;
+    }
+
+    private void createNoMediaFile(String filePath) {
+        final File noMedia = new File(filePath + "/.nomedia");
+        try {
+            noMedia.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
