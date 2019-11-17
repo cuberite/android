@@ -13,7 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.core.app.NotificationCompat;
 
 import android.os.Build;
-import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public class CuberiteService extends IntentService {
         String logLine = "";
         String[] text = string.split("\\n");
         for (String line : text) {
-            String curText = Html.escapeHtml(line);
+            String curText = TextUtils.htmlEncode(line);
             if (curText.toLowerCase().startsWith("log: ")) {
                 curText = curText.replaceFirst("(?i)log: ", "");
             } else if (curText.toLowerCase().startsWith("info:")) {
@@ -117,11 +117,16 @@ public class CuberiteService extends IntentService {
                 public void run() {
                     Log.d(Tags.SERVICE, "Starting logging thread...");
                     final long logTimeStart = System.currentTimeMillis();
+
                     Scanner processScanner = new Scanner(process.getInputStream());
-                    while (processScanner.hasNextLine()) {
-                        String line = processScanner.nextLine();
-                        Log.i(Tags.PROCESS, line);
-                        addLog(line);
+                    String line;
+                    try {
+                        while ((line = processScanner.nextLine()) != null) {
+                            Log.i(Tags.PROCESS, line);
+                            addLog(line);
+                        }
+                    } catch (NoSuchElementException e) {
+                        // Do nothing. Workaround for issues in older Android versions.
                     }
                     processScanner.close();
 
