@@ -58,6 +58,11 @@ public class CuberiteService extends IntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private void showStartupError() {
+        Intent intent = new Intent("showStartupError");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(Tags.SERVICE, "Starting service...");
@@ -84,6 +89,7 @@ public class CuberiteService extends IntentService {
                 .setContentText(ip)
                 .setContentIntent(contentIntent)
                 .build();
+
         startForeground(1, notification);
 
         try {
@@ -96,6 +102,7 @@ public class CuberiteService extends IntentService {
             addLog("Info: Cuberite is starting...");
             Log.d(Tags.SERVICE, "Starting process...");
             final Process process = processBuilder.start();
+            final long timeStart = System.currentTimeMillis();
 
             // Open STDIN for the inputLine
             final OutputStream cuberiteSTDIN = process.getOutputStream();
@@ -160,6 +167,11 @@ public class CuberiteService extends IntentService {
             // Wait for the process to end. Logic waits here until cuberite has stopped. Everything after that is cleanup for the next run
             process.waitFor();
 
+            final long timeEnd = System.currentTimeMillis();
+            if ((timeEnd - timeStart) < 500) {
+                showStartupError();
+            }
+
             LocalBroadcastManager.getInstance(this).unregisterReceiver(getLog);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(stop);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(kill);
@@ -169,6 +181,8 @@ public class CuberiteService extends IntentService {
             stopSelf();
         } catch (Exception e) {
             Log.wtf(Tags.SERVICE, "An error occurred when starting Cuberite", e);
+            showStartupError();
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("callback"));
         }
     }
 }
