@@ -201,7 +201,7 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                     try {
                         Ini ini = new Ini(settingsFile);
-                        int enabled = ini.get("Authentication", "Authenticate", int.class);
+                        int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
                         int newenabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
                         ini.put("Authentication", "Authenticate", newenabled);
                         ini.store(settingsFile);
