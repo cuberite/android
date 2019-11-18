@@ -184,7 +184,9 @@ public class InstallService extends IntentService {
             inputStream = connection.getInputStream();
             outputStream = new FileOutputStream(targetLocation);
 
-            receiver.send(DownloadReceiver.PROGRESS_START, null);
+            Bundle bundleInit = new Bundle();
+            bundleInit.putString("title", getString(R.string.status_downloading_cuberite));
+            receiver.send(DownloadReceiver.PROGRESS_START, bundleInit);
 
             byte[] data = new byte[4096];
             long total = 0;
@@ -192,10 +194,10 @@ public class InstallService extends IntentService {
             while ((count = inputStream.read(data)) != -1) {
                 total += count;
                 if (length > 0) { // only if total length is known
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("progress", (int) total);
-                    bundle.putInt("max", length);
-                    receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundle);
+                    Bundle bundleProg = new Bundle();
+                    bundleProg.putInt("progress", (int) total);
+                    bundleProg.putInt("max", length);
+                    receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundleProg);
                 }
                 outputStream.write(data, 0, count);
             }
@@ -244,7 +246,9 @@ public class InstallService extends IntentService {
             ZipEntry zipEntry;
             int length = (int) file.length();
 
-            receiver.send(DownloadReceiver.PROGRESS_START, null);
+            Bundle bundleInit = new Bundle();
+            bundleInit.putString("title", getString(R.string.status_installing_cuberite));
+            receiver.send(DownloadReceiver.PROGRESS_START, bundleInit);
 
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {
@@ -256,10 +260,10 @@ public class InstallService extends IntentService {
                     int read;
                     while ((read = zipInputStream.read(buffer)) != -1) {
                         bufferedOutputStream.write(buffer, 0, read);
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("progress", (int) channel.position());
-                        bundle.putInt("max", length);
-                        receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundle);
+                        Bundle bundleProg = new Bundle();
+                        bundleProg.putInt("progress", (int) channel.position());
+                        bundleProg.putInt("max", length);
+                        receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundleProg);
                     }
                     zipInputStream.closeEntry();
                     bufferedOutputStream.close();

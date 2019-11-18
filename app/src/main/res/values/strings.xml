@@ -15,7 +15,8 @@
     <string name="do_open_log">Console</string>
     <string name="do_open_settings">Settings</string>
 
-    <string name="status_downloading_cuberite">Installing Cuberite…</string>
+    <string name="status_downloading_cuberite">Downloading Cuberite…</string>
+    <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_download_error">Download error:</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
