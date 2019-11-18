@@ -206,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected void doKill() {
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("kill"));
-        checkState();
     }
 
     private void showLogLayout() {
