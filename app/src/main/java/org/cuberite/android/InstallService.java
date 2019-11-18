@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -29,7 +30,6 @@ import static org.cuberite.android.MainActivity.generateSha1;
 import static org.cuberite.android.MainActivity.getPreferredABI;
 
 public class InstallService extends IntentService {
-
     private ResultReceiver receiver;
 
     public InstallService() {
@@ -38,7 +38,6 @@ public class InstallService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
         receiver = intent.getParcelableExtra("receiver");
 
         switch (intent.getAction()) {
@@ -46,7 +45,7 @@ public class InstallService extends IntentService {
                 String file = intent.getStringExtra("file");
                 String targetLocation = intent.getStringExtra("targetLocation");
                 String unzipError = unzip(new File(file), new File(targetLocation));
-                if(unzipError != null){
+                if (unzipError != null) {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
                     return;
                 }
@@ -76,12 +75,12 @@ public class InstallService extends IntentService {
                 String unzipError = unzip(new File(zipTarget), new File(targetDirectory));
                 if (!new File(zipTarget).delete())
                     Log.w(Tags.INSTALL_SERVICE, getString(R.string.status_delete_file_error));
-                if(unzipError != null) {
+                if (unzipError != null) {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
                     return;
                 }
 
-                if(state == State.NEED_DOWNLOAD_BOTH) {
+                if (state == State.NEED_DOWNLOAD_BOTH) {
                     intent.putExtra("state", State.NEED_DOWNLOAD_SERVER.toString());
                     onHandleIntent(intent);
                 } else
@@ -109,12 +108,12 @@ public class InstallService extends IntentService {
                 String unzipError = unzip(new File(zipTarget), new File(targetDirectory));
                 if (!new File(zipTarget).delete())
                     Log.w(Tags.INSTALL_SERVICE, getString(R.string.status_delete_file_error));
-                if(unzipError != null) {
+                if (unzipError != null) {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
                     return;
                 }
 
-                if(state == State.NEED_DOWNLOAD_BOTH) {
+                if (state == State.NEED_DOWNLOAD_BOTH) {
                     intent.putExtra("state", State.NEED_DOWNLOAD_SERVER.toString());
                     onHandleIntent(intent);
                 } else
@@ -164,8 +163,6 @@ public class InstallService extends IntentService {
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
 
-        receiver.send(DownloadReceiver.PROGRESS_START, null);
-
         String result = null;
 
         InputStream inputStream = null;
@@ -187,7 +184,9 @@ public class InstallService extends IntentService {
             inputStream = connection.getInputStream();
             outputStream = new FileOutputStream(targetLocation);
 
-            byte data[] = new byte[4096];
+            receiver.send(DownloadReceiver.PROGRESS_START, null);
+
+            byte[] data = new byte[4096];
             long total = 0;
             int count;
             while ((count = inputStream.read(data)) != -1) {
@@ -200,6 +199,7 @@ public class InstallService extends IntentService {
                 }
                 outputStream.write(data, 0, count);
             }
+            receiver.send(DownloadReceiver.PROGRESS_END, null);
             Log.d(Tags.INSTALL_SERVICE, "Finished downloading");
         } catch (Exception e) {
             result = e.getMessage();
@@ -218,7 +218,6 @@ public class InstallService extends IntentService {
 
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
-        receiver.send(DownloadReceiver.PROGRESS_END, null);
         return result;
     }
 
@@ -230,8 +229,6 @@ public class InstallService extends IntentService {
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
 
-        receiver.send(DownloadReceiver.PROGRESS_START, null);
-
         if (!targetLocation.exists())
             targetLocation.mkdir();
 
@@ -242,10 +239,13 @@ public class InstallService extends IntentService {
 
         try {
             FileInputStream inputStream = new FileInputStream(file);
+            FileChannel channel = inputStream.getChannel();
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
             ZipEntry zipEntry;
             int length = (int) file.length();
-            int progress = 0;
+
+            receiver.send(DownloadReceiver.PROGRESS_START, null);
+
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {
                     new File(targetLocation.getAbsolutePath() + "/" + zipEntry.getName()).mkdir();
@@ -257,7 +257,7 @@ public class InstallService extends IntentService {
                     while ((read = zipInputStream.read(buffer)) != -1) {
                         bufferedOutputStream.write(buffer, 0, read);
                         Bundle bundle = new Bundle();
-                        bundle.putInt("progress", ++progress);
+                        bundle.putInt("progress", (int) channel.position());
                         bundle.putInt("max", length);
                         receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundle);
                     }
@@ -268,13 +268,13 @@ public class InstallService extends IntentService {
 
             }
             zipInputStream.close();
+            receiver.send(DownloadReceiver.PROGRESS_END, null);
         } catch (IOException e) {
             Log.e(Tags.INSTALL_SERVICE, "An error occurred while installing Cuberite", e);
             result = getString(R.string.status_unzip_error);
         }
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
-        receiver.send(DownloadReceiver.PROGRESS_END, null);
         return result;
     }
 
