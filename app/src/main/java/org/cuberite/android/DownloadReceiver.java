@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v4.os.ResultReceiver;
 
 class DownloadReceiver extends ResultReceiver {
-
     static final int PROGRESS_START = 1;
     static final int PROGRESS_NEWDATA = 2;
     static final int PROGRESS_END = 3;
@@ -27,7 +26,6 @@ class DownloadReceiver extends ResultReceiver {
          switch(resultCode) {
              case PROGRESS_START: {
                  progressDialog = new ProgressDialog(cont);
-                 progressDialog.setMax(100);
                  progressDialog.setTitle(cont.getString(R.string.status_downloading_cuberite));
                  progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                  progressDialog.show();
