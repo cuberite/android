@@ -1,6 +1,5 @@
 package org.cuberite.android;
 
-import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,7 +33,6 @@ import static org.cuberite.android.MainActivity.PUBLIC_DIR;
 import static org.cuberite.android.MainActivity.getPreferredABI;
 
 public class SettingsActivity extends AppCompatActivity {
-
     private final static int PICK_FILE_BINARY = 1;
     private final static int PICK_FILE_SERVER = 2;
 
@@ -76,22 +74,22 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Install options
 
-        Button updateBinary = (Button) findViewById(R.id.installUpdateBinary);
+        Button updateBinary = findViewById(R.id.installUpdateBinary);
         updateOnButtonClick(this, updateBinary, State.NEED_DOWNLOAD_BINARY);
 
-        Button updateServer = (Button) findViewById(R.id.installUpdateServer);
+        Button updateServer = findViewById(R.id.installUpdateServer);
         updateOnButtonClick(this, updateServer, State.NEED_DOWNLOAD_SERVER);
 
         String abi = String.format(getString(R.string.settings_install_manually_abi), getPreferredABI());
         ((TextView) findViewById(R.id.installABI)).setText(abi);
 
-        Button installBinary = (Button) findViewById(R.id.installBinary);
+        Button installBinary = findViewById(R.id.installBinary);
         installSelectFileOnButtonClick(installBinary, PICK_FILE_BINARY);
 
-        Button installServer = (Button) findViewById(R.id.installServer);
+        Button installServer = findViewById(R.id.installServer);
         installSelectFileOnButtonClick(installServer, PICK_FILE_SERVER);
 
-        Button installNoSha = (Button) findViewById(R.id.installNoShaButton);
+        Button installNoSha = findViewById(R.id.installNoShaButton);
         installNoSha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         // Webadmin
-        final Button webadminLogin = (Button) findViewById(R.id.webadminLogin);
+        final Button webadminLogin = findViewById(R.id.webadminLogin);
         webadminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,7 +191,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button toggleAuthentication = (Button) findViewById(R.id.troubleshootingAuthenticationToggle);
+        Button toggleAuthentication = findViewById(R.id.troubleshootingAuthenticationToggle);
         toggleAuthentication.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
