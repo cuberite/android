@@ -44,15 +44,9 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.security.MessageDigest;
-import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
-    // TODO: maybe improve landscape mode :P
-
     // Helper functions
     public static boolean isServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -99,24 +93,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(Tags.MAIN_ACTIVITY, "Getting preferred ABI: " + abi);
 
         return abi;
-    }
-    public String getIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements();) {
-                NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.getName().contains("wlan")) {
-                    for (Enumeration<InetAddress> addresses = networkInterface.getInetAddresses(); addresses.hasMoreElements();) {
-                        InetAddress address = addresses.nextElement();
-                        if (!address.isLoopbackAddress() && (address.getAddress().length == 4)) {
-                            return address.getHostAddress();
-                        }
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            return e.toString();
-        }
-        return "localhost";
     }
     public static String generateSha1(String location) {
         try {
@@ -167,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent.putExtra("location", preferences.getString("cuberiteLocation", ""));
         serviceIntent.putExtra("binary", PRIVATE_DIR + "/" + preferences.getString("executableName", ""));
         serviceIntent.putExtra("stopcommand", "stop");
-        serviceIntent.putExtra("ip", getIpAddress());
         BroadcastReceiver callback = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -178,16 +153,7 @@ public class MainActivity extends AppCompatActivity {
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(callback, new IntentFilter("callback"));
         startService(serviceIntent);
-
-        int colorTo = ContextCompat.getColor(this, R.color.warning);
-        animateColorChange(mainButton, mainButtonColor, colorTo, 500);
-        mainButton.setText(getText(R.string.do_stop_cuberite));
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doStop();
-            }
-        });
+        checkState();
     }
 
     protected void doStop() {
@@ -316,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private Button mainButton;
     private int mainButtonColor;
-    private TextView statusTextView;
     private RelativeLayout startstopLayout;
     private RelativeLayout logLayout;
     private TextView logView;
@@ -334,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         mainButton = (Button) findViewById(R.id.mainButton);
         mainButtonColor = ContextCompat.getColor(this, R.color.primary);
-        statusTextView = (TextView) findViewById(R.id.statusTextView);
         startstopLayout = (RelativeLayout) findViewById(R.id.startStopLayout);
         logLayout = (RelativeLayout) findViewById(R.id.logLayout);
         logView = (TextView) findViewById(R.id.logView);
@@ -490,7 +454,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(Tags.MAIN_ACTIVITY, "Permissions denied, boo, using private directory");
                     preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
                 }
-                checkState();
             }
         }
     }
