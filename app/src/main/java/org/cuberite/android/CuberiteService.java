@@ -1,7 +1,6 @@
 package org.cuberite.android;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,8 +11,12 @@ import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.core.app.NotificationCompat;
 
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.File;
@@ -64,11 +67,23 @@ public class CuberiteService extends IntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private String getIpAddress() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ip = wifiInfo.getIpAddress();
+
+        if (ip == 0) {
+            return "127.0.0.1";
+        } else {
+            return Formatter.formatIpAddress(ip);
+        }
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(Tags.SERVICE, "Starting service...");
         final String stopCommand = intent.getStringExtra("stopcommand");
-        final String ip = intent.getStringExtra("ip");
+        final String ip = getIpAddress();
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
         final String CHANNEL_ID = "cuberiteservice";
@@ -77,7 +92,7 @@ public class CuberiteService extends IntentService {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Cuberite";
+            CharSequence name = getString(R.string.app_name);
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
             channel.setSound(null, null);
             channel.setVibrationPattern(new long[]{ 0 });
@@ -91,15 +106,15 @@ public class CuberiteService extends IntentService {
             icon = R.mipmap.ic_launcher;
         }
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(icon)
                 .setTicker(text)
                 .setContentTitle(text)
                 .setContentText(ip)
                 .setContentIntent(contentIntent)
-                .build();
+                .setOnlyAlertOnce(true);
 
-        startForeground(1, notification);
+        startForeground(1, notification.build());
 
         try {
             // Make sure we can execute the binary
@@ -141,6 +156,30 @@ public class CuberiteService extends IntentService {
                 }
             }).start();
 
+            // Update notification IP if network changes
+            BroadcastReceiver updateIp = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    final String action = intent.getAction();
+                    if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                        NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+
+                        if (info.getState() == NetworkInfo.State.CONNECTED ||
+                        info.getState() == NetworkInfo.State.DISCONNECTED) {
+                            Log.d(Tags.SERVICE, "Updating notification IP due to network change");
+                            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            final String ip = getIpAddress();
+                            notification.setContentText(ip);
+                            notificationManager.notify(1, notification.build());
+                        }
+                    }
+                }
+            };
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+            registerReceiver(updateIp, intentFilter);
+
             // Communication with the activity
             BroadcastReceiver getLog = new BroadcastReceiver() {
                 @Override
@@ -178,6 +217,7 @@ public class CuberiteService extends IntentService {
                         Log.e(Tags.SERVICE, "An error occurred when writing " + line + " to the STDIN", e);}
                 }
             };
+
             LocalBroadcastManager.getInstance(this).registerReceiver(getLog, new IntentFilter("getLog"));
             LocalBroadcastManager.getInstance(this).registerReceiver(stop, new IntentFilter("stop"));
             LocalBroadcastManager.getInstance(this).registerReceiver(kill, new IntentFilter("kill"));
@@ -185,6 +225,8 @@ public class CuberiteService extends IntentService {
 
             // Wait for the process to end. Logic waits here until cuberite has stopped. Everything after that is cleanup for the next run
             process.waitFor();
+
+            unregisterReceiver(updateIp);
 
             LocalBroadcastManager.getInstance(this).unregisterReceiver(getLog);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(stop);
