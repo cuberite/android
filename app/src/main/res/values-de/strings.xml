@@ -12,7 +12,7 @@
     <string name="do_open_settings">Einstellungen</string>
 
     <string name="status_downloading_cuberite">Lade Cuberite herunter…</string>
-    <string name="status_download_error">Fehler beim Laden: </string>
+    <string name="status_download_error">Fehler beim Laden:</string>
     <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite beendet, Code: </string>
     <string name="status_permissions_needed">Berechtigung benötigt</string>

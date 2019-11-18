@@ -16,7 +16,9 @@
     <string name="do_open_settings">Settings</string>
 
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
-    <string name="status_download_error">Download error: </string>
+    <string name="status_download_error">Download error:</string>
+    <string name="status_unzip_error">Failed to unzip the server files</string>
+    <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
     <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI:</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite exited with code: </string>

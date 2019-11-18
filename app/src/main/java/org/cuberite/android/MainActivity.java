@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
     // TODO: maybe improve landscape mode :P
 
     // Helper functions
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+    public static boolean isServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
                 return true;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         if (new File(preferences.getString("cuberiteLocation", "")).exists())
             hasServer = true;
 
-        if(isServiceRunning(CuberiteService.class))
+        if(isServiceRunning(CuberiteService.class, context))
             state = State.RUNNING;
         else if (hasBinary && hasServer)
             state = State.OK;
@@ -206,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected void doKill() {
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("kill"));
-        checkState();
     }
 
     private void showLogLayout() {
@@ -270,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                             LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                             String error = intent.getStringExtra("error");
                             if(error != null) {
-                                Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                             }
                             checkState();
                         }
@@ -347,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String line = inputLine.getText().toString();
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(!line.isEmpty() && isServiceRunning(CuberiteService.class)) {
+                    if(!line.isEmpty() && isServiceRunning(CuberiteService.class, context)) {
                         sendExecuteLine(line);
                         inputLine.setText("");
                     }
@@ -363,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String line = inputLine.getText().toString();
-                if(!line.isEmpty() && isServiceRunning(CuberiteService.class)) {
+                if(!line.isEmpty() && isServiceRunning(CuberiteService.class, context)) {
                     sendExecuteLine(line);
                     inputLine.setText("");
                 }

@@ -1,5 +1,6 @@
 package org.cuberite.android;
 
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -94,6 +95,10 @@ public class SettingsActivity extends AppCompatActivity {
         installNoSha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
+                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
                 Intent intent = new Intent(context, InstallService.class);
                 intent.setAction("installNoCheck");
                 intent.putExtra("downloadHost", preferences.getString("downloadHost", ""));
@@ -107,7 +112,7 @@ public class SettingsActivity extends AppCompatActivity {
                         LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                         String error = intent.getStringExtra("error");
                         if (error != null) {
-                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }, new IntentFilter("InstallService.callback"));
@@ -260,6 +265,11 @@ public class SettingsActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (code == PICK_FILE_BINARY &&
+                    MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
+                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");
                 try {
@@ -275,6 +285,11 @@ public class SettingsActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (state == State.NEED_DOWNLOAD_BINARY &&
+                        MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
+                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
                 Intent intent = new Intent(context, InstallService.class);
                 intent.setAction("install");
                 intent.putExtra("downloadHost", preferences.getString("downloadHost", ""));
@@ -289,7 +304,7 @@ public class SettingsActivity extends AppCompatActivity {
                         LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                         String error = intent.getStringExtra("error");
                         if(error != null) {
-                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }, new IntentFilter("InstallService.callback"));
@@ -335,7 +350,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                                 String error = intent.getStringExtra("error");
                                 if(error != null) {
-                                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + error, Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         }, new IntentFilter("InstallService.callback"));

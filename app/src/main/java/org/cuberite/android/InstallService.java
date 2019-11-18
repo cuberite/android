@@ -202,7 +202,7 @@ public class InstallService extends IntentService {
             }
             Log.d(Tags.INSTALL_SERVICE, "Finished downloading");
         } catch (Exception e) {
-            result = e.toString();
+            result = e.getMessage();
             Log.e(Tags.INSTALL_SERVICE, "An error occurred when downloading a zip", e);
         } finally {
             try {
@@ -270,7 +270,7 @@ public class InstallService extends IntentService {
             zipInputStream.close();
         } catch (IOException e) {
             Log.e(Tags.INSTALL_SERVICE, "An error occurred while installing Cuberite", e);
-            result = getString(R.string.status_download_error);
+            result = getString(R.string.status_unzip_error);
         }
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
