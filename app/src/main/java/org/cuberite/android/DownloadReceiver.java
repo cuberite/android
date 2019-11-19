@@ -25,8 +25,9 @@ class DownloadReceiver extends ResultReceiver {
         super.onReceiveResult(resultCode, resultData);
          switch(resultCode) {
              case PROGRESS_START: {
+                 String title = resultData.getString("title");
                  progressDialog = new ProgressDialog(cont);
-                 progressDialog.setTitle(cont.getString(R.string.status_downloading_cuberite));
+                 progressDialog.setTitle(title);
                  progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                  progressDialog.show();
 
