@@ -3,64 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:id="@+id/logLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/inputWrapper"
+        android:textIsSelectable="true">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/inputWrapper">
+        <TextView
+            android:id="@+id/logView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textIsSelectable="true" />
+    </ScrollView>
 
-            <TextView
-                android:id="@+id/logView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_vertical_margin" />
-        </ScrollView>
+    <androidx.cardview.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/inputWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        card_view:cardElevation="10dp"
+        card_view:cardPreventCornerOverlap="false">
 
-        <androidx.cardview.widget.CardView
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/inputWrapper"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            card_view:cardElevation="10dp"
-            card_view:cardPreventCornerOverlap="false">
+            android:background="@color/bg">
 
-            <RelativeLayout
+            <EditText
+                android:id="@+id/inputLine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/bg">
+                android:background="@null"
+                android:ems="10"
+                android:padding="12dp"
+                android:hint="@string/inputLine_hint"
+                android:layout_toStartOf="@+id/executeLine"
+                android:layout_toLeftOf="@+id/executeLine"
+                android:singleLine="true"
+                tools:ignore="Autofill"/>
 
-                <EditText
-                    android:id="@+id/inputLine"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:ems="10"
-                    android:padding="12dp"
-                    android:hint="@string/inputLine_hint"
-                    android:layout_toStartOf="@+id/executeLine"
-                    android:layout_toLeftOf="@+id/executeLine"
-                    android:inputType="textNoSuggestions"
-                    android:singleLine="true"
-                    tools:ignore="Autofill"/>
-
-                <ImageView
-                    style="@style/Widget.AppCompat.ActionButton"
-                    android:id="@+id/executeLine"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/do_execute_line"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:tint="@color/execute_button"
-                    app:srcCompat="@drawable/ic_execute" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
-    </RelativeLayout>
+            <ImageView
+                style="@style/Widget.AppCompat.ActionButton"
+                android:id="@+id/executeLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/do_execute_line"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:tint="@color/execute_button"
+                app:srcCompat="@drawable/ic_execute" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

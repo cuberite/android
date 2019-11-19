@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/mainButton"
         android:layout_width="150dp"
-        android:layout_height="164dp"
+        android:layout_height="150dp"
         android:layout_centerInParent="true"
-        app:cornerRadius="128dp"
         android:focusable="true"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:padding="6dp"
         android:textAllCaps="false"
-        android:textColor="@color/main_button_text" />
+        android:textColor="@color/main_button_text"
+        app:elevation="0dp"
+        app:cornerRadius="75dp" />
 </RelativeLayout>

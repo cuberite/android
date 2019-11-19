@@ -142,6 +142,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
                 final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
+
                 if(!cuberiteDir.exists()) {
                     cuberiteNotInstalled(getContext());
                 } else {
@@ -180,10 +181,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                                         if(newUser.equals("") || newPass.equals("")) {
                                             ini.put("WebAdmin", "Enabled", 0);
-                                            ini.remove("User:" + oldUser);
                                         } else {
                                             ini.put("User:" + newUser, "Password", newPass);
                                         }
+
+                                        ini.remove("User:" + oldUser);
+
                                         try {
                                             ini.store(webadminFile);
                                             Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_success), Snackbar.LENGTH_LONG).show();
@@ -353,7 +356,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         Preference version = findPreference("version");
-        version.setTitle(String.format(getString(R.string.settings_info_version), BuildConfig.VERSION_NAME));
+        version.setSummary(String.format(getString(R.string.settings_info_version), BuildConfig.VERSION_NAME));
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

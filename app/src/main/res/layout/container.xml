@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/bar"
-        android:animateLayoutChanges="false"
         app:elevation="12dp"
         app:itemIconTint="@color/menu_item_color"
         app:itemTextColor="@color/menu_item_color"

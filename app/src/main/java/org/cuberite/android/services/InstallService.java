@@ -12,6 +12,8 @@ import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.cuberite.android.ProgressReceiver;
 import org.cuberite.android.R;
 import org.cuberite.android.State;
@@ -260,6 +262,7 @@ public class InstallService extends IntentService {
         }
 
         receiver.send(ProgressReceiver.PROGRESS_END, null);
+
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
         return result;
