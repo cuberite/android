@@ -25,8 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class CuberiteService extends IntentService {
-
-    private String log = "";
+    private static String log = "";
 
     public CuberiteService() {
         super("CuberiteService");
@@ -57,14 +56,12 @@ public class CuberiteService extends IntentService {
             }
         }
         log += logLine;
-        Intent intent = new Intent("addLog");
-        intent.putExtra("message", logLine);
+        Intent intent = new Intent("updateLog");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private void showStartupError() {
-        Intent intent = new Intent("showStartupError");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    public static String getLog() {
+        return log;
     }
 
     private String getIpAddress() {
@@ -82,7 +79,8 @@ public class CuberiteService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(Tags.SERVICE, "Starting service...");
-        final String stopCommand = intent.getStringExtra("stopcommand");
+        log = "";
+        final String stopCommand = intent.getStringExtra("stopCommand");
         final String ip = getIpAddress();
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
@@ -130,32 +128,6 @@ public class CuberiteService extends IntentService {
             // Open STDIN for the inputLine
             final OutputStream cuberiteSTDIN = process.getOutputStream();
 
-            // Logging thread. This thread will check cuberite's stdout (and stderr), color it and append it to the logView. This thread will wait only for next lines coming. if stdout is closed, this thread will exit
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(Tags.SERVICE, "Starting logging thread...");
-                    final long logTimeStart = System.currentTimeMillis();
-
-                    Scanner processScanner = new Scanner(process.getInputStream());
-                    String line;
-                    try {
-                        while ((line = processScanner.nextLine()) != null) {
-                            Log.i(Tags.PROCESS, line);
-                            addLog(line);
-                        }
-                    } catch (NoSuchElementException e) {
-                        // Do nothing. Workaround for issues in older Android versions.
-                    }
-                    processScanner.close();
-
-                    final long logTimeEnd = System.currentTimeMillis();
-                    if ((logTimeEnd - logTimeStart) < 500) {
-                        showStartupError();
-                    }
-                }
-            }).start();
-
             // Update notification IP if network changes
             BroadcastReceiver updateIp = new BroadcastReceiver() {
                 @Override
@@ -181,14 +153,6 @@ public class CuberiteService extends IntentService {
             registerReceiver(updateIp, intentFilter);
 
             // Communication with the activity
-            BroadcastReceiver getLog = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    Intent sendIntent = new Intent("fullLog");
-                    sendIntent.putExtra("message", log);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(sendIntent);
-                }
-            };
             BroadcastReceiver stop = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -218,27 +182,50 @@ public class CuberiteService extends IntentService {
                 }
             };
 
-            LocalBroadcastManager.getInstance(this).registerReceiver(getLog, new IntentFilter("getLog"));
             LocalBroadcastManager.getInstance(this).registerReceiver(stop, new IntentFilter("stop"));
             LocalBroadcastManager.getInstance(this).registerReceiver(kill, new IntentFilter("kill"));
             LocalBroadcastManager.getInstance(this).registerReceiver(executeLine, new IntentFilter("executeLine"));
 
-            // Wait for the process to end. Logic waits here until cuberite has stopped. Everything after that is cleanup for the next run
-            process.waitFor();
+            // Log to console
+            Log.d(Tags.SERVICE, "Starting logging...");
+            final long logTimeStart = System.currentTimeMillis();
 
+            Scanner processScanner = new Scanner(process.getInputStream());
+            String line;
+            try {
+                while ((line = processScanner.nextLine()) != null) {
+                    Log.i(Tags.PROCESS, line);
+                    addLog(line);
+                }
+            } catch (NoSuchElementException e) {
+                // Do nothing. Workaround for issues in older Android versions.
+            }
+            processScanner.close();
+
+            final long logTimeEnd = System.currentTimeMillis();
+            if ((logTimeEnd - logTimeStart) < 100) {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("showStartupError"));
+            }
+
+            // Logic waits here until Cuberite has stopped. Everything after that is cleanup for the next run
             unregisterReceiver(updateIp);
 
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(getLog);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(stop);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(kill);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(executeLine);
             cuberiteSTDIN.close();
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("callback"));
+
+            // Update button state
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("serverStopped"));
             stopSelf();
         } catch (Exception e) {
-            Log.wtf(Tags.SERVICE, "An error occurred when starting Cuberite", e);
-            showStartupError();
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("callback"));
+            Log.e(Tags.SERVICE, "An error occurred when starting Cuberite", e);
+
+            // Send error to user
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("showStartupError"));
+
+            // Update button state
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("serverStopped"));
         }
     }
 }
