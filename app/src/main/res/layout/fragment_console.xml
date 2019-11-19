@@ -33,20 +33,21 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/bg">
 
                 <EditText
                     android:id="@+id/inputLine"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@null"
                     android:ems="10"
-                    android:background="@color/bg"
                     android:padding="12dp"
                     android:hint="@string/inputLine_hint"
                     android:layout_toStartOf="@+id/executeLine"
                     android:layout_toLeftOf="@+id/executeLine"
                     android:inputType="textNoSuggestions"
-                    android:lines="1"
+                    android:singleLine="true"
                     tools:ignore="Autofill"/>
 
                 <ImageView
@@ -55,10 +56,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/do_execute_line"
-                    android:background="@color/bg"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:tint="@color/bar_text"
+                    android:tint="?android:attr/textColorSecondary"
                     app:srcCompat="@drawable/ic_execute" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         setContentView(R.layout.container);
 
         if (savedInstanceState == null) {
@@ -58,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         preferences = getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+
+        AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         editor.putString("executableName", "Cuberite");
         editor.putString("downloadHost", "https://builds.cuberite.org/job/cuberite/job/master/job/android/job/release/lastSuccessfulBuild/artifact/android/Server/");
