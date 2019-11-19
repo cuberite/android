@@ -58,7 +58,7 @@
                     android:contentDescription="@string/do_execute_line"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:tint="?android:attr/textColorSecondary"
+                    android:tint="@color/execute_button"
                     app:srcCompat="@drawable/ic_execute" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

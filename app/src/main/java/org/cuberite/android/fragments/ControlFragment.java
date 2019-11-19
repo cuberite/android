@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -104,8 +103,7 @@ public class ControlFragment extends Fragment {
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                GradientDrawable bgShape = (GradientDrawable) view.getBackground();
-                bgShape.setColor((int) animator.getAnimatedValue());
+                view.setBackgroundColor((int) animator.getAnimatedValue());
             }
         });
         colorAnimation.start();

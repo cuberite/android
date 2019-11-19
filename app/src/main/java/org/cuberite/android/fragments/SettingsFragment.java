@@ -1,6 +1,5 @@
 package org.cuberite.android.fragments;
 
-import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -284,11 +283,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         toggleAuthentication.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                /*if(!cuberiteDir.exists()) {
-                    cuberiteNotInstalled(getContext());
-                } else if(!settingsFile.exists()) {
-                    // TODO: prompt to start cuberite once
-                } else {*/
                 try {
                     Ini ini = new Ini(settingsFile);
                     int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
@@ -300,7 +294,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     Log.e(Tags.SETTINGS_ACTIVITY, "Something went wrong while opening the ini file", e);
                     Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_authentication_toggle_error), Snackbar.LENGTH_LONG).show();
                 }
-                //}
                 return true;
             }
         });

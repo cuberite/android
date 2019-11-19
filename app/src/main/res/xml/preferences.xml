@@ -2,85 +2,99 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        android:title="@string/title_activity_settings">
+        android:title="@string/title_activity_settings"
+        app:iconSpaceReserved="false">
         <ListPreference
             android:key="theme"
             android:title="@string/settings_theme"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_webadmin_heading">
+        android:title="@string/settings_webadmin_heading"
+        app:iconSpaceReserved="false">
         <Preference
             android:summary="@string/settings_webadmin_explanation"
-            android:icon="@drawable/ic_info"
-            android:focusable="false" />
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="webadminOpen"
-            android:title="@string/settings_webadmin_open" />
+            android:title="@string/settings_webadmin_open"
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="webadminLogin"
-            android:title="@string/settings_webadmin_login" />
+            android:title="@string/settings_webadmin_login"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_install_update">
+        android:title="@string/settings_install_update"
+        app:iconSpaceReserved="false">
         <Preference
             android:summary="@string/settings_install_update_explanation"
-            android:icon="@drawable/ic_info"
-            android:clickable="false"
-            android:focusable="false"/>
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="installUpdateBinary"
-            android:title="@string/settings_install_update_binary" />
+            android:title="@string/settings_install_update_binary"
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="installUpdateServer"
-            android:title="@string/settings_install_update_server" />
+            android:title="@string/settings_install_update_server"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_install_no_sha">
+        android:title="@string/settings_install_no_sha"
+        app:iconSpaceReserved="false">
         <Preference
             android:summary="@string/settings_install_no_sha_explanation"
-            android:icon="@drawable/ic_info"
-            android:focusable="false" />
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="installNoShaButton"
-            android:title="@string/settings_install_no_sha_button" />
+            android:title="@string/settings_install_no_sha_button"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_install_manually">
+        android:title="@string/settings_install_manually"
+        app:iconSpaceReserved="false">
         <Preference
             android:key="abiText"
             android:summary="@string/settings_install_manually_explanation"
-            android:icon="@drawable/ic_info"
-            android:focusable="false" />
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="installBinary"
-            android:title="@string/settings_install_select_binary" />
+            android:title="@string/settings_install_select_binary"
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="installServer"
-            android:title="@string/settings_install_select_server" />
+            android:title="@string/settings_install_select_server"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_troubleshooting_heading">
+        android:title="@string/settings_troubleshooting_heading"
+        app:iconSpaceReserved="false">
         <SwitchPreference
             android:key="troubleshootingAuthenticationToggle"
             android:title="@string/settings_authentication_toggle"
-            android:summary="@string/settings_authentication_errors_explanation"/>
+            android:summary="@string/settings_authentication_errors_explanation"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_info_heading">
-    <Preference
+        android:title="@string/settings_info_heading"
+        app:iconSpaceReserved="false">
+        <Preference
             android:key="infoDebugInfo"
-            android:title="@string/settings_info_debug" />
+            android:title="@string/settings_info_debug"
+            app:iconSpaceReserved="false"/>
         <Preference
             android:key="thirdPartyLicenses"
-            android:title="@string/settings_info_libraries" />
+            android:title="@string/settings_info_libraries"
+            app:iconSpaceReserved="false"/>
         <Preference
-            android:key="version" />
+            android:key="version"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 </PreferenceScreen>
