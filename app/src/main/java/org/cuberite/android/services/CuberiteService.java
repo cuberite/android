@@ -1,4 +1,4 @@
-package org.cuberite.android;
+package org.cuberite.android.services;
 
 import android.app.IntentService;
 import android.app.NotificationChannel;
@@ -19,6 +19,10 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import org.cuberite.android.R;
+import org.cuberite.android.Tags;
+import org.cuberite.android.fragments.ControlFragment;
+
 import java.io.File;
 import java.io.OutputStream;
 import java.util.NoSuchElementException;
@@ -28,7 +32,7 @@ public class CuberiteService extends IntentService {
     private static String log = "";
 
     public CuberiteService() {
-        super("CuberiteService");
+        super("ServerService");
     }
 
     private void addLog(String string) {
@@ -64,8 +68,8 @@ public class CuberiteService extends IntentService {
         return log;
     }
 
-    private String getIpAddress() {
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+    public static String getIpAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ip = wifiInfo.getIpAddress();
 
@@ -80,14 +84,14 @@ public class CuberiteService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(Tags.SERVICE, "Starting service...");
         log = "";
-        final String stopCommand = intent.getStringExtra("stopCommand");
-        final String ip = getIpAddress();
+        final String ip = getIpAddress(getBaseContext());
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
+
         final String CHANNEL_ID = "cuberiteservice";
         int icon = R.drawable.ic_cuberite;
         CharSequence text = getText(R.string.notification_cuberite_running);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, ControlFragment.class), 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.app_name);
@@ -140,7 +144,7 @@ public class CuberiteService extends IntentService {
                         info.getState() == NetworkInfo.State.DISCONNECTED) {
                             Log.d(Tags.SERVICE, "Updating notification IP due to network change");
                             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                            final String ip = getIpAddress();
+                            final String ip = getIpAddress(getBaseContext());
                             notification.setContentText(ip);
                             notificationManager.notify(1, notification.build());
                         }
@@ -157,10 +161,10 @@ public class CuberiteService extends IntentService {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     try {
-                        cuberiteSTDIN.write((stopCommand + "\n").getBytes());
+                        cuberiteSTDIN.write(("stop\n").getBytes());
                         cuberiteSTDIN.flush();
                     } catch (Exception e) {
-                        Log.e(Tags.SERVICE, "An error occurred when writing " + stopCommand + " to the STDIN", e);
+                        Log.e(Tags.SERVICE, "An error occurred when writing stop to the STDIN", e);
                     }
                 }
             };

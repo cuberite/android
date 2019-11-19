@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.os.ResultReceiver;
 
-class DownloadReceiver extends ResultReceiver {
-    static final int PROGRESS_START = 1;
-    static final int PROGRESS_NEWDATA = 2;
-    static final int PROGRESS_END = 3;
+public class ProgressReceiver extends ResultReceiver {
+    public static final int PROGRESS_START = 1;
+    public static final int PROGRESS_NEWDATA = 2;
+    public static final int PROGRESS_END = 3;
 
     private Context cont;
 
     private ProgressDialog progressDialog = null;
 
-    DownloadReceiver(Context context, Handler handler) {
+    public ProgressReceiver(Context context, Handler handler) {
         super(handler);
         cont = context;
     }

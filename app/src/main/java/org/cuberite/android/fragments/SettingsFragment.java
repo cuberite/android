@@ -1,4 +1,4 @@
-package org.cuberite.android;
+package org.cuberite.android.fragments;
 
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -12,122 +12,149 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.cuberite.android.ProgressReceiver;
+import org.cuberite.android.services.CuberiteService;
+import org.cuberite.android.services.InstallService;
+import org.cuberite.android.PathUtils;
+import org.cuberite.android.R;
+import org.cuberite.android.State;
+import org.cuberite.android.Tags;
 import org.ini4j.Config;
 import org.ini4j.Ini;
 
 import java.io.File;
 import java.io.IOException;
 
+import static android.content.Context.MODE_PRIVATE;
+import static org.cuberite.android.MainActivity.PACKAGE_NAME;
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 import static org.cuberite.android.MainActivity.PUBLIC_DIR;
-import static org.cuberite.android.MainActivity.getPreferredABI;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsFragment extends Fragment {
     private final static int PICK_FILE_BINARY = 1;
     private final static int PICK_FILE_SERVER = 2;
 
     private SharedPreferences preferences;
 
-    public static void initializeSettings(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(MainActivity.PACKAGE_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        if(!preferences.contains("externalStoragePermission")) {
-            // TODO: only ask once for permisssions
-        }
-
-        if (!preferences.contains("cuberiteLocation") && preferences.getBoolean("externalStoragePermission", false)) {
-            editor.putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server");
-        } else if (!preferences.contains("cuberiteLocation") && preferences.contains("externalStoragePermission")) {
-            editor.putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server");
-        }
-        if (!preferences.contains("executableName"))
-            editor.putString("executableName", "Cuberite");
-        if (!preferences.contains("downloadHost"))
-            editor.putString("downloadHost", "https://builds.cuberite.org/job/cuberite/job/master/job/android/job/release/lastSuccessfulBuild/artifact/android/Server/");
-        editor.apply();
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_settings, null);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         // Ini4j config
         Config config = Config.getGlobal();
         config.setEscape(false);
         config.setStrictOperator(true);
 
-        final Context context = this;
-
-        preferences = getSharedPreferences(MainActivity.PACKAGE_NAME, MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
 
         // Install options
 
-        Button updateBinary = findViewById(R.id.installUpdateBinary);
-        updateOnButtonClick(this, updateBinary, State.NEED_DOWNLOAD_BINARY);
+        Button updateBinary = view.findViewById(R.id.installUpdateBinary);
+        updateOnButtonClick(getContext(), updateBinary, State.NEED_DOWNLOAD_BINARY);
 
-        Button updateServer = findViewById(R.id.installUpdateServer);
-        updateOnButtonClick(this, updateServer, State.NEED_DOWNLOAD_SERVER);
+        Button updateServer = view.findViewById(R.id.installUpdateServer);
+        updateOnButtonClick(getContext(), updateServer, State.NEED_DOWNLOAD_SERVER);
 
-        String abi = String.format(getString(R.string.settings_install_manually_abi), getPreferredABI());
-        ((TextView) findViewById(R.id.installABI)).setText(abi);
+        String abi = String.format(getString(R.string.settings_install_manually_abi), InstallService.getPreferredABI());
+        ((TextView) view.findViewById(R.id.installABI)).setText(abi);
 
-        Button installBinary = findViewById(R.id.installBinary);
+        Button installBinary = view.findViewById(R.id.installBinary);
         installSelectFileOnButtonClick(installBinary, PICK_FILE_BINARY);
 
-        Button installServer = findViewById(R.id.installServer);
+        Button installServer = view.findViewById(R.id.installServer);
         installSelectFileOnButtonClick(installServer, PICK_FILE_SERVER);
 
-        Button installNoSha = findViewById(R.id.installNoShaButton);
+        Button installNoSha = view.findViewById(R.id.installNoShaButton);
         installNoSha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
-                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                if (ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                    Snackbar.make(view.findViewById(R.id.fragment_container), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
                     return;
                 }
-                Intent intent = new Intent(context, InstallService.class);
+                Intent intent = new Intent(getContext(), InstallService.class);
                 intent.setAction("installNoCheck");
                 intent.putExtra("downloadHost", preferences.getString("downloadHost", ""));
                 intent.putExtra("state", State.NEED_DOWNLOAD_BOTH.toString());
                 intent.putExtra("executableName", preferences.getString("executableName", ""));
                 intent.putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""));
-                intent.putExtra("receiver", new DownloadReceiver(context, new Handler()));
-                LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
+                intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
+                LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                         String error = intent.getStringExtra("error");
                         if (error != null) {
-                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }, new IntentFilter("InstallService.callback"));
 
-                startService(intent);
+                getActivity().startService(intent);
             }
         });
 
         // Webadmin
-        final Button webadminLogin = findViewById(R.id.webadminLogin);
+        final Button webadminOpen = view.findViewById(R.id.webadminOpen);
+        webadminOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_not_running), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
+                    final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
+
+                    Ini ini;
+                    if(!webadminFile.exists()) {
+                        ini = new Ini();
+                        ini.put("WebAdmin", "Ports", 8080);
+                    } else {
+                        ini = new Ini(webadminFile);
+                    }
+
+                    final String ip = CuberiteService.getIpAddress(getContext());
+                    final String port = ini.get("WebAdmin", "Ports");
+                    final String url = "http://" + ip + ":" + port;
+
+                    Log.d(Tags.SETTINGS_ACTIVITY, "Opening Webadmin on " + url);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + ip + ":" + port));
+                    startActivity(browserIntent);
+                } catch (IOException e) {
+                    Log.e(Tags.SETTINGS_ACTIVITY, "Something went wrong while opening the ini file", e);
+                    Snackbar.make(view.findViewById(R.id.container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        final Button webadminLogin = view.findViewById(R.id.webadminLogin);
         webadminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
                 final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
                 if(!cuberiteDir.exists()) {
-                    cuberiteNotInstalled(context);
+                    cuberiteNotInstalled(getContext());
                 } else {
                     try {
                         final Ini ini;
@@ -149,11 +176,11 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                         final String oldUser = username;
 
-                        final View layout = getLayoutInflater().inflate(R.layout.webadmin_layout, null);
+                        final View layout = getLayoutInflater().inflate(R.layout.dialog_webadmin_credentials, null);
                         ((EditText) layout.findViewById(R.id.webadminUsername)).setText(username);
                         ((EditText) layout.findViewById(R.id.webadminPassword)).setText(password);
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                                 .setView(layout)
                                 .setTitle(R.string.settings_webadmin_login)
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -170,10 +197,10 @@ public class SettingsActivity extends AppCompatActivity {
                                         }
                                         try {
                                             ini.store(webadminFile);
-                                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.settings_webadmin_success), Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_success), Snackbar.LENGTH_LONG).show();
                                         } catch(IOException e) {
                                             Log.e(Tags.SETTINGS_ACTIVITY, "Something went wrong while saving the ini file", e);
-                                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
                                         }
                                     }
                                 })
@@ -185,20 +212,20 @@ public class SettingsActivity extends AppCompatActivity {
                         builder.create().show();
                     } catch(IOException e) {
                         Log.e(Tags.SETTINGS_ACTIVITY, "Something went wrong while opening the ini file", e);
-                        Snackbar.make(findViewById(R.id.activity_main), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view.findViewById(R.id.container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
                     }
                 }
             }
         });
 
-        Button toggleAuthentication = findViewById(R.id.troubleshootingAuthenticationToggle);
+        Button toggleAuthentication = view.findViewById(R.id.troubleshootingAuthenticationToggle);
         toggleAuthentication.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
                 final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
                 if(!cuberiteDir.exists()) {
-                    cuberiteNotInstalled(context);
+                    cuberiteNotInstalled(getContext());
                 } else if(!settingsFile.exists()) {
                     // TODO: prompt to start cuberite once
                 } else {
@@ -208,18 +235,18 @@ public class SettingsActivity extends AppCompatActivity {
                         int newenabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
                         ini.put("Authentication", "Authenticate", newenabled);
                         ini.store(settingsFile);
-                        Snackbar.make(findViewById(R.id.activity_main), String.format(getString(R.string.settings_authentication_toggle_success), getString((newenabled == 1 ? R.string.enabled : R.string.disabled))), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view.findViewById(R.id.container), String.format(getString(R.string.settings_authentication_toggle_success), getString((newenabled == 1 ? R.string.enabled : R.string.disabled))), Snackbar.LENGTH_LONG).show();
                     } catch(IOException e) {
                         Log.e(Tags.SETTINGS_ACTIVITY, "Something went wrong while opening the ini file", e);
-                        Snackbar.make(findViewById(R.id.activity_main), getString(R.string.settings_authentication_toggle_error), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view.findViewById(R.id.container), getString(R.string.settings_authentication_toggle_error), Snackbar.LENGTH_LONG).show();
                     }
                 }
             }
         });
 
-        TextView infoDebug = (TextView) findViewById(R.id.infoDebugInfo);
+        TextView infoDebug = view.findViewById(R.id.infoDebugInfo);
         String infos = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
-                "Using ABI " + getPreferredABI() + "\n" +
+                "Using ABI " + InstallService.getPreferredABI() + "\n" +
                 "Private directory: " + PRIVATE_DIR + "\n" +
                 "Public directory: " + PUBLIC_DIR + "\n" +
                 "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
@@ -229,30 +256,42 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Ini4j config
+        Config config = Config.getGlobal();
+        config.setEscape(false);
+        config.setStrictOperator(true);
+
+        preferences = this.getActivity().getSharedPreferences(PACKAGE_NAME, this.getActivity().MODE_PRIVATE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == getActivity().RESULT_OK && data != null) {
             Uri selectedFile = data.getData();
-            String path = PathUtils.getPath(this, selectedFile);
+            String path = PathUtils.getPath(getContext(), selectedFile);
 
             switch (requestCode) {
                 case PICK_FILE_BINARY: {
-                    Intent intent = new Intent(this, InstallService.class);
+                    Intent intent = new Intent(getContext(), InstallService.class);
                     intent.setAction("unzip");
                     intent.putExtra("file", path);
                     intent.putExtra("targetLocation", PRIVATE_DIR);
-                    intent.putExtra("receiver", new DownloadReceiver(this, new Handler()));
-                    startService(intent);
+                    intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
+                    getActivity().startService(intent);
                     break;
                 }
                 case PICK_FILE_SERVER: {
-                    Intent intent = new Intent(this, InstallService.class);
+                    Intent intent = new Intent(getContext(), InstallService.class);
                     intent.setAction("unzip");
                     intent.putExtra("file", path);
                     intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
-                    intent.putExtra("receiver", new DownloadReceiver(this, new Handler()));
-                    startService(intent);
+                    intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
+                    getActivity().startService(intent);
                     break;
                 }
             }
@@ -264,8 +303,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (code == PICK_FILE_BINARY &&
-                    MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
-                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                    ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
                     return;
                 }
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -273,7 +312,7 @@ public class SettingsActivity extends AppCompatActivity {
                 try {
                     startActivityForResult(intent, code);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(SettingsActivity.this, getString(R.string.status_missing_filemanager), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.status_missing_filemanager), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -284,8 +323,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (state == State.NEED_DOWNLOAD_BINARY &&
-                        MainActivity.isServiceRunning(CuberiteService.class, getBaseContext())) {
-                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
+                        ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_update_binary_error), Snackbar.LENGTH_LONG).show();
                     return;
                 }
                 Intent intent = new Intent(context, InstallService.class);
@@ -294,7 +333,7 @@ public class SettingsActivity extends AppCompatActivity {
                 intent.putExtra("state", state.toString());
                 intent.putExtra("executableName", preferences.getString("executableName", ""));
                 intent.putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""));
-                intent.putExtra("receiver", new DownloadReceiver(context, new Handler()));
+                intent.putExtra("receiver", new ProgressReceiver(context, new Handler()));
 
                 LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
                     @Override
@@ -302,11 +341,11 @@ public class SettingsActivity extends AppCompatActivity {
                         LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                         String error = intent.getStringExtra("error");
                         if(error != null) {
-                            Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }, new IntentFilter("InstallService.callback"));
-                startService(intent);
+                getActivity().startService(intent);
             }
         });
     }
@@ -340,7 +379,7 @@ public class SettingsActivity extends AppCompatActivity {
                         intent.putExtra("state", state.toString());
                         intent.putExtra("executableName", preferences.getString("executableName", ""));
                         intent.putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""));
-                        intent.putExtra("receiver", new DownloadReceiver(context, new Handler()));
+                        intent.putExtra("receiver", new ProgressReceiver(context, new Handler()));
 
                         LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
                             @Override
@@ -348,11 +387,11 @@ public class SettingsActivity extends AppCompatActivity {
                                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                                 String error = intent.getStringExtra("error");
                                 if(error != null) {
-                                    Snackbar.make(findViewById(R.id.activity_main), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_download_error) + " " + error, Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         }, new IntentFilter("InstallService.callback"));
-                        startService(intent);
+                        getActivity().startService(intent);
                     }
                 }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override

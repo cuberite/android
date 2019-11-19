@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:id="@+id/activity_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="org.cuberite.android.MainActivity"
             android:orientation="vertical"
             android:weightSum="1">
 
@@ -156,6 +155,15 @@
                 android:layout_marginBottom="10dp" />
 
             <Button
+                android:text="@string/settings_webadmin_open"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/webadminOpen"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp" />
+
+            <Button
                 android:text="@string/settings_webadmin_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -283,7 +291,7 @@
                 android:id="@+id/infoPathutilsLicense"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="20dp" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

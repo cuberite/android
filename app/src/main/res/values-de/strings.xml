@@ -57,7 +57,7 @@
 
     <string name="settings_troubleshooting_heading">Fehlerbehebung</string>
     <string name="settings_authentication_errors">Authentifizierungsfehler</string>
-    <string name="settings_authentication_errors_explanation">Wenn Sie beim Verbinden den Fehler \"Failed to authenticate!\" erhalten, könnte diese Einstellung helfen.</string>
+    <string name="settings_authentication_errors_explanation">Auf einigen Geräten funktionieren Mojangs Authentifizierungs-Server nicht. Das Problem ist bekannt, konnte aber noch nicht behoben werden. Wenn Sie beim Verbinden den Fehler \"Failed to authenticate!\" erhalten, könnte diese Einstellung helfen.</string>
     <string name="settings_authentication_toggle">Authentifizierung an/abschalten.</string>
     <string name="settings_authentication_toggle_error">Beim Zugriff auf die Einstellungen ist ein Fehler aufgetreten.</string>
     <string name="settings_authentication_toggle_success">Fertig! Authentifizierung ist nun %1$s! Bitte Server neustarten um Änderungen zu übernehmen.</string>

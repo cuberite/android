@@ -1,15 +1,21 @@
-package org.cuberite.android;
+package org.cuberite.android.services;
 
 import android.app.IntentService;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
+
+import org.cuberite.android.ProgressReceiver;
+import org.cuberite.android.R;
+import org.cuberite.android.State;
+import org.cuberite.android.Tags;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,13 +27,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-import static org.cuberite.android.MainActivity.generateSha1;
-import static org.cuberite.android.MainActivity.getPreferredABI;
 
 public class InstallService extends IntentService {
     private ResultReceiver receiver;
@@ -123,6 +128,43 @@ public class InstallService extends IntentService {
         }
     }
 
+    public static String getPreferredABI() {
+        String abi;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            abi = Build.SUPPORTED_ABIS[0];
+        else
+            abi = Build.CPU_ABI;
+
+        Log.d(Tags.MAIN_ACTIVITY, "Getting preferred ABI: " + abi);
+
+        return abi;
+    }
+
+    private String generateSha1(String location) {
+        try {
+            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+            InputStream input = new FileInputStream(location);
+            byte[] buffer = new byte[8192];
+            int len = input.read(buffer);
+
+            while (len != -1) {
+                sha1.update(buffer, 0, len);
+                len = input.read(buffer);
+            }
+            byte[] shaSum = sha1.digest();
+            char[] charset = "0123456789ABCDEF".toCharArray();
+            char[] hexResult = new char[shaSum.length * 2];
+            for ( int j = 0; j < shaSum.length; j++ ) {
+                int v = shaSum[j] & 0xFF;
+                hexResult[j * 2] = charset[v >>> 4];
+                hexResult[j * 2 + 1] = charset[v & 0x0F];
+            }
+            return new String(hexResult).toLowerCase();
+        } catch (Exception e) {
+            return e.toString();
+        }
+    }
+
     private String downloadAndVerify(String url, String target) {
         String zipFileError = downloadFile(url, target);
         if(zipFileError != null)
@@ -186,7 +228,7 @@ public class InstallService extends IntentService {
 
             Bundle bundleInit = new Bundle();
             bundleInit.putString("title", getString(R.string.status_downloading_cuberite));
-            receiver.send(DownloadReceiver.PROGRESS_START, bundleInit);
+            receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
             byte[] data = new byte[4096];
             long total = 0;
@@ -197,11 +239,10 @@ public class InstallService extends IntentService {
                     Bundle bundleProg = new Bundle();
                     bundleProg.putInt("progress", (int) total);
                     bundleProg.putInt("max", length);
-                    receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundleProg);
+                    receiver.send(ProgressReceiver.PROGRESS_NEWDATA, bundleProg);
                 }
                 outputStream.write(data, 0, count);
             }
-            receiver.send(DownloadReceiver.PROGRESS_END, null);
             Log.d(Tags.INSTALL_SERVICE, "Finished downloading");
         } catch (Exception e) {
             result = e.getMessage();
@@ -218,6 +259,7 @@ public class InstallService extends IntentService {
                 connection.disconnect();
         }
 
+        receiver.send(ProgressReceiver.PROGRESS_END, null);
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
         return result;
@@ -248,7 +290,7 @@ public class InstallService extends IntentService {
 
             Bundle bundleInit = new Bundle();
             bundleInit.putString("title", getString(R.string.status_installing_cuberite));
-            receiver.send(DownloadReceiver.PROGRESS_START, bundleInit);
+            receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {
@@ -263,7 +305,7 @@ public class InstallService extends IntentService {
                         Bundle bundleProg = new Bundle();
                         bundleProg.putInt("progress", (int) channel.position());
                         bundleProg.putInt("max", length);
-                        receiver.send(DownloadReceiver.PROGRESS_NEWDATA, bundleProg);
+                        receiver.send(ProgressReceiver.PROGRESS_NEWDATA, bundleProg);
                     }
                     zipInputStream.closeEntry();
                     bufferedOutputStream.close();
@@ -272,11 +314,11 @@ public class InstallService extends IntentService {
 
             }
             zipInputStream.close();
-            receiver.send(DownloadReceiver.PROGRESS_END, null);
         } catch (IOException e) {
             Log.e(Tags.INSTALL_SERVICE, "An error occurred while installing Cuberite", e);
             result = getString(R.string.status_unzip_error);
         }
+        receiver.send(ProgressReceiver.PROGRESS_END, null);
         Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
         wakeLock.release();
         return result;

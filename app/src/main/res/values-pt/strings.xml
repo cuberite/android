@@ -35,7 +35,7 @@
 
     <string name="settings_install_heading">Opções de instalação</string>
     <string name="settings_install_update">Atualizar o Cuberite</string>
-    <string name="settings_install_update_explanation">Use essa seção de tempos em tempos para atualizar a sua instalação do Cuberite. Por favor note que se você fizer a atualização do server.zip algumas configurações customizadas podem ser perdidas.</string>
+    <string name="settings_install_update_explanation">Um sistema de atualização automatizado para o Cuberite ainda precisa ser feito. Use essa seção de tempos em tempos para atualizar a sua instalação do Cuberite. Por favor note que se você fizer a atualização do server.zip algumas configurações customizadas podem ser perdidas.</string>
     <string name="settings_install_update_binary">Baixar e instalar o binário do Cuberite</string>
     <string name="settings_install_update_server">Baixar e instalar o server.zip</string>
     <string name="settings_install_manually">Instalar arquivos zip manualmente</string>
@@ -57,7 +57,7 @@
 
     <string name="settings_troubleshooting_heading">Solução de problemas</string>
     <string name="settings_authentication_errors">Erros de autenticação</string>
-    <string name="settings_authentication_errors_explanation">Se você tiver problemas para conectar ao Cuberite e recebe a mensagem \"Failed to authenticate!\" você pode querer desativar a autenticação usando o botão abaixo.</string>
+    <string name="settings_authentication_errors_explanation">Em alguns dispositivos, a autenticação com os servidores da Mojang não funciona. Nós sabemos sobre esse problema mas ainda não conseguimos arrumar. Se você tiver problemas para conectar ao Cuberite e recebe a mensagem \"Failed to authenticate!\" você pode querer desativar a autenticação usando o botão abaixo.</string>
     <string name="settings_authentication_toggle">Ativar/desativar a autenticação</string>
     <string name="settings_authentication_toggle_error">Algo deu errado ao acessar a configuração do servidor</string>
     <string name="settings_authentication_toggle_success">Sucesso, %1$s a autenticação! Reinicie o servidor para ativar a alteração</string>
