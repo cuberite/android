@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
@@ -13,7 +14,6 @@ import android.util.Log;
 
 import org.cuberite.android.ProgressReceiver;
 import org.cuberite.android.R;
-import org.cuberite.android.fragments.SettingsFragment;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,6 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
+import static org.cuberite.android.fragments.SettingsFragment.PICK_FILE_BINARY;
 
 public class InstallService extends IntentService {
     // Logging tag
@@ -261,13 +262,15 @@ public class InstallService extends IntentService {
 
         if ((state.equals("NEED_DOWNLOAD_BINARY") ||
                 state.equals("NEED_DOWNLOAD_BOTH") ||
-                state.equals(Integer.toString(SettingsFragment.PICK_FILE_BINARY))) &&
+                state.equals(Integer.toString(PICK_FILE_BINARY))) &&
                 CuberiteService.isCuberiteRunning(getBaseContext())) {
             result = getString(R.string.status_update_binary_error);
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
         } else if (intent.getAction().equals("unzip")) {
             String file = intent.getStringExtra("file");
-            String targetLocation = intent.getStringExtra("targetLocation");
+            Log.d(LOG, intent.getStringExtra("targetLocation"));
+            String targetLocation = (state.equals(Integer.toString(PICK_FILE_BINARY)) ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
+            Log.d(LOG, targetLocation);
             result = unzip(new File(file), new File(targetLocation));
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
         } else {

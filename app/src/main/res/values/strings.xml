@@ -23,7 +23,7 @@
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
-    <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI:</string>
+    <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite exited with code: </string>
     <string name="status_permissions_needed">Permissions needed</string>
     <string name="status_shasum_error">SHA-1 validation error</string>

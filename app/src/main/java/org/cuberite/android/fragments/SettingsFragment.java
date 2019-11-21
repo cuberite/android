@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.cuberite.android.BuildConfig;
+import org.cuberite.android.MainActivity;
 import org.cuberite.android.ProgressReceiver;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
@@ -135,8 +136,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         webadminOpen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                if (!CuberiteService.isCuberiteRunning(getContext())) {
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_not_running), Snackbar.LENGTH_LONG).show();
+                if (!CuberiteService.isCuberiteRunning(getActivity())) {
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_not_running), Snackbar.LENGTH_LONG)
+                            .setAnchorView(MainActivity.navigation)
+                            .show();
                 } else if (urlInner != null) {
                     Log.d(LOG, "Opening Webadmin on " + urlInner);
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlInner));
@@ -161,7 +164,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 @Override
                                 public void onClick(DialogInterface dialog, int i) {
                                     String action = "install";
-                                    installCuberiteDownload(getActivity(), getContext(), action, CuberiteService.getState(getContext()));
+                                    installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BOTH);
                                 }
                             }).setNegativeButton(R.string.cancel, null)
                             .create();
@@ -210,10 +213,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                                         try {
                                             ini.store(webadminFile);
-                                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_success), Snackbar.LENGTH_LONG).show();
+                                            MainActivity.showSnackBar(getActivity(), getString(R.string.settings_webadmin_success));
                                         } catch(IOException e) {
                                             Log.e(LOG, "Something went wrong while saving the ini file", e);
-                                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
+                                            MainActivity.showSnackBar(getActivity(),getString(R.string.settings_webadmin_error));
                                         }
                                     }
                                 })
@@ -225,7 +228,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         builder.create().show();
                     } catch(IOException e) {
                         Log.e(LOG, "Something went wrong while opening the ini file", e);
-                        Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
+                        MainActivity.showSnackBar(getActivity(), getString(R.string.settings_webadmin_error));
                     }
                 }
                 return true;
@@ -238,7 +241,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 String action = "install";
-                installCuberiteDownload(getActivity(), getContext(), action, State.NEED_DOWNLOAD_BINARY);
+                installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BINARY);
                 return true;
             }
         });
@@ -248,7 +251,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 String action = "install";
-                installCuberiteDownload(getActivity(), getContext(), action, State.NEED_DOWNLOAD_SERVER);
+                installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_SERVER);
                 return true;
             }
         });
@@ -262,7 +265,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 String action = "installNoCheck";
-                installCuberiteDownload(getActivity(), getContext(), action, State.NEED_DOWNLOAD_BOTH);
+                installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BOTH);
                 return true;
             }
         });
@@ -318,10 +321,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     int newenabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
                     ini.put("Authentication", "Authenticate", newenabled);
                     ini.store(settingsFile);
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), String.format(getString(R.string.settings_authentication_toggle_success), getString((newenabled == 1 ? R.string.enabled : R.string.disabled))), Snackbar.LENGTH_LONG).show();
+                    MainActivity.showSnackBar(getActivity(), String.format(getString(R.string.settings_authentication_toggle_success), getString((newenabled == 1 ? R.string.enabled : R.string.disabled))));
                 } catch(IOException e) {
                     Log.e(LOG, "Something went wrong while opening the ini file", e);
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_authentication_toggle_error), Snackbar.LENGTH_LONG).show();
+                    MainActivity.showSnackBar(getActivity(), getString(R.string.settings_authentication_toggle_error));
                 }
                 return true;
             }
@@ -394,22 +397,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    public static void installCuberiteDownload(final Activity activity, Context context, String action, State state) {
+    public static void installCuberiteDownload(final Activity activity, String action, State state) {
         SharedPreferences preferences = activity.getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
-        Intent intent = new Intent(context, InstallService.class);
+
+        Intent intent = new Intent(activity, InstallService.class);
         intent.setAction(action);
         intent.putExtra("downloadHost", preferences.getString("downloadHost", ""));
         intent.putExtra("state", state.toString());
         intent.putExtra("executableName", preferences.getString("executableName", ""));
         intent.putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""));
-        intent.putExtra("receiver", new ProgressReceiver(context, new Handler()));
+        intent.putExtra("receiver", new ProgressReceiver(activity, new Handler()));
 
-        LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
+        LocalBroadcastManager.getInstance(activity).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 String result = intent.getStringExtra("result");
-                Snackbar.make(activity.findViewById(R.id.fragment_container), result, Snackbar.LENGTH_LONG).show();
+                MainActivity.showSnackBar(activity, result);
             }
         }, new IntentFilter("InstallService.callback"));
         activity.startService(intent);
@@ -421,7 +425,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             startActivityForResult(intent, code);
         } catch (ActivityNotFoundException e) {
-            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.status_missing_filemanager), Snackbar.LENGTH_LONG).show();
+            MainActivity.showSnackBar(getActivity(), getString(R.string.status_missing_filemanager));
         }
     }
 
@@ -439,7 +443,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             intent.setAction("unzip");
             intent.putExtra("file", path);
             intent.putExtra("state", Integer.toString(requestCode));
-            intent.putExtra("targetLocation", (requestCode == PICK_FILE_BINARY || requestCode == PICK_FILE_SERVER ? PRIVATE_DIR : preferences.getString("cuberiteLocation", "")));
+            intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
             intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
 
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver() {
@@ -447,7 +451,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 public void onReceive(Context context, Intent intent) {
                     LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                     String result = intent.getStringExtra("result");
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_container), result, Snackbar.LENGTH_LONG).show();
+                    MainActivity.showSnackBar(getActivity(), result);
                 }
             }, new IntentFilter("InstallService.callback"));
 

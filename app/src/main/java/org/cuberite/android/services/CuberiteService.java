@@ -1,5 +1,6 @@
 package org.cuberite.android.services;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.IntentService;
 import android.app.NotificationChannel;
@@ -12,7 +13,6 @@ import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.core.app.NotificationCompat;
 
-import android.content.SharedPreferences;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -21,17 +21,13 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import org.cuberite.android.MainActivity;
 import org.cuberite.android.R;
-import org.cuberite.android.State;
-import org.cuberite.android.fragments.ControlFragment;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-
-import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class CuberiteService extends IntentService {
     // Logging tag
@@ -88,34 +84,6 @@ public class CuberiteService extends IntentService {
         }
     }
 
-    public static State getState(Context context) {
-        State state;
-        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
-        boolean hasBinary = false;
-        boolean hasServer = false;
-
-        // Install state
-        if (new File(PRIVATE_DIR + "/" + preferences.getString("executableName", "")).exists())
-            hasBinary = true;
-        if (new File(preferences.getString("cuberiteLocation", "")).exists())
-            hasServer = true;
-
-        if (CuberiteService.isCuberiteRunning(context))
-            state = State.RUNNING;
-        else if (hasBinary && hasServer)
-            state = State.READY;
-        else if (!hasServer && !hasBinary)
-            state = State.NEED_DOWNLOAD_BOTH;
-        else if (!hasServer)
-            state = State.NEED_DOWNLOAD_SERVER;
-        else
-            state = State.NEED_DOWNLOAD_BINARY;
-
-        Log.d(LOG, "Getting State: " + state.toString());
-
-        return state;
-    }
-
     public static boolean isCuberiteRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -138,7 +106,7 @@ public class CuberiteService extends IntentService {
         final String CHANNEL_ID = "cuberiteservice";
         int icon = R.drawable.ic_cuberite;
         CharSequence text = getText(R.string.notification_cuberite_running);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, ControlFragment.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.app_name);

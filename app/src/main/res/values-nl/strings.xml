@@ -35,7 +35,7 @@
 
     <string name="settings_install_heading">Installatie opties</string>
     <string name="settings_install_update">Update Cuberite</string>
-    <string name="settings_install_update_explanation">Er is voorlopig nog geen automatische updater, gebruike deze sectie van tijd tot tijd om uw Cuberite installatie te updaten. Opmerking: als u een server.zip update uitvoert is er een kans dat uw server instellingen verloren gaan.</string>
+    <string name="settings_install_update_explanation">Gebruike deze sectie van tijd tot tijd om uw Cuberite installatie te updaten. Opmerking: als u een server.zip update uitvoert is er een kans dat uw server instellingen verloren gaan.</string>
     <string name="settings_install_update_binary">Download en installeer de Cuberite binary</string>
     <string name="settings_install_update_server">Download en installeer server.zip</string>
     <string name="settings_install_manually">Installeer zip bestanden manueel</string>
@@ -57,7 +57,7 @@
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
     <string name="settings_authentication_errors">Authenticatie fouten</string>
-    <string name="settings_authentication_errors_explanation">Op sommige apparaten werkt de authenticatie met de Mojang servers niet, we kennen het probleem, maar hebben het nog niet kunnen oplossen. Als u problemen heeft met het verbinden met Cuberite en het bericht \"Authenticatie mislukt!\" krijgt moet u misshien de authenticatie uitschakelen met de knop hieronder.</string>
+    <string name="settings_authentication_errors_explanation">Als u problemen heeft met het verbinden met Cuberite en het bericht \"Authenticatie mislukt!\" krijgt moet u misshien de authenticatie uitschakelen met de knop hieronder.</string>
     <string name="settings_authentication_toggle">Authenticatie</string>
     <string name="settings_authentication_toggle_error">Er ging iets fout tijdens het aanpassen van de Server configuratie.</string>
     <string name="settings_authentication_toggle_success">Success! Authenticatie is nu %1$s! Herstart de server om de verandering toe te passen.</string>

@@ -1,6 +1,8 @@
 package org.cuberite.android;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.cuberite.android.fragments.ConsoleFragment;
 import org.cuberite.android.fragments.ControlFragment;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private SharedPreferences preferences;
     private AlertDialog permissionPopup;
+    public static BottomNavigationView navigation;
 
     public static String PACKAGE_NAME;
     public static String PRIVATE_DIR;
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
         // Set navigation bar listener
-        BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
+        navigation = findViewById(R.id.bottom_navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
         // Initialize settings
@@ -95,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         }
         return false;
+    }
+
+    public static void showSnackBar(Activity activity, String message) {
+        Snackbar.make(activity.findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
+                .setAnchorView(MainActivity.navigation)
+                .show();
     }
 
     private void showPermissionPopup() {

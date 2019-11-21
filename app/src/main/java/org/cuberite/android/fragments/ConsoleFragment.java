@@ -47,7 +47,7 @@ public class ConsoleFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String line = inputLine.getText().toString();
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getContext())) {
+                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getActivity())) {
                         sendExecuteLine(line);
                         inputLine.setText("");
                     }
@@ -63,7 +63,7 @@ public class ConsoleFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String line = inputLine.getText().toString();
-                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getContext())) {
+                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getActivity())) {
                     sendExecuteLine(line);
                     inputLine.setText("");
                 }
