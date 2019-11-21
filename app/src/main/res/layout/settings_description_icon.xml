@@ -23,5 +23,8 @@
         android:paddingEnd="12dp"
         android:paddingBottom="16dp"
         android:paddingLeft="72dp"
-        android:paddingStart="72dp"/>
+        android:paddingStart="72dp"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:longClickable="true"/>
 </RelativeLayout>

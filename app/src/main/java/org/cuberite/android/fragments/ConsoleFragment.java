@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -24,12 +22,14 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.cuberite.android.R;
-import org.cuberite.android.Tags;
 import org.cuberite.android.services.CuberiteService;
 
 public class ConsoleFragment extends Fragment {
-    private RelativeLayout logLayout;
+    // Logging tag
+    private String LOG = "Cuberite/Console";
+
     private TextView logView;
+    private EditText inputLine;
 
     @Nullable
     @Override
@@ -39,16 +39,15 @@ public class ConsoleFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        //logLayout = view.findViewById(R.id.logLayout);
         logView = view.findViewById(R.id.logView);
 
-        final EditText inputLine = view.findViewById(R.id.inputLine);
+        inputLine = view.findViewById(R.id.inputLine);
         inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String line = inputLine.getText().toString();
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (!line.isEmpty() && ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getContext())) {
                         sendExecuteLine(line);
                         inputLine.setText("");
                     }
@@ -64,7 +63,7 @@ public class ConsoleFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String line = inputLine.getText().toString();
-                if (!line.isEmpty() && ControlFragment.isServiceRunning(CuberiteService.class, getContext())) {
+                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getContext())) {
                     sendExecuteLine(line);
                     inputLine.setText("");
                 }
@@ -73,7 +72,7 @@ public class ConsoleFragment extends Fragment {
     }
 
     private void sendExecuteLine(String line) {
-        Log.d(Tags.MAIN_ACTIVITY, "Executing " + line);
+        Log.d(LOG, "Executing " + line);
         Intent intent = new Intent("executeLine");
         intent.putExtra("message", line);
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
@@ -85,19 +84,19 @@ public class ConsoleFragment extends Fragment {
             // Extract data included in the Intent
             String message = CuberiteService.getLog();
             final ScrollView scrollView = (ScrollView) logView.getParent();
-            // Only scroll down if we are already at bottom. getScrollY is how much we have scrolled, whereas getHeight is the complete height.
-            //final int scrollY = scrollView.getScrollY();
-            //final int bottomLocation = logLayout.getHeight() - scrollView.getHeight();
 
+            boolean shouldScroll = (logView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= 0;
             logView.setText(Html.fromHtml(message));
-            scrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    //if(scrollY > bottomLocation)
-                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 
-                }
-            });
+            if (shouldScroll) {
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        inputLine.requestFocus();
+                    }
+                });
+            }
         }
     };
 

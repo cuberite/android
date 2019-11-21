@@ -5,5 +5,5 @@ public enum State {
     NEED_DOWNLOAD_BINARY,
     NEED_DOWNLOAD_BOTH,
     RUNNING,
-    OK
+    READY
 }

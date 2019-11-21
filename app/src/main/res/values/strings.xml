@@ -17,7 +17,9 @@
 
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
+    <string name="status_install_success">Successfully installed Cuberite!</string>
     <string name="status_download_error">Download error:</string>
+    <string name="status_no_connection">Please verify that your internet connection works before downloading.</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
@@ -34,8 +36,8 @@
 
     <string name="inputLine_hint">Enter commands…</string>
 
-    <string name="message_externalstorage_permission">Cuberite stores its worlds by default on the external storage, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"don\'t ask again\" option and Cuberite will use the app\'s private storage.</string>
-    <string name="message_shasum_not_matching">SHA-1 sums doesn\'t match. This can indicate someone trying to spoof you or just a download error. Please retry and if the error persists, you may turn off the check by installing Cuberite via the Settings</string>
+    <string name="message_externalstorage_permission">Cuberite stores its worlds on the external storage by default, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"Deny\" option and Cuberite will use the app\'s private storage.</string>
+    <string name="message_shasum_not_matching">SHA-1 sums don\'t match. This may indicate an attempt to spoof you, or just a download error. Please try downloading Cuberite again, and if the error persists, you may bypass the check by installing Cuberite via the settings.</string>
 
     <string name="title_activity_settings">Settings</string>
 
@@ -46,7 +48,7 @@
     <string name="settings_theme_auto">Automatic</string>
 
     <string name="settings_download_host">Download Server</string>
-    <string name="settings_download_host_summary">The server from which Cuberite will download from. If you are running your own (automated) builds, you can change this setting and Cuberite will use your own server. Please note, that in order to have working automatic updates, the server needs to provide valid SHA-1 files</string>
+    <string name="settings_download_host_summary">The server from which Cuberite will download from. If you are running your own (automated) builds, you can change this setting and Cuberite will use your own server. Please note, that in order to have working automatic updates, the server needs to provide valid SHA-1 files.</string>
 
     <string name="settings_install_heading">Installation options</string>
     <string name="settings_install_update">Perform Cuberite update</string>
@@ -59,7 +61,7 @@
     <string name="settings_install_select_binary">Select and install binary zip file</string>
     <string name="settings_install_select_server">Select and install server.zip</string>
     <string name="settings_install_no_sha">Install without SHA-1 check</string>
-    <string name="settings_install_no_sha_explanation">Normally, Cuberite verifies the downloaded executables to make sure Cuberite was downloaded correctly. Use this button if the verification fails, but note that you are disabling a security feature by that.</string>
+    <string name="settings_install_no_sha_explanation">Normally, Cuberite verifies the downloaded executables to make sure Cuberite was downloaded correctly. Use this button if the verification fails, but please note that you are disabling a security feature by that.</string>
     <string name="settings_install_no_sha_button">Download and install Cuberite</string>
 
     <string name="settings_webadmin_heading">Webadmin</string>

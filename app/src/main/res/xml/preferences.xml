@@ -12,6 +12,7 @@
     <PreferenceCategory
         android:title="@string/settings_webadmin_heading">
         <Preference
+            android:key="webadminDescription"
             android:summary="@string/settings_webadmin_explanation"
             android:icon="@drawable/ic_webadmin"
             android:layout="@layout/settings_description_icon"/>

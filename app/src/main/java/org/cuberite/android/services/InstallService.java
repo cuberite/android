@@ -2,7 +2,6 @@ package org.cuberite.android.services;
 
 import android.app.IntentService;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,12 +11,9 @@ import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import org.cuberite.android.ProgressReceiver;
 import org.cuberite.android.R;
-import org.cuberite.android.State;
-import org.cuberite.android.Tags;
+import org.cuberite.android.fragments.SettingsFragment;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -37,97 +33,13 @@ import java.util.zip.ZipInputStream;
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class InstallService extends IntentService {
+    // Logging tag
+    private static String LOG = "Cuberite/InstallService";
+
     private ResultReceiver receiver;
 
     public InstallService() {
         super("InstallService");
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        receiver = intent.getParcelableExtra("receiver");
-
-        switch (intent.getAction()) {
-            case "unzip": {
-                String file = intent.getStringExtra("file");
-                String targetLocation = intent.getStringExtra("targetLocation");
-                String unzipError = unzip(new File(file), new File(targetLocation));
-                if (unzipError != null) {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
-                    return;
-                }
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback"));
-                break;
-            }
-            case "install": {
-                String downloadHost = intent.getStringExtra("downloadHost");
-                String abi = getPreferredABI();
-                State state = State.valueOf(intent.getStringExtra("state"));
-                String executableName = intent.getStringExtra("executableName");
-                String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
-
-                String zipTarget = PRIVATE_DIR + "/" + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? executableName : "server") + ".zip";
-                String zipUrl = downloadHost + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
-
-                Log.i(Tags.INSTALL_SERVICE, "Downloading " + state.toString());
-
-                // Download
-                String downloadError = downloadAndVerify(zipUrl, zipTarget);
-                if (downloadError != null) {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", downloadError));
-                    return;
-                }
-
-                // Unzipping file
-                String unzipError = unzip(new File(zipTarget), new File(targetDirectory));
-                if (!new File(zipTarget).delete())
-                    Log.w(Tags.INSTALL_SERVICE, getString(R.string.status_delete_file_error));
-                if (unzipError != null) {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
-                    return;
-                }
-
-                if (state == State.NEED_DOWNLOAD_BOTH) {
-                    intent.putExtra("state", State.NEED_DOWNLOAD_SERVER.toString());
-                    onHandleIntent(intent);
-                } else
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback"));
-                break;
-            }
-            case "installNoCheck": {
-                String downloadHost = intent.getStringExtra("downloadHost");
-                String abi = getPreferredABI();
-                State state = State.valueOf(intent.getStringExtra("state"));
-                String executableName = intent.getStringExtra("executableName");
-                String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
-
-                String zipTarget = PRIVATE_DIR + "/" + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? executableName : "server") + ".zip";
-                String zipUrl = downloadHost + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
-
-                Log.i(Tags.INSTALL_SERVICE, "Downloading without checking " + state.toString());
-
-                String zipFileError = downloadFile(zipUrl, zipTarget);
-                if (zipFileError != null) {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", zipFileError));
-                    return;
-                }
-
-                String unzipError = unzip(new File(zipTarget), new File(targetDirectory));
-                if (!new File(zipTarget).delete())
-                    Log.w(Tags.INSTALL_SERVICE, getString(R.string.status_delete_file_error));
-                if (unzipError != null) {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("error", unzipError));
-                    return;
-                }
-
-                if (state == State.NEED_DOWNLOAD_BOTH) {
-                    intent.putExtra("state", State.NEED_DOWNLOAD_SERVER.toString());
-                    onHandleIntent(intent);
-                } else
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback"));
-                break;
-            }
-        }
     }
 
     public static String getPreferredABI() {
@@ -137,7 +49,7 @@ public class InstallService extends IntentService {
         else
             abi = Build.CPU_ABI;
 
-        Log.d(Tags.MAIN_ACTIVITY, "Getting preferred ABI: " + abi);
+        Log.d(LOG, "Getting preferred ABI: " + abi);
 
         return abi;
     }
@@ -167,16 +79,27 @@ public class InstallService extends IntentService {
         }
     }
 
-    private String downloadAndVerify(String url, String target) {
-        String zipFileError = downloadFile(url, target);
-        if(zipFileError != null)
+    private void createNoMediaFile(String filePath) {
+        final File noMedia = new File(filePath + "/.nomedia");
+        try {
+            noMedia.createNewFile();
+        } catch (IOException e) {
+            Log.e(LOG, "Something went wrong while creating the .nomedia file", e);
+        }
+    }
+
+    private String downloadVerify(String url, String target) {
+        String zipFileError = downloadNoVerify(url, target);
+        if (zipFileError != null) {
             return zipFileError;
+        }
 
         // Verifying file
         String zipSha = generateSha1(target);
-        String shaError = downloadFile(url + ".sha1", target + ".sha1");
-        if (shaError != null)
+        String shaError = downloadNoVerify(url + ".sha1", target + ".sha1");
+        if (shaError != null) {
             return shaError;
+        }
 
         try {
             String shaFile = new Scanner(new File(target + ".sha1")).useDelimiter("\\Z").next().split(" ", 2)[0];
@@ -185,24 +108,21 @@ public class InstallService extends IntentService {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getString(R.string.status_shasum_error));
                 builder.setMessage(R.string.message_shasum_not_matching);
-                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // No event
-                    }
-                });
+                builder.setPositiveButton(R.string.ok, null);
                 builder.create().show();
-                return null;
+                Log.d(LOG, "SHA-1 check didn't pass");
+            } else {
+                Log.d(LOG, "SHA-1 check passed successfully with checksum " + zipSha);
             }
-            Log.d(Tags.INSTALL_SERVICE, "SHA-1 check passed successfully with checksum " + zipSha);
         } catch (Exception e) {
-            Log.e(Tags.INSTALL_SERVICE, "Something went wrong while generating checksum", e);
+            Log.e(LOG, "Something went wrong while generating checksum", e);
             return "";
         }
         return null;
     }
 
-    private String downloadFile(String stringUrl, String targetLocation) {
-        Log.d(Tags.INSTALL_SERVICE, "Acquiring wakeLock");
+    private String downloadNoVerify(String stringUrl, String targetLocation) {
+        Log.d(LOG, "Acquiring wakeLock");
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
@@ -212,14 +132,22 @@ public class InstallService extends IntentService {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         HttpURLConnection connection = null;
+
+        Bundle bundleInit = new Bundle();
+        bundleInit.putString("title", getString(R.string.status_downloading_cuberite));
+        receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
+
         install: try {
-            Log.d(Tags.INSTALL_SERVICE, "Started downloading " + stringUrl);
+            Log.d(LOG, "Started downloading " + stringUrl);
+            Log.d(LOG, "Downloading to " + targetLocation);
+
             URL url = new URL(stringUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
+
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 String error = "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
-                Log.e(Tags.INSTALL_SERVICE, error);
+                Log.e(LOG, error);
                 result = error;
                 break install;
             }
@@ -227,10 +155,6 @@ public class InstallService extends IntentService {
             int length = connection.getContentLength();
             inputStream = connection.getInputStream();
             outputStream = new FileOutputStream(targetLocation);
-
-            Bundle bundleInit = new Bundle();
-            bundleInit.putString("title", getString(R.string.status_downloading_cuberite));
-            receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
             byte[] data = new byte[4096];
             long total = 0;
@@ -245,10 +169,10 @@ public class InstallService extends IntentService {
                 }
                 outputStream.write(data, 0, count);
             }
-            Log.d(Tags.INSTALL_SERVICE, "Finished downloading");
+            Log.d(LOG, "Finished downloading");
         } catch (Exception e) {
-            result = e.getMessage();
-            Log.e(Tags.INSTALL_SERVICE, "An error occurred when downloading a zip", e);
+            result = getString(R.string.status_no_connection);
+            Log.e(LOG, "An error occurred when downloading a zip", e);
         } finally {
             try {
                 if (outputStream != null)
@@ -263,14 +187,14 @@ public class InstallService extends IntentService {
 
         receiver.send(ProgressReceiver.PROGRESS_END, null);
 
-        Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
+        Log.d(LOG, "Releasing wakeLock");
         wakeLock.release();
         return result;
     }
 
     private String unzip(File file, File targetLocation) {
-        Log.i(Tags.INSTALL_SERVICE, "Unzipping " + file.getAbsolutePath() + " to " + targetLocation.getAbsolutePath());
-        Log.d(Tags.INSTALL_SERVICE, "Acquiring wakeLock");
+        Log.i(LOG, "Unzipping " + file.getAbsolutePath() + " to " + targetLocation.getAbsolutePath());
+        Log.d(LOG, "Acquiring wakeLock");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
@@ -282,7 +206,11 @@ public class InstallService extends IntentService {
         // Create a .nomedia file in the server directory to prevent images from showing in gallery
         createNoMediaFile(targetLocation.getAbsolutePath());
 
-        String result = null;
+        String result = getString(R.string.status_unzip_error);
+
+        Bundle bundleInit = new Bundle();
+        bundleInit.putString("title", getString(R.string.status_installing_cuberite));
+        receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
         try {
             FileInputStream inputStream = new FileInputStream(file);
@@ -290,10 +218,6 @@ public class InstallService extends IntentService {
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
             ZipEntry zipEntry;
             int length = (int) file.length();
-
-            Bundle bundleInit = new Bundle();
-            bundleInit.putString("title", getString(R.string.status_installing_cuberite));
-            receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {
@@ -317,22 +241,68 @@ public class InstallService extends IntentService {
 
             }
             zipInputStream.close();
+            result = getString(R.string.status_install_success);
         } catch (IOException e) {
-            Log.e(Tags.INSTALL_SERVICE, "An error occurred while installing Cuberite", e);
-            result = getString(R.string.status_unzip_error);
+            Log.e(LOG, "An error occurred while installing Cuberite", e);
         }
         receiver.send(ProgressReceiver.PROGRESS_END, null);
-        Log.d(Tags.INSTALL_SERVICE, "Releasing wakeLock");
+
+        Log.d(LOG, "Releasing wakeLock");
         wakeLock.release();
+
         return result;
     }
 
-    private void createNoMediaFile(String filePath) {
-        final File noMedia = new File(filePath + "/.nomedia");
-        try {
-            noMedia.createNewFile();
-        } catch (IOException e) {
-            Log.e(Tags.INSTALL_SERVICE, "Something went wrong while creating the .nomedia file", e);
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        receiver = intent.getParcelableExtra("receiver");
+        String state = intent.getStringExtra("state");
+        String result;
+
+        if ((state.equals("NEED_DOWNLOAD_BINARY") ||
+                state.equals("NEED_DOWNLOAD_BOTH") ||
+                state.equals(Integer.toString(SettingsFragment.PICK_FILE_BINARY))) &&
+                CuberiteService.isCuberiteRunning(getBaseContext())) {
+            result = getString(R.string.status_update_binary_error);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
+        } else if (intent.getAction().equals("unzip")) {
+            String file = intent.getStringExtra("file");
+            String targetLocation = intent.getStringExtra("targetLocation");
+            result = unzip(new File(file), new File(targetLocation));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
+        } else {
+            String downloadHost = intent.getStringExtra("downloadHost");
+            String abi = getPreferredABI();
+            String executableName = intent.getStringExtra("executableName");
+            String targetDirectory = (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
+
+            String zipTarget = PRIVATE_DIR + "/" + (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? executableName : "server") + ".zip";
+            String zipUrl = downloadHost + (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? abi : "server") + ".zip";
+
+            Log.i(LOG, "Downloading " + state);
+
+            // Download
+            if (intent.getAction().equals("install")) {
+                result = downloadVerify(zipUrl, zipTarget);
+            } else {
+                result = downloadNoVerify(zipUrl, zipTarget);
+            }
+
+            if (result == null) {
+                result = unzip(new File(zipTarget), new File(targetDirectory));
+
+                if (!new File(zipTarget).delete()) {
+                    Log.w(LOG, getString(R.string.status_delete_file_error));
+                }
+            }
+
+            if (state.equals("NEED_DOWNLOAD_BOTH")) {
+                intent.putExtra("state", "NEED_DOWNLOAD_SERVER");
+                onHandleIntent(intent);
+            } else {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
+            }
         }
+        stopSelf();
     }
 }
