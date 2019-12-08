@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg">#fafafa</color>
-    <color name="accent">#245A48</color>
+    <color name="accent">#378B6F</color>
     <color name="bar">#fafafa</color>
-    <color name="bar_text">#3A3A3A</color>
+    <color name="execute_button">#737373</color>
     <color name="main_button_text">#ffffff</color>
-    <color name="primary">#245A48</color>
-    <color name="success">#245A48</color>
-    <color name="warning">#EC8B36</color>
+    <color name="primary">#378B6F</color>
+    <color name="success">#378B6F</color>
+    <color name="warning">#ED9D57</color>
     <color name="danger">#F0433F</color>
 </resources>

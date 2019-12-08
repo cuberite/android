@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
-        <item name="android:windowBackground">@color/bg</item>
-        <item name="colorPrimary">@color/bar</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">@color/bar</item>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:navigationBarColor">@color/bar</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:windowBackground">@color/bg</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">?android:attr/textColorSecondary</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
 </resources>

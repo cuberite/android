@@ -17,9 +17,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
+
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +31,11 @@
         </activity>
 
         <service
-            android:name=".CuberiteService"
+            android:name=".services.CuberiteService"
             android:description="@string/service_description" />
 
         <service
-            android:name=".InstallService"
+            android:name=".services.InstallService"
             android:description="@string/installservice_description" />
-
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
     </application>
-
 </manifest>
