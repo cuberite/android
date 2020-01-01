@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:ems="10"
+                android:imeOptions="flagNoExtractUi"
                 android:padding="12dp"
                 android:hint="@string/inputLine_hint"
                 android:layout_toStartOf="@+id/executeLine"
