@@ -364,6 +364,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (!webadminFile.exists()) {
             ini = new Ini();
             ini.put("WebAdmin", "Ports", 8080);
+            ini.put("WebAdmin", "Enabled", 1);
             ini.store(webadminFile);
         } else {
             ini = new Ini(webadminFile);
@@ -412,13 +413,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         String newUsername = ((EditText) layout.findViewById(R.id.webadminUsername)).getText().toString();
                         String newPassword = ((EditText) layout.findViewById(R.id.webadminPassword)).getText().toString();
 
-                        if(newUsername.equals("") || newPassword.equals("")) {
-                            ini.put("WebAdmin", "Enabled", 0);
-                        } else {
-                            ini.put("User:" + newUsername, "Password", newPassword);
-                        }
-
                         ini.remove("User:" + oldUsername);
+                        ini.put("User:" + newUsername, "Password", newPassword);
 
                         try {
                             ini.store(webadminFile);
