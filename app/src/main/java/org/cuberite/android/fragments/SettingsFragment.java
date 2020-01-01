@@ -45,6 +45,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static androidx.appcompat.app.AppCompatDelegate.create;
 import static org.cuberite.android.MainActivity.PACKAGE_NAME;
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 import static org.cuberite.android.MainActivity.PUBLIC_DIR;
@@ -59,7 +60,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
+
         final SharedPreferences preferences = getActivity().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
+        final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
 
         // Ini4j config
         Config config = Config.getGlobal();
@@ -105,20 +108,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         // Webadmin
+        final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
+
         String url = null;
 
         try {
-            File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
-            final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
-
-            Ini ini;
-            if (!webadminFile.exists()) {
-                ini = new Ini();
-                ini.put("WebAdmin", "Ports", 8080);
-            } else {
-                ini = new Ini(webadminFile);
-            }
-
+            final Ini ini = createWebadminIni(webadminFile);
             final String ip = CuberiteService.getIpAddress(getContext());
             final String port = ini.get("WebAdmin", "Ports");
             url = "http://" + ip + ":" + port;
@@ -127,7 +122,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             webadminDescription.setSummary(webadminDescription.getSummary() + "\n\n" + "URL: " + url);
         } catch (IOException e) {
             Log.e(LOG, "Something went wrong while opening the ini file", e);
-            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_webadmin_error), Snackbar.LENGTH_LONG).show();
         }
 
         final String urlInner = url;
@@ -153,79 +147,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         webadminLogin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
-                final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
-
-                if(!cuberiteDir.exists()) {
-                    final AlertDialog dialog = new AlertDialog.Builder(getContext())
-                            .setTitle(R.string.settings_webadmin_not_installed_title)
-                            .setMessage(R.string.settings_webadmin_not_installed)
-                            .setPositiveButton(R.string.do_install_cuberite, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int i) {
-                                    String action = "install";
-                                    installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BOTH);
-                                }
-                            }).setNegativeButton(R.string.cancel, null)
-                            .create();
-                    dialog.show();
+                if (!cuberiteDir.exists()) {
+                    showWebadminInfoPopup();
                 } else {
                     try {
-                        final Ini ini;
-                        if(!webadminFile.exists()) {
-                            ini = new Ini();
-                            ini.put("WebAdmin", "Ports", 8080);
-                        } else {
-                            ini = new Ini(webadminFile);
-                        }
+                        final Ini ini = createWebadminIni(webadminFile);
                         ini.put("WebAdmin", "Enabled", 1);
 
-                        String username = "";
-                        String password = "";
-                        for(String sectionName : ini.keySet()) {
-                            if(sectionName.startsWith("User:")) {
-                                username = sectionName.substring(5);
-                                password = ini.get(sectionName, "Password");
-                            }
-                        }
-                        final String oldUser = username;
-
-                        final View layout = getLayoutInflater().inflate(R.layout.dialog_webadmin_credentials, null);
-                        ((EditText) layout.findViewById(R.id.webadminUsername)).setText(username);
-                        ((EditText) layout.findViewById(R.id.webadminPassword)).setText(password);
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                                .setView(layout)
-                                .setTitle(R.string.settings_webadmin_login)
-                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        String newUser = ((EditText) layout.findViewById(R.id.webadminUsername)).getText().toString();
-                                        String newPass = ((EditText) layout.findViewById(R.id.webadminPassword)).getText().toString();
-
-                                        if(newUser.equals("") || newPass.equals("")) {
-                                            ini.put("WebAdmin", "Enabled", 0);
-                                        } else {
-                                            ini.put("User:" + newUser, "Password", newPass);
-                                        }
-
-                                        ini.remove("User:" + oldUser);
-
-                                        try {
-                                            ini.store(webadminFile);
-                                            MainActivity.showSnackBar(getActivity(), getString(R.string.settings_webadmin_success));
-                                        } catch(IOException e) {
-                                            Log.e(LOG, "Something went wrong while saving the ini file", e);
-                                            MainActivity.showSnackBar(getActivity(),getString(R.string.settings_webadmin_error));
-                                        }
-                                    }
-                                })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        builder.create().show();
+                        showWebadminCredentialPopup(webadminFile, ini);
                     } catch(IOException e) {
                         Log.e(LOG, "Something went wrong while opening the ini file", e);
                         MainActivity.showSnackBar(getActivity(), getString(R.string.settings_webadmin_error));
@@ -293,7 +222,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         toggleAuthentication.setShouldDisableView(false);
         toggleAuthentication.setEnabled(true);
 
-        final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
         final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
         int enabled = 0;
 
@@ -429,13 +357,91 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    private Ini createWebadminIni(final File webadminFile) throws IOException {
+        Ini ini;
+        if (!webadminFile.exists()) {
+            ini = new Ini();
+            ini.put("WebAdmin", "Ports", 8080);
+        } else {
+            ini = new Ini(webadminFile);
+        }
+
+        return ini;
+    }
+
+    private void showWebadminInfoPopup() {
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.settings_webadmin_not_installed_title)
+                .setMessage(R.string.settings_webadmin_not_installed)
+                .setPositiveButton(R.string.do_install_cuberite, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        String action = "install";
+                        installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BOTH);
+                    }
+                }).setNegativeButton(R.string.cancel, null)
+                .create();
+        dialog.show();
+    }
+
+    private void showWebadminCredentialPopup(final File webadminFile, final Ini ini) {
+        String username = "";
+        String password = "";
+
+        for (String sectionName : ini.keySet()) {
+            if (sectionName.startsWith("User:")) {
+                username = sectionName.substring(5);
+                password = ini.get(sectionName, "Password");
+            }
+        }
+        final String oldUsername = username;
+
+        final View layout = getLayoutInflater().inflate(R.layout.dialog_webadmin_credentials, null);
+        ((EditText) layout.findViewById(R.id.webadminUsername)).setText(username);
+        ((EditText) layout.findViewById(R.id.webadminPassword)).setText(password);
+
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(layout)
+                .setTitle(R.string.settings_webadmin_login)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        String newUsername = ((EditText) layout.findViewById(R.id.webadminUsername)).getText().toString();
+                        String newPassword = ((EditText) layout.findViewById(R.id.webadminPassword)).getText().toString();
+
+                        if(newUsername.equals("") || newPassword.equals("")) {
+                            ini.put("WebAdmin", "Enabled", 0);
+                        } else {
+                            ini.put("User:" + newUsername, "Password", newPassword);
+                        }
+
+                        ini.remove("User:" + oldUsername);
+
+                        try {
+                            ini.store(webadminFile);
+                            MainActivity.showSnackBar(getActivity(), getString(R.string.settings_webadmin_success));
+                        } catch(IOException e) {
+                            Log.e(LOG, "Something went wrong while saving the ini file", e);
+                            MainActivity.showSnackBar(getActivity(),getString(R.string.settings_webadmin_error));
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SharedPreferences preferences = getActivity().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
 
-        if (resultCode == RESULT_OK &&
-                data != null) {
+        if (resultCode == RESULT_OK
+                && data != null) {
             Uri selectedFile = data.getData();
             String path = PathUtils.getPath(getContext(), selectedFile);
 
