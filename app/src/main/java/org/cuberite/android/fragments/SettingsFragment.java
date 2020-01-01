@@ -364,6 +364,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (!webadminFile.exists()) {
             ini = new Ini();
             ini.put("WebAdmin", "Ports", 8080);
+            ini.store(webadminFile);
         } else {
             ini = new Ini(webadminFile);
         }
