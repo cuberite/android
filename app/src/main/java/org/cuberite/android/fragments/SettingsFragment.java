@@ -112,16 +112,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         String url = null;
 
-        try {
-            final Ini ini = createWebadminIni(webadminFile);
-            final String ip = CuberiteService.getIpAddress(getContext());
-            final String port = ini.get("WebAdmin", "Ports");
-            url = "http://" + ip + ":" + port;
+        if (cuberiteDir.exists()) {
+            try {
+                final Ini ini = createWebadminIni(webadminFile);
+                final String ip = CuberiteService.getIpAddress(getContext());
+                final String port = ini.get("WebAdmin", "Ports");
+                url = "http://" + ip + ":" + port;
 
-            Preference webadminDescription = findPreference("webadminDescription");
-            webadminDescription.setSummary(webadminDescription.getSummary() + "\n\n" + "URL: " + url);
-        } catch (IOException e) {
-            Log.e(LOG, "Something went wrong while opening the ini file", e);
+                Preference webadminDescription = findPreference("webadminDescription");
+                webadminDescription.setSummary(webadminDescription.getSummary() + "\n\n" + "URL: " + url);
+            } catch (IOException e) {
+                Log.e(LOG, "Something went wrong while opening the ini file", e);
+            }
         }
 
         final String urlInner = url;
