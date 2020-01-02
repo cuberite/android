@@ -107,35 +107,33 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .show();
     }
 
-    private void showPermissionPopup() {
-        AlertDialog.Builder permissionPopupBuilder = new AlertDialog.Builder(this);
-        permissionPopupBuilder.setTitle(getString(R.string.status_permissions_needed));
-        permissionPopupBuilder.setMessage(R.string.message_externalstorage_permission);
-        permissionPopupBuilder.setCancelable(false);
-        permissionPopupBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Log.d(LOG, "Requesting permissions for external storage");
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-            }
-        });
+   private void showPermissionPopup() {
+        permissionPopup = new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.status_permissions_needed))
+            .setMessage(R.string.message_externalstorage_permission)
+            .setCancelable(false)
+            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(LOG, "Requesting permissions for external storage");
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                }
+            })
+            .create();
 
-        permissionPopup = permissionPopupBuilder.create();
         permissionPopup.show();
     }
 
     private void checkPermissions() {
-        if (preferences.getString("cuberiteLocation", null) == null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                // Always use public dir in Lollipop and earlier, since permissions are granted when the app is installed
-                preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-            } else {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // User is running Android 6 or above, show permission popup on first run
+            // or if user granted permission and later denied it
+
+            if ((preferences.getString("cuberiteLocation", null) == null
+                    || preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR))
+                    && permissionPopup == null) {
                 showPermissionPopup();
             }
-        } else if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR) &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            showPermissionPopup();
-        } else if (preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR) &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        } else {
             preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
         }
     }
@@ -144,22 +142,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
             // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(LOG, "Got permissions, using public directory");
                 preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
             } else {
                 Log.i(LOG, "Permissions denied, boo, using private directory");
                 preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
             }
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (permissionPopup != null) {
-            permissionPopup.dismiss();
-            permissionPopup = null;
         }
     }
 
