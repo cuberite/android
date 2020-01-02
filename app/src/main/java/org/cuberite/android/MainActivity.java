@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Log.d(LOG, "Requesting permissions for external storage");
+                    permissionPopup = null;
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
                 }
             })
