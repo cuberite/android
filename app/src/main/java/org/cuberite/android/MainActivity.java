@@ -107,20 +107,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .show();
     }
 
-   private void showPermissionPopup() {
-        permissionPopup = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.status_permissions_needed))
-            .setMessage(R.string.message_externalstorage_permission)
-            .setCancelable(false)
-            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Log.d(LOG, "Requesting permissions for external storage");
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-                }
-            })
-            .create();
+    private void showPermissionPopup() {
+        if (permissionPopup == null) {
+            permissionPopup = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.status_permissions_needed))
+                .setMessage(R.string.message_externalstorage_permission)
+                .setCancelable(false)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Log.d(LOG, "Requesting permissions for external storage");
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                    }
+                })
+                .create();
 
-        permissionPopup.show();
+            permissionPopup.show();
+        }
     }
 
     private void checkPermissions() {
@@ -128,12 +130,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             // User is running Android 6 or above, show permission popup on first run
             // or if user granted permission and later denied it
 
-            if ((preferences.getString("cuberiteLocation", null) == null
-                    || preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR))
-                    && permissionPopup == null) {
+            if (!preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)) {
                 showPermissionPopup();
             }
-        } else {
+        } else if (!preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
             preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
         }
     }
