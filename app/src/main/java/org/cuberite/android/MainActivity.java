@@ -108,21 +108,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     private void showPermissionPopup() {
-        if (permissionPopup == null) {
-            permissionPopup = new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.status_permissions_needed))
-                .setMessage(R.string.message_externalstorage_permission)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Log.d(LOG, "Requesting permissions for external storage");
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-                    }
-                })
-                .create();
+        permissionPopup = new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.status_permissions_needed))
+            .setMessage(R.string.message_externalstorage_permission)
+            .setCancelable(false)
+            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(LOG, "Requesting permissions for external storage");
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                }
+            })
+            .create();
 
-            permissionPopup.show();
-        }
+        permissionPopup.show();
     }
 
     private void checkPermissions() {
@@ -150,6 +148,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Log.i(LOG, "Permissions denied, boo, using private directory");
                 preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
             }
+        }
+    }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (permissionPopup != null) {
+            permissionPopup.dismiss();
         }
     }
 
