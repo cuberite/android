@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -69,6 +70,7 @@ public class ConsoleFragment extends Fragment {
                 }
             }
         });
+        TooltipCompat.setTooltipText(sendCommandButton, getString(R.string.do_execute_line));
     }
 
     private void sendExecuteLine(String line) {
