@@ -150,12 +150,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         }
     }
-    
+
     @Override
     public void onPause() {
         super.onPause();
         if (permissionPopup != null) {
             permissionPopup.dismiss();
+            permissionPopup = null;
         }
     }
 
