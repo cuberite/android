@@ -241,7 +241,7 @@ public class CuberiteService extends IntentService {
         }
 
         // Update button state
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("CuberiteService.callback"));
         stopSelf();
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("CuberiteService.callback"));
     }
 }
