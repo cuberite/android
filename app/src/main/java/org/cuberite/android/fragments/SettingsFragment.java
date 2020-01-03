@@ -116,7 +116,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 final Ini ini = createWebadminIni(webadminFile);
                 final String ip = CuberiteService.getIpAddress(getContext());
-                final String port = ini.get("WebAdmin", "Ports");
+                int port;
+                try {
+                    port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
+                } catch (NumberFormatException e) {
+                    ini.put("WebAdmin", "Ports", 8080);
+                    ini.store(webadminFile);
+                    port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
+                }
                 url = "http://" + ip + ":" + port;
 
                 Preference webadminDescription = findPreference("webadminDescription");
@@ -221,37 +228,30 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         // Authentication
         final SwitchPreference toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
-        toggleAuthentication.setShouldDisableView(false);
-        toggleAuthentication.setEnabled(true);
-
         final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
-        int enabled = 0;
 
-        try {
-            Ini ini = new Ini(settingsFile);
-            enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-
-            if (enabled == 1) {
-                toggleAuthentication.setChecked(true);
-            } else {
-                toggleAuthentication.setChecked(false);
-            }
-        } catch(IOException e) {
-            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
-            toggleAuthentication.setShouldDisableView(true);
-            toggleAuthentication.setEnabled(false);
-        }
+        updateAuthenticationToggle(settingsFile, toggleAuthentication);
 
         toggleAuthentication.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Ini ini = new Ini(settingsFile);
-                    int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-                    int newenabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
-                    ini.put("Authentication", "Authenticate", newenabled);
+                    final Ini ini = new Ini(settingsFile);
+                    int newEnabled;
+
+                    try {
+                        final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
+                        newEnabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
+                    } catch (NumberFormatException e) {
+                        newEnabled = 1;
+                    }
+
+                    boolean newEnabledBool = newEnabled != 0;
+                    toggleAuthentication.setChecked(newEnabledBool);
+
+                    ini.put("Authentication", "Authenticate", newEnabled);
                     ini.store(settingsFile);
-                    MainActivity.showSnackBar(getActivity(), String.format(getString(R.string.settings_authentication_toggle_success), getString((newenabled == 1 ? R.string.enabled : R.string.disabled))));
+                    MainActivity.showSnackBar(getActivity(), String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled == 1 ? R.string.enabled : R.string.disabled)));
                 } catch(IOException e) {
                     Log.e(LOG, "Something went wrong while opening the ini file", e);
                     MainActivity.showSnackBar(getActivity(), getString(R.string.settings_authentication_toggle_error));
@@ -432,6 +432,29 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 })
                 .create();
         dialog.show();
+    }
+
+    private void updateAuthenticationToggle(File settingsFile, SwitchPreference toggle) {
+        try {
+            final Ini ini = new Ini(settingsFile);
+
+            try {
+                final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
+
+                if (enabled == 0) {
+                    toggle.setChecked(false);
+                }
+            } catch (NumberFormatException e) {
+                ini.put("Authentication", "Authenticate", 1);
+                ini.store(settingsFile);
+                toggle.setChecked(true);
+            }
+        } catch(IOException e) {
+            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
+            toggle.setShouldDisableView(true);
+            toggle.setEnabled(false);
+            toggle.setChecked(true);
+        }
     }
 
     @Override
