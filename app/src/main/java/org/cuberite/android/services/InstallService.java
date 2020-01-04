@@ -186,7 +186,7 @@ public class InstallService extends IntentService {
     }
 
     private String unzip(Uri fileUri, File targetLocation) {
-        Log.i(LOG, "Unzipping file to " + targetLocation.getAbsolutePath());
+        Log.i(LOG, "Unzipping " + fileUri + " to " + targetLocation.getAbsolutePath());
         String result = getString(R.string.status_unzip_error);
 
         Log.d(LOG, "Acquiring wakeLock");

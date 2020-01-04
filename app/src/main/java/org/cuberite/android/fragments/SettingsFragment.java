@@ -1,6 +1,5 @@
 package org.cuberite.android.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -16,8 +15,6 @@ import android.os.Handler;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
@@ -27,7 +24,6 @@ import androidx.preference.SwitchPreference;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import org.cuberite.android.BuildConfig;
@@ -506,7 +502,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 && data != null) {
             Intent intent = new Intent(getContext(), InstallService.class);
             intent.setAction("unzip");
-            System.out.println(Uri.parse(data.getData().toString()));
             intent.putExtra("uri", data.getData().toString());
             intent.putExtra("state", Integer.toString(requestCode));
             intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
