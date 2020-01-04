@@ -1,5 +1,6 @@
 package org.cuberite.android.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
@@ -28,10 +30,9 @@ import android.widget.EditText;
 
 import org.cuberite.android.BuildConfig;
 import org.cuberite.android.MainActivity;
-import org.cuberite.android.ProgressReceiver;
+import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
-import org.cuberite.android.utils.PathUtils;
 import org.cuberite.android.R;
 import org.cuberite.android.State;
 import org.ini4j.Config;
@@ -45,10 +46,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static androidx.appcompat.app.AppCompatDelegate.create;
 import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-import static org.cuberite.android.MainActivity.PUBLIC_DIR;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     // Logging tag
@@ -63,6 +61,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         final SharedPreferences preferences = getActivity().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
         final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
+
+        final String PRIVATE_DIR = getActivity().getFilesDir().getAbsolutePath();
+        final String PUBLIC_DIR = getActivity().getExternalFilesDir(null).getAbsolutePath();
 
         // Ini4j config
         Config config = Config.getGlobal();
@@ -106,6 +107,38 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
+        // SD Card
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && getActivity().getExternalFilesDirs(null).length > 1) {
+            final SwitchPreference toggleSD = findPreference("saveToSDToggle");
+
+            Log.d(LOG, "SD Card found, showing preference");
+            toggleSD.setVisible(true);
+
+            if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
+                toggleSD.setChecked(false);
+            }
+
+            toggleSD.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (CuberiteService.isCuberiteRunning(getActivity())) {
+                        Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_sd_card_running), Snackbar.LENGTH_LONG)
+                                .setAnchorView(MainActivity.navigation)
+                                .show();
+                        toggleSD.setChecked(!toggleSD.isChecked());
+                    } else if (toggleSD.isChecked()
+                            && getActivity().getExternalFilesDirs(null).length > 1) {
+                        final String SD_DIR = getActivity().getExternalFilesDirs(null)[1].getAbsolutePath();
+                        preferences.edit().putString("cuberiteLocation", SD_DIR + "/server").apply();
+                    } else {
+                        preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/server").apply();
+                    }
+                    return true;
+                }
+            });
+        }
 
         // Webadmin
         final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
@@ -270,10 +303,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
                         "Using ABI " + InstallService.getPreferredABI() + "\n" +
                         "IP: " + CuberiteService.getIpAddress(getContext()) + "\n" +
-                        "Private directory: " + PRIVATE_DIR + "\n" +
-                        "Public directory: " + PUBLIC_DIR + "\n" +
+                        "Binary location: " + PRIVATE_DIR + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Will download from: " + preferences.getString("downloadHost", "");
+                        "Download URL: " + preferences.getString("downloadHost", "");
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -297,9 +329,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 dialogBuilder.setTitle(getString(R.string.settings_info_libraries));
                 String message = getString(R.string.settings_info_libraries_explanation) + "\n\n" +
                         getString(R.string.ini4j_license) + "\n\n" +
-                        getString(R.string.ini4j_license_description) + "\n\n" +
-                        getString(R.string.pathutils_license) + "\n\n" +
-                        getString(R.string.pathutils_license_description);
+                        getString(R.string.ini4j_license_description);
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -353,6 +383,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+
             startActivityForResult(intent, code);
         } catch (ActivityNotFoundException e) {
             MainActivity.showSnackBar(getActivity(), getString(R.string.status_missing_filemanager));
@@ -464,12 +498,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         if (resultCode == RESULT_OK
                 && data != null) {
-            Uri selectedFile = data.getData();
-            String path = PathUtils.getPath(getContext(), selectedFile);
-
             Intent intent = new Intent(getContext(), InstallService.class);
             intent.setAction("unzip");
-            intent.putExtra("file", path);
+            intent.putExtra("uri", data.getData().toString());
             intent.putExtra("state", Integer.toString(requestCode));
             intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
             intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));

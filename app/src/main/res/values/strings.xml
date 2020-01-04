@@ -25,7 +25,6 @@
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
     <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite exited with code: </string>
-    <string name="status_permissions_needed">Permissions needed</string>
     <string name="status_shasum_error">SHA-1 validation error</string>
     <string name="status_missing_filemanager">No filemanager found: Please install one</string>
 
@@ -36,7 +35,6 @@
 
     <string name="inputLine_hint">Enter commands…</string>
 
-    <string name="message_externalstorage_permission">Cuberite stores its worlds on the external storage by default, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"Deny\" option and Cuberite will use the app\'s private storage.</string>
     <string name="message_shasum_not_matching">SHA-1 sums don\'t match. This may indicate an attempt to spoof you, or just a download error. Please try downloading Cuberite again, and if the error persists, you may bypass the check by installing Cuberite via the settings.</string>
 
     <string name="title_activity_settings">Settings</string>
@@ -46,6 +44,10 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_auto">Automatic</string>
+
+    <string name="settings_sd_card">Use SD card for storage</string>
+    <string name="settings_sd_card_explanation">Stores server files on your SD card. Files are not transferred between internal and SD storage.</string>
+    <string name="settings_sd_card_running">Please stop the server before changing the storage location</string>
 
     <string name="settings_download_host">Download Server</string>
     <string name="settings_download_host_summary">The server from which Cuberite will download from. If you are running your own (automated) builds, you can change this setting and Cuberite will use your own server. Please note, that in order to have working automatic updates, the server needs to provide valid SHA-1 files.</string>
@@ -95,24 +97,6 @@ you may not use this file except in compliance with the License.
 You may obtain a copy of the License at\n\n
 
      http://www.apache.org/licenses/LICENSE-2.0\n\n
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-    </string>
-
-    <string name="pathutils_license">License for the PathUtils functions (used for installing Cuberite manually to select binaries)</string>
-    <string name="pathutils_license_description" translatable="false">A few edits were made to wrap some functions into a new class. Below is a copy of the original license.\n\n
-
-Copyright © 2011 - 2013 Paul Burke\n\n
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at\n\n
-
-  http://www.apache.org/licenses/LICENSE-2.0\n\n
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

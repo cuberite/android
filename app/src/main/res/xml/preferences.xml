@@ -1,86 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        android:title="@string/title_activity_settings">
+        app:title="@string/title_activity_settings">
         <ListPreference
-            android:key="theme"
-            android:title="@string/settings_theme"
+            app:key="theme"
+            app:title="@string/settings_theme"
             app:useSimpleSummaryProvider="true" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/settings_webadmin_heading">
-        <Preference
-            android:key="webadminDescription"
-            android:summary="@string/settings_webadmin_explanation"
-            android:icon="@drawable/ic_webadmin"
-            android:layout="@layout/settings_description_icon"/>
-        <Preference
-            android:key="webadminOpen"
-            android:title="@string/settings_webadmin_open" />
-        <Preference
-            android:key="webadminLogin"
-            android:title="@string/settings_webadmin_login" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/settings_install_update">
-        <Preference
-            android:summary="@string/settings_install_update_explanation"
-            android:icon="@drawable/ic_cloud_download"
-            android:layout="@layout/settings_description_icon"/>
-        <Preference
-            android:key="installUpdateBinary"
-            android:title="@string/settings_install_update_binary" />
-        <Preference
-            android:key="installUpdateServer"
-            android:title="@string/settings_install_update_server" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/settings_install_no_sha">
-        <Preference
-            android:summary="@string/settings_install_no_sha_explanation"
-            android:icon="@drawable/ic_policy"
-            android:layout="@layout/settings_description_icon"/>
-        <Preference
-            android:key="installNoShaButton"
-            android:title="@string/settings_install_no_sha_button" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/settings_install_manually">
-        <Preference
-            android:key="abiText"
-            android:summary="@string/settings_install_manually_explanation"
-            android:icon="@drawable/ic_install"
-            android:layout="@layout/settings_description_icon"/>
-        <Preference
-            android:key="installBinary"
-            android:title="@string/settings_install_select_binary" />
-        <Preference
-            android:key="installServer"
-            android:title="@string/settings_install_select_server" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/settings_troubleshooting_heading">
         <SwitchPreference
-            android:key="troubleshootingAuthenticationToggle"
-            android:title="@string/settings_authentication_toggle"
-            android:summary="@string/settings_authentication_errors_explanation" />
+            app:key="saveToSDToggle"
+            app:title="@string/settings_sd_card"
+            app:summary="@string/settings_sd_card_explanation"
+            app:isPreferenceVisible="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/settings_info_heading">
+        app:title="@string/settings_webadmin_heading">
         <Preference
-            android:key="infoDebugInfo"
-            android:title="@string/settings_info_debug" />
+            app:key="webadminDescription"
+            app:summary="@string/settings_webadmin_explanation"
+            app:icon="@drawable/ic_webadmin"
+            app:enableCopying="true"
+            app:selectable="false" />
         <Preference
-            android:key="thirdPartyLicenses"
-            android:title="@string/settings_info_libraries" />
+            app:key="webadminOpen"
+            app:title="@string/settings_webadmin_open" />
         <Preference
-            android:key="version" />
+            app:key="webadminLogin"
+            app:title="@string/settings_webadmin_login" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_install_update">
+        <Preference
+            app:summary="@string/settings_install_update_explanation"
+            app:icon="@drawable/ic_cloud_download"
+            app:enableCopying="true"
+            app:selectable="false" />
+        <Preference
+            app:key="installUpdateBinary"
+            app:title="@string/settings_install_update_binary" />
+        <Preference
+            app:key="installUpdateServer"
+            app:title="@string/settings_install_update_server" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_install_no_sha">
+        <Preference
+            app:summary="@string/settings_install_no_sha_explanation"
+            app:icon="@drawable/ic_policy"
+            app:enableCopying="true"
+            app:selectable="false" />
+        <Preference
+            app:key="installNoShaButton"
+            app:title="@string/settings_install_no_sha_button" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_install_manually">
+        <Preference
+            app:key="abiText"
+            app:summary="@string/settings_install_manually_explanation"
+            app:icon="@drawable/ic_install"
+            app:enableCopying="true"
+            app:selectable="false" />
+        <Preference
+            app:key="installBinary"
+            app:title="@string/settings_install_select_binary" />
+        <Preference
+            app:key="installServer"
+            app:title="@string/settings_install_select_server" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_troubleshooting_heading">
+        <SwitchPreference
+            app:key="troubleshootingAuthenticationToggle"
+            app:title="@string/settings_authentication_toggle"
+            app:summary="@string/settings_authentication_errors_explanation" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_info_heading">
+        <Preference
+            app:key="infoDebugInfo"
+            app:title="@string/settings_info_debug" />
+        <Preference
+            app:key="thirdPartyLicenses"
+            app:title="@string/settings_info_libraries" />
+        <Preference
+            app:key="version" />
     </PreferenceCategory>
 </PreferenceScreen>

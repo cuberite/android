@@ -3,16 +3,17 @@ package org.cuberite.android.services;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PowerManager;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
-import org.cuberite.android.ProgressReceiver;
+import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.R;
 
 import java.io.BufferedOutputStream;
@@ -24,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
@@ -45,10 +45,11 @@ public class InstallService extends IntentService {
 
     public static String getPreferredABI() {
         String abi;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             abi = Build.SUPPORTED_ABIS[0];
-        else
+        } else {
             abi = Build.CPU_ABI;
+        }
 
         Log.d(LOG, "Getting preferred ABI: " + abi);
 
@@ -77,15 +78,6 @@ public class InstallService extends IntentService {
             return new String(hexResult).toLowerCase();
         } catch (Exception e) {
             return e.toString();
-        }
-    }
-
-    private void createNoMediaFile(String filePath) {
-        final File noMedia = new File(filePath + "/.nomedia");
-        try {
-            noMedia.createNewFile();
-        } catch (IOException e) {
-            Log.e(LOG, "Something went wrong while creating the .nomedia file", e);
         }
     }
 
@@ -193,32 +185,28 @@ public class InstallService extends IntentService {
         return result;
     }
 
-    private String unzip(File file, File targetLocation) {
-        Log.i(LOG, "Unzipping " + file.getAbsolutePath() + " to " + targetLocation.getAbsolutePath());
+    private String unzip(Uri fileUri, File targetLocation) {
+        Log.i(LOG, "Unzipping file to " + targetLocation.getAbsolutePath());
+        String result = getString(R.string.status_unzip_error);
+
         Log.d(LOG, "Acquiring wakeLock");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
 
-        if (!targetLocation.exists())
+        if (!targetLocation.exists()) {
             targetLocation.mkdir();
-
-        // Create a .nomedia file in the server directory to prevent images from showing in gallery
-        createNoMediaFile(targetLocation.getAbsolutePath());
-
-        String result = getString(R.string.status_unzip_error);
+        }
 
         Bundle bundleInit = new Bundle();
         bundleInit.putString("title", getString(R.string.status_installing_cuberite));
-        receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
+        receiver.send(ProgressReceiver.PROGRESS_START_INDETERMINATE, bundleInit);
 
         try {
-            FileInputStream inputStream = new FileInputStream(file);
-            FileChannel channel = inputStream.getChannel();
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
             ZipEntry zipEntry;
-            int length = (int) file.length();
 
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {
@@ -230,10 +218,6 @@ public class InstallService extends IntentService {
                     int read;
                     while ((read = zipInputStream.read(buffer)) != -1) {
                         bufferedOutputStream.write(buffer, 0, read);
-                        Bundle bundleProg = new Bundle();
-                        bundleProg.putInt("progress", (int) channel.position());
-                        bundleProg.putInt("max", length);
-                        receiver.send(ProgressReceiver.PROGRESS_NEWDATA, bundleProg);
                     }
                     zipInputStream.closeEntry();
                     bufferedOutputStream.close();
@@ -267,11 +251,11 @@ public class InstallService extends IntentService {
             result = getString(R.string.status_update_binary_error);
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
         } else if (intent.getAction().equals("unzip")) {
-            String file = intent.getStringExtra("file");
+            Uri uri = Uri.parse(intent.getStringExtra("uri"));
             Log.d(LOG, intent.getStringExtra("targetLocation"));
             String targetLocation = (state.equals(Integer.toString(PICK_FILE_BINARY)) ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
             Log.d(LOG, targetLocation);
-            result = unzip(new File(file), new File(targetLocation));
+            result = unzip(uri, new File(targetLocation));
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
         } else {
             String downloadHost = intent.getStringExtra("downloadHost");
@@ -292,7 +276,7 @@ public class InstallService extends IntentService {
             }
 
             if (result == null) {
-                result = unzip(new File(zipTarget), new File(targetDirectory));
+                result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetDirectory));
 
                 if (!new File(zipTarget).delete()) {
                     Log.w(LOG, getString(R.string.status_delete_file_error));

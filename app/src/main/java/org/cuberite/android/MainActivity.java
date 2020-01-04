@@ -1,23 +1,19 @@
 package org.cuberite.android;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public static String PACKAGE_NAME;
     public static String PRIVATE_DIR;
     public static String PUBLIC_DIR;
-    private final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
+    public static String SD_DIR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +55,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // On most devices
         PACKAGE_NAME = this.getPackageName();
         PRIVATE_DIR = this.getFilesDir().getAbsolutePath();
-        PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
+        PUBLIC_DIR = getExternalFilesDir(null).getAbsolutePath();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && getExternalFilesDirs(null).length > 1) {
+            SD_DIR = getExternalFilesDirs(null)[1].getAbsolutePath();
+        } else {
+            SD_DIR = PUBLIC_DIR;
+        }
 
         preferences = getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+
+        if (!preferences.getString("cuberiteLocation", "").equals(PUBLIC_DIR + "/server")
+                && !preferences.getString("cuberiteLocation", "").equals(SD_DIR + "/server")) {
+            preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/server").apply();
+        }
 
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
@@ -107,50 +115,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .show();
     }
 
-    private void showPermissionPopup() {
-        permissionPopup = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.status_permissions_needed))
-            .setMessage(R.string.message_externalstorage_permission)
-            .setCancelable(false)
-            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Log.d(LOG, "Requesting permissions for external storage");
-                    permissionPopup = null;
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+    private BroadcastReceiver checkSD = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals(Intent.ACTION_MEDIA_REMOVED)
+                    || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)
+                    || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)) {
+                if (!preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
+                    preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/server").apply();
                 }
-            })
-            .create();
-
-        permissionPopup.show();
-    }
-
-    private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // User is running Android 6 or above, show permission popup on first run
-            // or if user granted permission and later denied it
-
-            if (!preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)) {
-                showPermissionPopup();
-            }
-        } else if (!preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
-            preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(LOG, "Got permissions, using public directory");
-                preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-            } else {
-                Log.i(LOG, "Permissions denied, boo, using private directory");
-                preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
             }
         }
-    }
+    };
 
     @Override
     public void onPause() {
@@ -159,11 +136,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             permissionPopup.dismiss();
             permissionPopup = null;
         }
+        unregisterReceiver(checkSD);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        checkPermissions();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);
+        intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+        intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
+        intentFilter.addDataScheme("file");
+        registerReceiver(checkSD, intentFilter);
     }
 }

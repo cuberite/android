@@ -15,7 +15,6 @@
     <string name="status_download_error">Erro na transferência:</string>
     <string name="status_delete_file_error">Algo deu errado: Não foi possível apagar o arquivo</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Encerrou com o código: </string>
-    <string name="status_permissions_needed">Permissões necessarias</string>
     <string name="status_shasum_error">Erro ao executar a validação SHA-1</string>
     <string name="status_missing_filemanager">Nenhum explorador de arquivos encontrado: Por favor instale um</string>
 
@@ -26,7 +25,6 @@
 
     <string name="inputLine_hint">Insira comandos…</string>
 
-    <string name="message_externalstorage_permission">Cuberite armazena seus mundos por padrão no armazenamento externo, que é acessível por qualquer aplicativo. Para isso, você precisa permitir que o Cuberite escreva no armazenamento externo. Se você não quiser dar a permissão necessária para isso, por favor selecione a opção \"Não perguntar novamente\". Assim, o Cuberite irá usar o armazenamento privado do aplicativo</string>
     <string name="message_shasum_not_matching">As somas SHA-1 não batem. Isso pode significar que alguém está tentanto te enganar ou pode simplesmente ser um erro na transferência. Tente baixar novamente, caso o erro persista você pode desabilitar essa verificação instalando Cuberite através das Configurações</string>
 
     <string name="title_activity_settings">Configurações</string>
@@ -68,7 +66,4 @@
     <string name="settings_info_libraries_explanation">Este aplicativo usa bibliotecas de terceiros para prover certas funções. Abaixo algumas informações sobre essas bibliotecas e suas respectivas licenças</string>
 
     <string name="ini4j_license">Licença para a biblioteca [ini4j] (usada para manipular as configurações do Cuberite)</string>
-
-    <string name="pathutils_license">Licença para a biblioteca PathUtils (usada para instalar o Cuberite manualmente, para selecionar os binários)</string>
-
 </resources>

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg">#fafafa</color>
-    <color name="accent">#378B6F</color>
+    <color name="primary">#737373</color>
     <color name="bar">#fafafa</color>
-    <color name="execute_button">#737373</color>
-    <color name="main_button_text">#ffffff</color>
-    <color name="primary">#378B6F</color>
-    <color name="success">#378B6F</color>
+    <color name="accent">#378B6F</color>
     <color name="warning">#ED9D57</color>
     <color name="danger">#F0433F</color>
+    <color name="white">#ffffff</color>
 </resources>

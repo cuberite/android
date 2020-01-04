@@ -15,7 +15,6 @@
     <string name="status_download_error">Download fout:</string>
     <string name="status_delete_file_error">Er ging iets fout: kon het bestand niet verwijderen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite stopte met code: </string>
-    <string name="status_permissions_needed">Toestemming nodig</string>
     <string name="status_shasum_error">SHA-1 validatie fout</string>
     <string name="status_missing_filemanager">Geen bestandsbeheerder gevonden: installeer er a.u.b een</string>
 
@@ -26,7 +25,6 @@
 
     <string name="inputLine_hint">Voer commando\'s in…</string>
 
-    <string name="message_externalstorage_permission">Cuberite bewaart de werelden standaard op externe opslagmedia die lees- en schrijfbaar zijn door iedere app. Hiervoor moet u Cuberite toestaan om te schrijven naar het externe medium. Als u de nodige toestemming niet wilt geven, selecteer de \"vraag niet opnieuw\" optie en Cuberite zal de app zijn privé opslag gebruiken.</string>
     <string name="message_shasum_not_matching">SHA-1 sommen komen zijn niet gelijk. Dit kan gewoon een download fout zijn of iemand probeert uw download te vervalsen. Probeer a.u.b opnieuw, als de fout opnieuw gebeurt kan u de controle afzetten door Cuberite te installeren via de Instellingen.</string>
 
     <string name="title_activity_settings">Instellingen</string>
@@ -68,6 +66,4 @@
     <string name="settings_info_libraries_explanation">Deze app gebruikt bibliotheken van derden voor bepaalde functies. Hieronder is informatie over deze bibliotheken en hun licenties</string>
 
     <string name="ini4j_license">Licentie voor de [ini4j] bibliotheken (gebruikt voor het aanpassen van de Cuberite instellingen)</string>
-
-    <string name="pathutils_license">Licentie voor de PathUtils functies (gebruikt voor het manueel selecteren van binaries voor de Cuberite installatie)</string>
 </resources>

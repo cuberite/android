@@ -15,7 +15,6 @@
     <string name="status_download_error">Fehler beim Laden:</string>
     <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite beendet, Code: </string>
-    <string name="status_permissions_needed">Berechtigung benötigt</string>
     <string name="status_shasum_error">Integritätsfehler</string>
     <string name="status_missing_filemanager">Kein Dateimanager gefunden: bitte einen zu Installieren</string>
 
@@ -26,7 +25,6 @@
 
     <string name="inputLine_hint">Befehl eingeben…</string>
 
-    <string name="message_externalstorage_permission">Normalerweise versucht Cuberite die Welt auf der SDCard zu speichern, diese kann dann von anderen Apps geöffnet werden. Wenn sie Cuberite nicht die Rechte geben wollen, können sie \"nicht nochmal fragen\" wählen. Cuberite wird dann die Daten intern speichern.</string>
     <string name="message_shasum_not_matching">Die SHA-1 Summen stimmen nicht überein. Das kann bedeuten, dass jemand versucht sie zu spoofen, es kann sich aber auch nur um einen Fehler handeln. Versuchen sie es erneut. Sollte der Fehler weiter auftreten können Sie Cuberite über die Einstellungen manuell installieren</string>
 
     <string name="title_activity_settings">@string/do_open_settings</string>
@@ -68,5 +66,4 @@
     <string name="settings_info_libraries_explanation">Diese App nutzt Open-Source Bibliotheken, hier ist eine Liste aller genutzten Bibliotheken und deren jeweilige Lizenzen.</string>
 
     <string name="ini4j_license">Lizenz der [ini4j] Bibliothek (zum Ändern von Cuberite Einstellungen)</string>
-    <string name="pathutils_license">Lizenz der PathUtils Funktionen (genutzt um Dateien für die manuelle Installation zu wählen)</string>
 </resources>
