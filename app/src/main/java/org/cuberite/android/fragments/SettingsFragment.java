@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
@@ -26,6 +27,7 @@ import androidx.preference.SwitchPreference;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import org.cuberite.android.BuildConfig;
@@ -384,6 +386,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void installCuberiteLocal(int code) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        }
+
         intent.setType("*/*");
         try {
             startActivityForResult(intent, code);
@@ -499,6 +506,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 && data != null) {
             Intent intent = new Intent(getContext(), InstallService.class);
             intent.setAction("unzip");
+            System.out.println(Uri.parse(data.getData().toString()));
             intent.putExtra("uri", data.getData().toString());
             intent.putExtra("state", Integer.toString(requestCode));
             intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
