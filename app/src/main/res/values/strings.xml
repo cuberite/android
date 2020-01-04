@@ -46,6 +46,9 @@
     <string name="settings_startup_toggle">Start Cuberite on boot</string>
     <string name="settings_startup_explanation">Start Cuberite automatically when you boot up your device</string>
 
+    <string name="settings_sd_card">Use SD card for storage</string>
+    <string name="settings_sd_card_explanation">Store server files on your external SD card. Your existing Cuberite installation will not be moved to the SD card.</string>
+    <string name="settings_sd_card_running">Please stop the server before changing the storage location</string>
 
     <string name="settings_install_update">Perform Cuberite update</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>

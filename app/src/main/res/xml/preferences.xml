@@ -10,6 +10,11 @@
             app:key="startupToggle"
             app:title="@string/settings_startup_toggle"
             app:summary="@string/settings_startup_explanation" />
+        <SwitchPreferenceCompat
+            app:key="saveToSDToggle"
+            app:title="@string/settings_sd_card"
+            app:summary="@string/settings_sd_card_explanation"
+            app:isPreferenceVisible="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

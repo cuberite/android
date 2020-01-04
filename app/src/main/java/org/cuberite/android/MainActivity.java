@@ -115,14 +115,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     private void checkPermissions() {
+        final String location = preferences.getString("cuberiteLocation", "");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // User is running Android 6 or above, show permission popup on first run
             // or if user granted permission and later denied it
 
-            if (!preferences.getString("cuberiteLocation", "").startsWith(PRIVATE_DIR)) {
+            if (location.startsWith(PUBLIC_DIR)) {
                 showPermissionPopup();
             }
-        } else if (!preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
+        } else if (location.startsWith(PRIVATE_DIR)) {
             preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
         }
     }
