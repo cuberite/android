@@ -56,12 +56,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         PACKAGE_NAME = this.getPackageName();
         PRIVATE_DIR = this.getFilesDir().getAbsolutePath();
         PUBLIC_DIR = getExternalFilesDir(null).getAbsolutePath();
+        SD_DIR = PUBLIC_DIR;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                && getExternalFilesDirs(null).length > 1) {
-            SD_DIR = getExternalFilesDirs(null)[1].getAbsolutePath();
-        } else {
-            SD_DIR = PUBLIC_DIR;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && getExternalFilesDirs(null)[1] != null) {
+                SD_DIR = getExternalFilesDirs(null)[1].getAbsolutePath();
+            }
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         preferences = getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);

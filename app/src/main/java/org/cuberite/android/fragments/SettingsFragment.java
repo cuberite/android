@@ -109,35 +109,38 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         // SD Card
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                && getActivity().getExternalFilesDirs(null).length > 1) {
-            final SwitchPreference toggleSD = findPreference("saveToSDToggle");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                    && getActivity().getExternalFilesDirs(null)[1] != null) {
+                final SwitchPreference toggleSD = findPreference("saveToSDToggle");
 
-            Log.d(LOG, "SD Card found, showing preference");
-            toggleSD.setVisible(true);
+                Log.d(LOG, "SD Card found, showing preference");
+                toggleSD.setVisible(true);
 
-            if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
-                toggleSD.setChecked(false);
-            }
-
-            toggleSD.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (CuberiteService.isCuberiteRunning(getActivity())) {
-                        Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_sd_card_running), Snackbar.LENGTH_LONG)
-                                .setAnchorView(MainActivity.navigation)
-                                .show();
-                        toggleSD.setChecked(!toggleSD.isChecked());
-                    } else if (toggleSD.isChecked()
-                            && getActivity().getExternalFilesDirs(null).length > 1) {
-                        final String SD_DIR = getActivity().getExternalFilesDirs(null)[1].getAbsolutePath();
-                        preferences.edit().putString("cuberiteLocation", SD_DIR + "/server").apply();
-                    } else {
-                        preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/server").apply();
-                    }
-                    return true;
+                if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
+                    toggleSD.setChecked(false);
                 }
-            });
+
+                toggleSD.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        if (CuberiteService.isCuberiteRunning(getActivity())) {
+                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), getString(R.string.settings_sd_card_running), Snackbar.LENGTH_LONG)
+                                    .setAnchorView(MainActivity.navigation)
+                                    .show();
+                            toggleSD.setChecked(!toggleSD.isChecked());
+                        } else if (toggleSD.isChecked()
+                                && getActivity().getExternalFilesDirs(null).length > 1) {
+                            final String SD_DIR = getActivity().getExternalFilesDirs(null)[1].getAbsolutePath();
+                            preferences.edit().putString("cuberiteLocation", SD_DIR + "/server").apply();
+                        } else {
+                            preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/server").apply();
+                        }
+                        return true;
+                    }
+                });
+            }
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         // Webadmin
