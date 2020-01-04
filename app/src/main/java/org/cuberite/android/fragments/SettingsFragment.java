@@ -383,10 +383,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            }
-
             startActivityForResult(intent, code);
         } catch (ActivityNotFoundException e) {
             MainActivity.showSnackBar(getActivity(), getString(R.string.status_missing_filemanager));
