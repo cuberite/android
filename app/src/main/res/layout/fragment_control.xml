@@ -14,7 +14,7 @@
         android:insetBottom="0dp"
         android:padding="6dp"
         android:textAllCaps="false"
-        android:textColor="@color/main_button_text"
+        android:textColor="@color/white"
         app:elevation="0dp"
         app:cornerRadius="75dp" />
 </RelativeLayout>
