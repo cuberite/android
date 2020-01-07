@@ -6,9 +6,9 @@ android {
     defaultConfig {
         applicationId "org.cuberite.android"
         minSdkVersion 14
-        targetSdkVersion 29
-        versionCode 5
-        versionName "1.4"
+        targetSdkVersion 28
+        versionCode 6
+        versionName "1.4.1"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
