@@ -68,6 +68,4 @@
     <string name="settings_info_libraries_explanation">Deze app gebruikt bibliotheken van derden voor bepaalde functies. Hieronder is informatie over deze bibliotheken en hun licenties</string>
 
     <string name="ini4j_license">Licentie voor de [ini4j] bibliotheken (gebruikt voor het aanpassen van de Cuberite instellingen)</string>
-
-    <string name="pathutils_license">Licentie voor de PathUtils functies (gebruikt voor het manueel selecteren van binaries voor de Cuberite installatie)</string>
 </resources>

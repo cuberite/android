@@ -68,7 +68,4 @@
     <string name="settings_info_libraries_explanation">Este aplicativo usa bibliotecas de terceiros para prover certas funções. Abaixo algumas informações sobre essas bibliotecas e suas respectivas licenças</string>
 
     <string name="ini4j_license">Licença para a biblioteca [ini4j] (usada para manipular as configurações do Cuberite)</string>
-
-    <string name="pathutils_license">Licença para a biblioteca PathUtils (usada para instalar o Cuberite manualmente, para selecionar os binários)</string>
-
 </resources>
