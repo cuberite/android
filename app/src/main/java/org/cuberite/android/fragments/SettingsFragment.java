@@ -28,10 +28,9 @@ import android.widget.EditText;
 
 import org.cuberite.android.BuildConfig;
 import org.cuberite.android.MainActivity;
-import org.cuberite.android.ProgressReceiver;
+import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
-import org.cuberite.android.utils.PathUtils;
 import org.cuberite.android.R;
 import org.cuberite.android.State;
 import org.ini4j.Config;
@@ -273,7 +272,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         "Private directory: " + PRIVATE_DIR + "\n" +
                         "Public directory: " + PUBLIC_DIR + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Will download from: " + preferences.getString("downloadHost", "");
+                        "Download URL: " + preferences.getString("downloadHost", "");
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -297,9 +296,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 dialogBuilder.setTitle(getString(R.string.settings_info_libraries));
                 String message = getString(R.string.settings_info_libraries_explanation) + "\n\n" +
                         getString(R.string.ini4j_license) + "\n\n" +
-                        getString(R.string.ini4j_license_description) + "\n\n" +
-                        getString(R.string.pathutils_license) + "\n\n" +
-                        getString(R.string.pathutils_license_description);
+                        getString(R.string.ini4j_license_description) + "\n\n";
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -351,6 +348,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void installCuberiteLocal(int code) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Only show file sources that support loading content from Uri
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        }
+
         intent.setType("*/*");
         try {
             startActivityForResult(intent, code);
@@ -464,12 +467,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         if (resultCode == RESULT_OK
                 && data != null) {
-            Uri selectedFile = data.getData();
-            String path = PathUtils.getPath(getContext(), selectedFile);
+            Uri selectedFileUri = data.getData();
 
             Intent intent = new Intent(getContext(), InstallService.class);
             intent.setAction("unzip");
-            intent.putExtra("file", path);
+            intent.putExtra("uri", selectedFileUri.toString());
             intent.putExtra("state", Integer.toString(requestCode));
             intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
             intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
