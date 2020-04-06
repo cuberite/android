@@ -317,7 +317,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/cuberite/android/releases/latest"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://download.cuberite.org/android"));
                 startActivity(browserIntent);
                 return true;
             }
