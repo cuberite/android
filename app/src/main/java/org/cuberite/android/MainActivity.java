@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         editor.putString("executableName", "Cuberite");
-        editor.putString("downloadHost", "https://builds.cuberite.org/job/cuberite/job/master/job/android/job/release/lastSuccessfulBuild/artifact/android/Server/");
+        editor.putString("downloadHost", "https://download.cuberite.org/androidbinaries/");
         editor.apply();
     }
 
