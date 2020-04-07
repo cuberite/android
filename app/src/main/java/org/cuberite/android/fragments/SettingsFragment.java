@@ -197,16 +197,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference setABIText = findPreference("abiText");
         setABIText.setSummary(setABIText.getSummary() + "\n\n" + abi);
 
-        Preference installNoSha = findPreference("installNoShaButton");
-        installNoSha.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                String action = "installNoCheck";
-                installCuberiteDownload(getActivity(), action, State.NEED_DOWNLOAD_BOTH);
-                return true;
-            }
-        });
-
         Preference installBinary = findPreference("installBinary");
         installBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

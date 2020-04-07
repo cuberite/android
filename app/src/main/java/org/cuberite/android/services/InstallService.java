@@ -281,11 +281,7 @@ public class InstallService extends IntentService {
             Log.i(LOG, "Downloading " + state);
 
             // Download
-            if (intent.getAction().equals("install")) {
-                result = downloadVerify(zipUrl, zipTarget);
-            } else {
-                result = downloadNoVerify(zipUrl, zipTarget);
-            }
+            result = downloadVerify(zipUrl, zipTarget);
 
             if (result == null) {
                 result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetDirectory));
