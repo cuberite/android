@@ -43,9 +43,6 @@
     <string name="settings_install_manually_abi">Benötigte ABI: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
     <string name="settings_install_select_binary">Wähle und installiere cuberite zip-Datei.</string>
     <string name="settings_install_select_server">Wähle und installiere server.zip</string>
-    <string name="settings_install_no_sha">Installiere ohne SHA-1 Kontrolle</string>
-    <string name="settings_install_no_sha_explanation">Normalerweise, werden alle Dateien auf Korrektheit geprüft. Diese Schaltfläche deaktiviert die Überprüfung und damit die Sicherheit.</string>
-    <string name="settings_install_no_sha_button">Cuberite herunterladen und installieren</string>
 
     <string name="settings_webadmin_heading">Webadmin Einstellungen</string>
     <string name="settings_webadmin_explanation">Für kleinere Einstellungen sollte die Webadmin Funktionion genutzt werden. Hier können Benutzername und Passwort festgelegt werden.</string>
