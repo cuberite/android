@@ -12,35 +12,35 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import com.google.android.material.snackbar.Snackbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.cuberite.android.BuildConfig;
 import org.cuberite.android.MainActivity;
+import org.cuberite.android.R;
+import org.cuberite.android.State;
 import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
-import org.cuberite.android.R;
-import org.cuberite.android.State;
 import org.ini4j.Config;
 import org.ini4j.Ini;
 
 import java.io.File;
 import java.io.IOException;
 
-import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
+import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
