@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.os.ResultReceiver;
 
+import org.cuberite.android.R;
+
 public class ProgressReceiver extends ResultReceiver {
     public static final int PROGRESS_START_INDETERMINATE = 0;
     public static final int PROGRESS_START = 1;
