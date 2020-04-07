@@ -280,9 +280,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
                 dialogBuilder.setTitle(getString(R.string.settings_info_libraries));
-                String message = getString(R.string.settings_info_libraries_explanation) + "\n\n" +
-                        getString(R.string.ini4j_license) + "\n\n" +
-                        getString(R.string.ini4j_license_description) + "\n\n";
+                String message = getString(R.string.ini4j_license) + "\n\n" +
+                        getString(R.string.ini4j_license_description);
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
