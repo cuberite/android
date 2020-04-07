@@ -23,7 +23,7 @@ public class ProgressReceiver extends ResultReceiver {
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        switch(resultCode) {
+        switch (resultCode) {
             case PROGRESS_START_INDETERMINATE: {
                 String title = resultData.getString("title");
                 progressDialog = new ProgressDialog(cont);
