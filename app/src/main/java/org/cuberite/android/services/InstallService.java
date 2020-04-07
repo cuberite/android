@@ -257,7 +257,7 @@ public class InstallService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         receiver = intent.getParcelableExtra("receiver");
-        int state = intent.getIntExtra("state", 2);
+        int state = intent.getIntExtra("state", State.NEED_DOWNLOAD_BOTH);
         String result;
 
         if ((state == State.NEED_DOWNLOAD_BINARY
