@@ -20,7 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
+import androidx.preference.SwitchPreferenceCompat;
 
 import android.util.Log;
 import android.view.View;
@@ -44,7 +44,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static androidx.appcompat.app.AppCompatDelegate.create;
 import static org.cuberite.android.MainActivity.PACKAGE_NAME;
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 import static org.cuberite.android.MainActivity.PUBLIC_DIR;
@@ -226,7 +225,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         // Authentication
-        final SwitchPreference toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
+        final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
         final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
 
         updateAuthenticationToggle(settingsFile, toggleAuthentication);
@@ -437,7 +436,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         dialog.show();
     }
 
-    private void updateAuthenticationToggle(File settingsFile, SwitchPreference toggle) {
+    private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
         try {
             final Ini ini = new Ini(settingsFile);
 
