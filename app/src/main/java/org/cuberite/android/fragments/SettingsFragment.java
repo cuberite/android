@@ -183,7 +183,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
-        String abi = String.format(getString(R.string.settings_install_manually_abi), InstallHelper.getPreferredABI());
+        String abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteHelper.getPreferredABI());
         Preference setABIText = findPreference("abiText");
         setABIText.setSummary(setABIText.getSummary() + "\n\n" + abi);
 
@@ -253,7 +253,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
                 dialogBuilder.setTitle(getString(R.string.settings_info_debug));
                 String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
-                        "Using ABI " + InstallHelper.getPreferredABI() + "\n" +
+                        "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
                         "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
                         "Private directory: " + PRIVATE_DIR + "\n" +
                         "Public directory: " + PUBLIC_DIR + "\n" +

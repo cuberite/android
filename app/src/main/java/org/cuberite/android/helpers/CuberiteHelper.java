@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -70,6 +71,20 @@ public class CuberiteHelper {
         } else {
             return Formatter.formatIpAddress(ip);
         }
+    }
+
+    public static String getPreferredABI() {
+        String abi;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            abi = Build.SUPPORTED_ABIS[0];
+        } else {
+            abi = Build.CPU_ABI;
+        }
+
+        Log.d(LOG, "Getting preferred ABI: " + abi);
+
+        return abi;
     }
 
     public static boolean isCuberiteRunning(Context context) {

@@ -5,32 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 
 import org.cuberite.android.MainActivity;
 import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.services.InstallService;
 
 public class InstallHelper {
-    public static String getPreferredABI() {
-        // Logging tag
-        final String LOG = "Cuberite/InstallHelper";
-
-        String abi;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            abi = Build.SUPPORTED_ABIS[0];
-        } else {
-            abi = Build.CPU_ABI;
-        }
-
-        Log.d(LOG, "Getting preferred ABI: " + abi);
-
-        return abi;
-    }
-
     public static void installCuberiteDownload(final Activity activity, State state) {
         SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PACKAGE_NAME, Context.MODE_PRIVATE);
 

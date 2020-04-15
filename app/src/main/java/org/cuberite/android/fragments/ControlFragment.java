@@ -159,7 +159,7 @@ public class ControlFragment extends Fragment {
                     requireContext(),
                     String.format(
                             getString(R.string.status_failed_start),
-                            InstallHelper.getPreferredABI()
+                            CuberiteHelper.getPreferredABI()
                     )
             );
         }
