@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Cuberite</string>
     <string name="do_install_cuberite">Install Cuberite</string>
@@ -18,8 +19,7 @@
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_install_success">Successfully installed Cuberite!</string>
-    <string name="status_download_error">Download error:</string>
-    <string name="status_no_connection">Please verify that your internet connection works before downloading.</string>
+    <string name="status_no_connection">Please verify that your internet connection works before downloading</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
@@ -47,9 +47,6 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_auto">Automatic</string>
 
-    <string name="settings_download_host">Download Server</string>
-    <string name="settings_download_host_summary">The server from which Cuberite will download from. If you are running your own (automated) builds, you can change this setting and Cuberite will use your own server. Please note, that in order to have working automatic updates, the server needs to provide valid SHA-1 files.</string>
-
     <string name="settings_install_heading">Installation options</string>
     <string name="settings_install_update">Perform Cuberite update</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>
@@ -65,11 +62,9 @@
     <string name="settings_webadmin_explanation">For fine-tuning your server, you are entitled to use the built-in Webadmin. Use the settings here to set a username and password for it</string>
     <string name="settings_webadmin_open">Open Webadmin</string>
     <string name="settings_webadmin_login">Change login credentials</string>
-    <string name="settings_webadmin_not_installed_title">Cuberite is not installed</string>
-    <string name="settings_webadmin_not_installed">Before setting the Webadmin credentials, Cuberite needs to be installed before. You can either choose to install it now or just close this dialog</string>
     <string name="settings_webadmin_not_running">Cuberite needs to be running before you can access the Webadmin</string>
-    <string name="settings_webadmin_error">Something went wrong while accessing the Webadmin configuration</string>
-    <string name="settings_webadmin_success">Success! The new credentials are activated when you start Cuberite the next time</string>
+    <string name="settings_webadmin_error">Cuberite needs to be installed before setting the Webadmin credentials</string>
+    <string name="settings_webadmin_success">Success! The new credentials are activated the next time you start Cuberite</string>
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
     <string name="settings_authentication_errors">Authentication errors</string>
@@ -78,11 +73,10 @@
     <string name="settings_authentication_toggle_error">Something went wrong while accessing the Server configuration</string>
     <string name="settings_authentication_toggle_success">Success! Authentication is now %1$s! Restart the server to activate the change</string>
 
-    <string name="settings_info_heading">Info</string>
+    <string name="settings_info_heading">Information</string>
     <string name="settings_info_version">Version %1$s</string>
     <string name="settings_info_debug">Debug information</string>
     <string name="settings_info_libraries">Third-party Libraries</string>
-    <string name="settings_info_libraries_explanation">This app uses third-party libraries to provide certain features. Below is some info about these libraries as well as their respective licenses</string>
 
     <string name="ini4j_license">License for the [ini4j] library (used for manipulating Cuberite settings)</string>
     <string name="ini4j_license_description" translatable="false">Copyright 2005,2009 Ivan SZKIBA\n\n
@@ -97,6 +91,5 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.
-    </string>
+limitations under the License.</string>
 </resources>

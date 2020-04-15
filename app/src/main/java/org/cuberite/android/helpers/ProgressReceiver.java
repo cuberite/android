@@ -16,14 +16,14 @@ public class ProgressReceiver extends ResultReceiver {
 
     private ProgressDialog progressDialog;
 
-    public ProgressReceiver(Context context, Handler handler) {
+    ProgressReceiver(Context context, Handler handler) {
         super(handler);
         cont = context;
     }
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        switch(resultCode) {
+        switch (resultCode) {
             case PROGRESS_START_INDETERMINATE: {
                 String title = resultData.getString("title");
                 progressDialog = new ProgressDialog(cont);

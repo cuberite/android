@@ -4,15 +4,18 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.util.Log;
 
+import org.cuberite.android.helpers.CuberiteHelper;
+import org.cuberite.android.helpers.InstallHelper;
+import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.R;
 
@@ -31,7 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-import static org.cuberite.android.fragments.SettingsFragment.PICK_FILE_BINARY;
 
 public class InstallService extends IntentService {
     // Logging tag
@@ -41,19 +43,6 @@ public class InstallService extends IntentService {
 
     public InstallService() {
         super("InstallService");
-    }
-
-    public static String getPreferredABI() {
-        String abi;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            abi = Build.SUPPORTED_ABIS[0];
-        } else {
-            abi = Build.CPU_ABI;
-        }
-
-        Log.d(LOG, "Getting preferred ABI: " + abi);
-
-        return abi;
     }
 
     private String generateSha1(String location) {
@@ -70,7 +59,7 @@ public class InstallService extends IntentService {
             byte[] shaSum = sha1.digest();
             char[] charset = "0123456789ABCDEF".toCharArray();
             char[] hexResult = new char[shaSum.length * 2];
-            for ( int j = 0; j < shaSum.length; j++ ) {
+            for (int j = 0; j < shaSum.length; j++) {
                 int v = shaSum[j] & 0xFF;
                 hexResult[j * 2] = charset[v >>> 4];
                 hexResult[j * 2 + 1] = charset[v & 0x0F];
@@ -91,14 +80,14 @@ public class InstallService extends IntentService {
     }
 
     private String downloadVerify(String url, String target) {
-        String zipFileError = downloadNoVerify(url, target);
+        String zipFileError = download(url, target);
         if (zipFileError != null) {
             return zipFileError;
         }
 
         // Verifying file
         String zipSha = generateSha1(target);
-        String shaError = downloadNoVerify(url + ".sha1", target + ".sha1");
+        String shaError = download(url + ".sha1", target + ".sha1");
         if (shaError != null) {
             return shaError;
         }
@@ -123,11 +112,11 @@ public class InstallService extends IntentService {
         return null;
     }
 
-    private String downloadNoVerify(String stringUrl, String targetLocation) {
+    private String download(String stringUrl, String targetLocation) {
         Log.d(LOG, "Acquiring wakeLock");
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        wakeLock.acquire();
+        wakeLock.acquire(300000);  // 5 min timeout
 
         String result = null;
 
@@ -177,14 +166,17 @@ public class InstallService extends IntentService {
             Log.e(LOG, "An error occurred when downloading a zip", e);
         } finally {
             try {
-                if (outputStream != null)
+                if (outputStream != null) {
                     outputStream.close();
-                if (inputStream != null)
+                }
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (IOException ignored) {}
 
-            if (connection != null)
+            if (connection != null) {
                 connection.disconnect();
+            }
         }
 
         receiver.send(ProgressReceiver.PROGRESS_END, null);
@@ -202,7 +194,7 @@ public class InstallService extends IntentService {
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        wakeLock.acquire();
+        wakeLock.acquire(300000);  // 5 min timeout
 
         if (!targetLocation.exists()) {
             targetLocation.mkdir();
@@ -253,30 +245,26 @@ public class InstallService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         receiver = intent.getParcelableExtra("receiver");
-        String state = intent.getStringExtra("state");
+        State state = (State) intent.getSerializableExtra("state");
         String result;
 
-        if ((state.equals("NEED_DOWNLOAD_BINARY") ||
-                state.equals("NEED_DOWNLOAD_BOTH") ||
-                state.equals(Integer.toString(PICK_FILE_BINARY))) &&
-                CuberiteService.isCuberiteRunning(getBaseContext())) {
+        if ((state == State.NEED_DOWNLOAD_BINARY
+                || state == State.NEED_DOWNLOAD_BOTH
+                || state == State.PICK_FILE_BINARY)
+                && CuberiteHelper.isCuberiteRunning(getApplicationContext())) {
             result = getString(R.string.status_update_binary_error);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
-        } else if (intent.getAction().equals("unzip")) {
+        } else if ("unzip".equals(intent.getAction())) {
             Uri uri = Uri.parse(intent.getStringExtra("uri"));
-            Log.d(LOG, intent.getStringExtra("targetLocation"));
-            String targetLocation = (state.equals(Integer.toString(PICK_FILE_BINARY)) ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
-            Log.d(LOG, targetLocation);
+            String targetLocation = (state == State.PICK_FILE_BINARY ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
             result = unzip(uri, new File(targetLocation));
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
         } else {
             String downloadHost = intent.getStringExtra("downloadHost");
-            String abi = getPreferredABI();
+            String abi = InstallHelper.getPreferredABI();
             String executableName = intent.getStringExtra("executableName");
-            String targetDirectory = (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
+            String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
 
-            String zipTarget = PRIVATE_DIR + "/" + (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? executableName : "server") + ".zip";
-            String zipUrl = downloadHost + (state.equals("NEED_DOWNLOAD_BINARY") || state.equals("NEED_DOWNLOAD_BOTH") ? abi : "server") + ".zip";
+            String zipTarget = PRIVATE_DIR + "/" + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? executableName : "server") + ".zip";
+            String zipUrl = downloadHost + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
 
             Log.i(LOG, "Downloading " + state);
 
@@ -291,13 +279,16 @@ public class InstallService extends IntentService {
                 }
             }
 
-            if (state.equals("NEED_DOWNLOAD_BOTH")) {
-                intent.putExtra("state", "NEED_DOWNLOAD_SERVER");
+            if (state == State.NEED_DOWNLOAD_BOTH) {
+                intent.putExtra("state", State.NEED_DOWNLOAD_SERVER);
                 onHandleIntent(intent);
-            } else {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("InstallService.callback").putExtra("result", result));
             }
         }
+
         stopSelf();
+        LocalBroadcastManager.getInstance(this).sendBroadcast(
+                new Intent("InstallService.callback")
+                        .putExtra("result", result)
+        );
     }
 }

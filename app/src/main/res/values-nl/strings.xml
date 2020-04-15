@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="do_install_cuberite">Installeer Cuberite</string>
     <string name="do_start_cuberite">Start Server</string>
@@ -12,7 +13,6 @@
     <string name="do_open_settings">Instellingen</string>
 
     <string name="status_downloading_cuberite">Downloaden Cuberite…</string>
-    <string name="status_download_error">Download fout:</string>
     <string name="status_delete_file_error">Er ging iets fout: kon het bestand niet verwijderen</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite stopte met code: </string>
     <string name="status_permissions_needed">Toestemming nodig</string>
@@ -30,8 +30,6 @@
     <string name="message_shasum_not_matching">SHA-1 sommen komen zijn niet gelijk. Dit kan gewoon een download fout zijn of iemand probeert uw download te vervalsen. Probeer a.u.b opnieuw, als de fout opnieuw gebeurt kan u de controle afzetten door Cuberite te installeren via de Instellingen.</string>
 
     <string name="title_activity_settings">Instellingen</string>
-    <string name="settings_download_host">Download Server</string>
-    <string name="settings_download_host_summary">De server waar Cuberite van gedownload zal worden. Als u uw eigen (automatische) builds maakt kan u deze instelling aanpassen en Cuberite zal uw eigen server gebruiken. Opmerking: voor automatische updates moet de server geldige SHA-1 bestanden voorzien.</string>
 
     <string name="settings_install_heading">Installatie opties</string>
     <string name="settings_install_update">Update Cuberite</string>
@@ -47,8 +45,6 @@
     <string name="settings_webadmin_heading">Webadmin instellingen</string>
     <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de Webadmin in te stellen.</string>
     <string name="settings_webadmin_login">Verander gebruikersnaam en wachtwoord</string>
-    <string name="settings_webadmin_not_installed_title">Cuberite is nog niet geïnstalleerd</string>
-    <string name="settings_webadmin_not_installed">Voor de gebruikersnaam en wachtwoord aan te passen moet Cuberite geïnstalleerd zijn. U kan kiezen om dit nu te doen of om dit dialoog venster te sluiten.</string>
     <string name="settings_webadmin_error">Er ging iets fout tijdens het aanpassen van de Webadmin configuratie</string>
     <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en wachtwoord zijn geldig nadat u Cuberite herstart</string>
 
@@ -62,7 +58,6 @@
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Debug informatie</string>
     <string name="settings_info_libraries">Bibliotheken van derden</string>
-    <string name="settings_info_libraries_explanation">Deze app gebruikt bibliotheken van derden voor bepaalde functies. Hieronder is informatie over deze bibliotheken en hun licenties</string>
 
     <string name="ini4j_license">Licentie voor de [ini4j] bibliotheken (gebruikt voor het aanpassen van de Cuberite instellingen)</string>
 </resources>

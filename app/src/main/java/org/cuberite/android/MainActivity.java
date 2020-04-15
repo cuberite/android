@@ -2,6 +2,7 @@ package org.cuberite.android;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private SharedPreferences preferences;
     private AlertDialog permissionPopup;
-    public static BottomNavigationView navigation;
+    private static BottomNavigationView navigation;
 
     public static String PACKAGE_NAME;
     public static String PRIVATE_DIR;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.container);
 
         if (savedInstanceState == null) {
@@ -64,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
-        editor.putString("executableName", "Cuberite");
         editor.putString("downloadHost", "https://download.cuberite.org/androidbinaries/");
+        editor.putString("executableName", "Cuberite");
         editor.apply();
     }
 
@@ -99,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return false;
     }
 
-    public static void showSnackBar(Activity activity, String message) {
-        Snackbar.make(activity.findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
+    public static void showSnackBar(Context context, String message) {
+        Snackbar.make(((Activity) context).findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
                 .setAnchorView(MainActivity.navigation)
                 .show();
     }

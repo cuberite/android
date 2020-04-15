@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="do_install_cuberite">Instalar o Cuberite</string>
     <string name="do_start_cuberite">Iniciar o servidor</string>
@@ -12,7 +13,6 @@
     <string name="do_open_settings">Configurações</string>
 
     <string name="status_downloading_cuberite">Transferindo o Cuberite…</string>
-    <string name="status_download_error">Erro na transferência:</string>
     <string name="status_delete_file_error">Algo deu errado: Não foi possível apagar o arquivo</string>
  <!-- yet unused -->   <string name="status_program_exited">Info: Encerrou com o código: </string>
     <string name="status_permissions_needed">Permissões necessarias</string>
@@ -30,8 +30,6 @@
     <string name="message_shasum_not_matching">As somas SHA-1 não batem. Isso pode significar que alguém está tentanto te enganar ou pode simplesmente ser um erro na transferência. Tente baixar novamente, caso o erro persista você pode desabilitar essa verificação instalando Cuberite através das Configurações</string>
 
     <string name="title_activity_settings">Configurações</string>
-    <string name="settings_download_host">Baixar o servidor</string>
-    <string name="settings_download_host_summary">O servidor pelo qual o Cuberite será baixado. Se você estiver rodando suas próprias compilações (automatizadas), você pode alterar essa configuração para que o Cuberite use seu servidor. Por favor notr que as atualizações automáticas só irão funcionar se o servidor prover arquivos SHA-1 válidos</string>
 
     <string name="settings_install_heading">Opções de instalação</string>
     <string name="settings_install_update">Atualizar o Cuberite</string>
@@ -47,8 +45,6 @@
     <string name="settings_webadmin_heading">Configurações do Webadmin</string>
     <string name="settings_webadmin_explanation">Para ajustar outros detalhes do seu servidor, você poderá usar o Webadmin embutido. Use as configurações aqui para definir um nome de usuário e senha para isso</string>
     <string name="settings_webadmin_login">Alterar credenciais de acesso</string>
-    <string name="settings_webadmin_not_installed_title">Cuberite não está instalado</string>
-    <string name="settings_webadmin_not_installed">Antes de congiruar as credenciais no Webadmin o Cuberite precisa estar instalado. Você pode instalar ele agora ou fechar essa mensagen</string>
     <string name="settings_webadmin_error">Algo deu errado ao acessar a configuração do Webadmin</string>
     <string name="settings_webadmin_success">Sucesso! As novas credenciais serão ativadas na próxima vez que você iniciar o Cuberite</string>
 
@@ -62,7 +58,6 @@
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Informações de Depuração</string>
     <string name="settings_info_libraries">Bibliotecas de terceiros</string>
-    <string name="settings_info_libraries_explanation">Este aplicativo usa bibliotecas de terceiros para prover certas funções. Abaixo algumas informações sobre essas bibliotecas e suas respectivas licenças</string>
 
     <string name="ini4j_license">Licença para a biblioteca [ini4j] (usada para manipular as configurações do Cuberite)</string>
 </resources>
