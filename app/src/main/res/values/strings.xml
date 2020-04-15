@@ -60,9 +60,6 @@
     <string name="settings_install_manually_abi">Required ABI for your device: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
     <string name="settings_install_select_binary">Select and install binary zip file</string>
     <string name="settings_install_select_server">Select and install server.zip</string>
-    <string name="settings_install_no_sha">Install without SHA-1 check</string>
-    <string name="settings_install_no_sha_explanation">Normally, Cuberite verifies the downloaded executables to make sure Cuberite was downloaded correctly. Use this button if the verification fails, but please note that you are disabling a security feature by that.</string>
-    <string name="settings_install_no_sha_button">Download and install Cuberite</string>
 
     <string name="settings_webadmin_heading">Webadmin</string>
     <string name="settings_webadmin_explanation">For fine-tuning your server, you are entitled to use the built-in Webadmin. Use the settings here to set a username and password for it</string>

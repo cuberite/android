@@ -43,9 +43,6 @@
     <string name="settings_install_manually_abi">Benodigde ABI voor dit apparaat: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
     <string name="settings_install_select_binary">Selecteer and installeer binary zip bestand</string>
     <string name="settings_install_select_server">Selecteer and installeer server.zip</string>
-    <string name="settings_install_no_sha">Installeer zonder SHA-1 controle</string>
-    <string name="settings_install_no_sha_explanation">Normaal verifieerd Cuberite de gedownloade uitvoerbare bestanden om er zeker van te zijn dat ze correct gedownload zijn. Gebruik deze optie als de verificatie mislukt, maar merk op dat u een beveiligingsfunctie uitschakeldt.</string>
-    <string name="settings_install_no_sha_button">Download and installeer Cuberite</string>
 
     <string name="settings_webadmin_heading">Webadmin instellingen</string>
     <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de Webadmin in te stellen.</string>

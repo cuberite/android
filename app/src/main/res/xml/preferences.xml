@@ -40,18 +40,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/settings_install_no_sha">
-        <Preference
-            app:summary="@string/settings_install_no_sha_explanation"
-            app:icon="@drawable/ic_policy"
-            app:enableCopying="true"
-            app:selectable="false" />
-        <Preference
-            app:key="installNoShaButton"
-            app:title="@string/settings_install_no_sha_button" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         app:title="@string/settings_install_manually">
         <Preference
             app:key="abiText"
