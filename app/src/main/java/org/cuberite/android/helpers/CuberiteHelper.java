@@ -7,6 +7,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -15,6 +16,9 @@ import org.cuberite.android.services.CuberiteService;
 import static android.content.Context.WIFI_SERVICE;
 
 public class CuberiteHelper {
+    // Logging tag
+    private static String LOG = "Cuberite/CuberiteHelper";
+
     private static StringBuilder consoleOutput = new StringBuilder();
 
     public static void addConsoleOutput(Context context, String string) {
@@ -77,5 +81,22 @@ public class CuberiteHelper {
             }
         }
         return false;
+    }
+
+    public static void startCuberite(Context context) {
+        Log.d(LOG, "Starting Cuberite");
+
+        Intent serviceIntent = new Intent(context, CuberiteService.class);
+        context.startService(serviceIntent);
+    }
+
+    public static void stopCuberite(Context context) {
+        Log.d(LOG, "Stopping Cuberite");
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("stop"));
+    }
+
+    public static void killCuberite(Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("kill"));
     }
 }

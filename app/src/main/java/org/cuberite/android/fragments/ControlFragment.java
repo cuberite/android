@@ -20,10 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import org.cuberite.android.MainActivity;
+import org.cuberite.android.helpers.CuberiteHelper;
 import org.cuberite.android.helpers.InstallHelper;
 import org.cuberite.android.helpers.StateHelper;
 import org.cuberite.android.helpers.StateHelper.State;
-import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.R;
 
 public class ControlFragment extends Fragment {
@@ -60,37 +60,6 @@ public class ControlFragment extends Fragment {
         mainButtonColor = colorTo;
     }
 
-    private void doInstall(final State state) {
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-                installServiceCallback,
-                new IntentFilter("InstallService.callback")
-        );
-
-        InstallHelper.installCuberiteDownload(requireActivity(), state);
-    }
-
-    private void doStart() {
-        Log.d(LOG, "Starting Cuberite");
-
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-                showStartupError,
-                new IntentFilter("showStartupError")
-        );
-
-        Intent serviceIntent = new Intent(getContext(), CuberiteService.class);
-        requireContext().startService(serviceIntent);
-    }
-
-    private void doStop() {
-        Log.d(LOG, "Stopping Cuberite");
-
-        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent("stop"));
-    }
-
-    private void doKill() {
-        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent("kill"));
-    }
-
     private void setInstallButton(final State state) {
         int colorTo = ContextCompat.getColor(requireContext(), R.color.accent);
         animateColorChange(mainButton, mainButtonColor, colorTo);
@@ -98,7 +67,12 @@ public class ControlFragment extends Fragment {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doInstall(state);
+                LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                        installServiceCallback,
+                        new IntentFilter("InstallService.callback")
+                );
+
+                InstallHelper.installCuberiteDownload(requireActivity(), state);
             }
         });
     }
@@ -110,7 +84,12 @@ public class ControlFragment extends Fragment {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doStart();
+                LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                        showStartupError,
+                        new IntentFilter("showStartupError")
+                );
+
+                CuberiteHelper.startCuberite(requireContext());
                 setStopButton();
             }
         });
@@ -123,7 +102,7 @@ public class ControlFragment extends Fragment {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doStop();
+                CuberiteHelper.stopCuberite(requireContext());
                 setKillButton();
             }
         });
@@ -136,7 +115,7 @@ public class ControlFragment extends Fragment {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doKill();
+                CuberiteHelper.killCuberite(requireContext());
             }
         });
     }
