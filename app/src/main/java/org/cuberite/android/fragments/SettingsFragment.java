@@ -12,39 +12,38 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
+
+import com.google.android.material.snackbar.Snackbar;
+
 import org.cuberite.android.BuildConfig;
 import org.cuberite.android.MainActivity;
+import org.cuberite.android.R;
+import org.cuberite.android.State;
 import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
-import org.cuberite.android.R;
-import org.cuberite.android.State;
 import org.ini4j.Config;
 import org.ini4j.Ini;
 
 import java.io.File;
 import java.io.IOException;
 
-import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
+import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static androidx.appcompat.app.AppCompatDelegate.create;
 import static org.cuberite.android.MainActivity.PACKAGE_NAME;
 import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 import static org.cuberite.android.MainActivity.PUBLIC_DIR;
@@ -226,7 +225,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         // Authentication
-        final SwitchPreference toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
+        final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
         final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
 
         updateAuthenticationToggle(settingsFile, toggleAuthentication);
@@ -437,7 +436,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         dialog.show();
     }
 
-    private void updateAuthenticationToggle(File settingsFile, SwitchPreference toggle) {
+    private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
         try {
             final Ini ini = new Ini(settingsFile);
 

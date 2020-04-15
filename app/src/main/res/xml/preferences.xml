@@ -69,7 +69,7 @@
 
     <PreferenceCategory
         app:title="@string/settings_troubleshooting_heading">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             app:key="troubleshootingAuthenticationToggle"
             app:title="@string/settings_authentication_toggle"
             app:summary="@string/settings_authentication_errors_explanation" />
