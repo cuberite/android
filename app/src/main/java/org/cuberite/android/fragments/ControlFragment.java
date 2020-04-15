@@ -28,7 +28,7 @@ import org.cuberite.android.R;
 
 public class ControlFragment extends Fragment {
     // Logging tag
-    private String LOG = "Cuberite/Control";
+    private final String LOG = "Cuberite/Control";
 
     private Button mainButton;
     private int mainButtonColor;
@@ -133,14 +133,14 @@ public class ControlFragment extends Fragment {
     }
 
     // Broadcast receivers
-    private BroadcastReceiver cuberiteServiceCallback = new BroadcastReceiver() {
+    private final BroadcastReceiver cuberiteServiceCallback = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             updateControlButton();
         }
     };
 
-    private BroadcastReceiver installServiceCallback = new BroadcastReceiver() {
+    private final BroadcastReceiver installServiceCallback = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
@@ -150,7 +150,7 @@ public class ControlFragment extends Fragment {
         }
     };
 
-    private BroadcastReceiver showStartupError = new BroadcastReceiver() {
+    private final BroadcastReceiver showStartupError = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             LocalBroadcastManager.getInstance(context).unregisterReceiver(this);

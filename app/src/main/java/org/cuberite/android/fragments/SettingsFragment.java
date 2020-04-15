@@ -46,7 +46,7 @@ import static org.cuberite.android.MainActivity.PUBLIC_DIR;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     // Logging tag
-    private String LOG = "Cuberite/Settings";
+    private final String LOG = "Cuberite/Settings";
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -398,7 +398,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private BroadcastReceiver installServiceCallback = new BroadcastReceiver() {
+    private final BroadcastReceiver installServiceCallback = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String result = intent.getStringExtra("result");

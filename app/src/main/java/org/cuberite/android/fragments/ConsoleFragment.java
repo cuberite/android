@@ -80,7 +80,7 @@ public class ConsoleFragment extends Fragment {
     }
 
     // Broadcast receivers
-    private BroadcastReceiver updateLog = new BroadcastReceiver() {
+    private final BroadcastReceiver updateLog = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent

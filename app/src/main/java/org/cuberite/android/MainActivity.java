@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -30,7 +28,7 @@ import org.cuberite.android.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     // Logging tag
-    private String LOG = "Cuberite/MainActivity";
+    private final String LOG = "Cuberite/MainActivity";
 
     private SharedPreferences preferences;
     private AlertDialog permissionPopup;

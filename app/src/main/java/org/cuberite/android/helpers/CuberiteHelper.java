@@ -18,7 +18,7 @@ import static android.content.Context.WIFI_SERVICE;
 
 public class CuberiteHelper {
     // Logging tag
-    private static String LOG = "Cuberite/CuberiteHelper";
+    private static final String LOG = "Cuberite/CuberiteHelper";
 
     private static StringBuilder consoleOutput = new StringBuilder();
 

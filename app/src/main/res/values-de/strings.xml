@@ -14,7 +14,6 @@
 
     <string name="status_downloading_cuberite">Lade Cuberite herunter…</string>
     <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
- <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite beendet, Code: </string>
     <string name="status_permissions_needed">Berechtigung benötigt</string>
     <string name="status_shasum_error">Integritätsfehler</string>
     <string name="status_missing_filemanager">Kein Dateimanager gefunden: bitte einen zu Installieren</string>
@@ -31,7 +30,6 @@
 
     <string name="title_activity_settings">@string/do_open_settings</string>
 
-    <string name="settings_install_heading">Installationsoptionen</string>
     <string name="settings_install_update">Cuberite aktualisieren</string>
     <string name="settings_install_update_explanation">An automatischen Aktualisierungen wird noch gearbeitet. Bis dahin kann über diese Funktion Cuberite aktualisiert werden. Achten Sie drauf, dass eine Aktualisierung Servereinstellungen überschreiben kann.</string>
     <string name="settings_install_update_binary">Cuberite Programmdatei herunterladen und installieren</string>
@@ -45,11 +43,9 @@
     <string name="settings_webadmin_heading">Webadmin Einstellungen</string>
     <string name="settings_webadmin_explanation">Für kleinere Einstellungen sollte die Webadmin Funktionion genutzt werden. Hier können Benutzername und Passwort festgelegt werden.</string>
     <string name="settings_webadmin_login">Name und Passwort ändern</string>
-    <string name="settings_webadmin_error">Fehler beim Zugriff auf die Webadmin Einstellungen.</string>
     <string name="settings_webadmin_success">Fertig! Einstellungen werden nach einem Neustart von Cuberite aktiv.</string>
 
     <string name="settings_troubleshooting_heading">Fehlerbehebung</string>
-    <string name="settings_authentication_errors">Authentifizierungsfehler</string>
     <string name="settings_authentication_errors_explanation">Wenn Sie beim Verbinden den Fehler \"Failed to authenticate!\" erhalten, könnte diese Einstellung helfen.</string>
     <string name="settings_authentication_toggle">Authentifizierung an/abschalten.</string>
     <string name="settings_authentication_toggle_error">Beim Zugriff auf die Einstellungen ist ein Fehler aufgetreten.</string>

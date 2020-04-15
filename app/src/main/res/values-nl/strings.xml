@@ -14,7 +14,6 @@
 
     <string name="status_downloading_cuberite">Downloaden Cuberite…</string>
     <string name="status_delete_file_error">Er ging iets fout: kon het bestand niet verwijderen</string>
- <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite stopte met code: </string>
     <string name="status_permissions_needed">Toestemming nodig</string>
     <string name="status_shasum_error">SHA-1 validatie fout</string>
     <string name="status_missing_filemanager">Geen bestandsbeheerder gevonden: installeer er a.u.b een</string>
@@ -31,7 +30,6 @@
 
     <string name="title_activity_settings">Instellingen</string>
 
-    <string name="settings_install_heading">Installatie opties</string>
     <string name="settings_install_update">Update Cuberite</string>
     <string name="settings_install_update_explanation">Gebruike deze sectie van tijd tot tijd om uw Cuberite installatie te updaten. Opmerking: als u een server.zip update uitvoert is er een kans dat uw server instellingen verloren gaan.</string>
     <string name="settings_install_update_binary">Download en installeer de Cuberite binary</string>
@@ -45,11 +43,9 @@
     <string name="settings_webadmin_heading">Webadmin instellingen</string>
     <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de Webadmin in te stellen.</string>
     <string name="settings_webadmin_login">Verander gebruikersnaam en wachtwoord</string>
-    <string name="settings_webadmin_error">Er ging iets fout tijdens het aanpassen van de Webadmin configuratie</string>
     <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en wachtwoord zijn geldig nadat u Cuberite herstart</string>
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
-    <string name="settings_authentication_errors">Authenticatie fouten</string>
     <string name="settings_authentication_errors_explanation">Als u problemen heeft met het verbinden met Cuberite en het bericht \"Authenticatie mislukt!\" krijgt moet u misshien de authenticatie uitschakelen met de knop hieronder.</string>
     <string name="settings_authentication_toggle">Authenticatie</string>
     <string name="settings_authentication_toggle_error">Er ging iets fout tijdens het aanpassen van de Server configuratie.</string>

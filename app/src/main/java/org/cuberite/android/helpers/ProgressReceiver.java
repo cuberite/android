@@ -9,10 +9,10 @@ import android.support.v4.os.ResultReceiver;
 public class ProgressReceiver extends ResultReceiver {
     public static final int PROGRESS_START_INDETERMINATE = 0;
     public static final int PROGRESS_START = 1;
-    public static final int PROGRESS_NEWDATA = 2;
+    public static final int PROGRESS_NEW_DATA = 2;
     public static final int PROGRESS_END = 3;
 
-    private Context cont;
+    private final Context cont;
 
     private ProgressDialog progressDialog;
 
@@ -49,7 +49,7 @@ public class ProgressReceiver extends ResultReceiver {
                 break;
             }
 
-            case PROGRESS_NEWDATA: {
+            case PROGRESS_NEW_DATA: {
                 int progress = resultData.getInt("progress");
                 int max = resultData.getInt("max");
                 progressDialog.setIndeterminate(false);

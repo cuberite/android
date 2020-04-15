@@ -31,7 +31,7 @@ import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class CuberiteService extends IntentService {
     // Logging tag
-    private static String LOG = "Cuberite/CuberiteService";
+    private static final String LOG = "Cuberite/ServerService";
 
     public CuberiteService() {
         super("CuberiteService");

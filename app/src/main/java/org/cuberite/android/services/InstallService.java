@@ -14,7 +14,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.cuberite.android.helpers.CuberiteHelper;
-import org.cuberite.android.helpers.InstallHelper;
 import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.R;
@@ -37,7 +36,7 @@ import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class InstallService extends IntentService {
     // Logging tag
-    private static String LOG = "Cuberite/InstallService";
+    private static final String LOG = "Cuberite/InstallService";
 
     private ResultReceiver receiver;
 
@@ -156,7 +155,7 @@ public class InstallService extends IntentService {
                     Bundle bundleProg = new Bundle();
                     bundleProg.putInt("progress", (int) total);
                     bundleProg.putInt("max", length);
-                    receiver.send(ProgressReceiver.PROGRESS_NEWDATA, bundleProg);
+                    receiver.send(ProgressReceiver.PROGRESS_NEW_DATA, bundleProg);
                 }
                 outputStream.write(data, 0, count);
             }
@@ -259,7 +258,7 @@ public class InstallService extends IntentService {
             result = unzip(uri, new File(targetLocation));
         } else {
             String downloadHost = intent.getStringExtra("downloadHost");
-            String abi = InstallHelper.getPreferredABI();
+            String abi = CuberiteHelper.getPreferredABI();
             String executableName = intent.getStringExtra("executableName");
             String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
 
