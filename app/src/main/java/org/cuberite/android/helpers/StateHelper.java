@@ -23,14 +23,6 @@ public class StateHelper {
         READY
     }
 
-    /*public static final int NEED_DOWNLOAD_SERVER = 0;
-    public static final int NEED_DOWNLOAD_BINARY = 1;
-    public static final int NEED_DOWNLOAD_BOTH = 2;
-    public static final int PICK_FILE_BINARY = 3;
-    public static final int PICK_FILE_SERVER = 4;
-    public static final int RUNNING = 5;
-    public static final int READY = 6;*/
-
     public static State getState(Context context) {
         // Logging tag
         String LOG = "Cuberite/Status";
