@@ -21,10 +21,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import org.cuberite.android.MainActivity;
+import org.cuberite.android.helpers.StateHelper;
+import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
 import org.cuberite.android.R;
-import org.cuberite.android.helpers.State;
 
 import static android.content.Context.MODE_PRIVATE;
 import static org.cuberite.android.MainActivity.PACKAGE_NAME;
@@ -67,7 +68,7 @@ public class ControlFragment extends Fragment {
     }
 
     private void updateControlButton() {
-        final int state = State.getState(requireContext());
+        final State state = StateHelper.getState(requireContext());
 
         if (state == State.RUNNING) {
             int colorTo = ContextCompat.getColor(requireContext(), R.color.warning);

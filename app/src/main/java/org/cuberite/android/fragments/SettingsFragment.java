@@ -29,8 +29,8 @@ import com.google.android.material.snackbar.Snackbar;
 import org.cuberite.android.BuildConfig;
 import org.cuberite.android.MainActivity;
 import org.cuberite.android.R;
-import org.cuberite.android.helpers.State;
 import org.cuberite.android.helpers.ProgressReceiver;
+import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.services.CuberiteService;
 import org.cuberite.android.services.InstallService;
 import org.ini4j.Config;
@@ -309,7 +309,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    static void installCuberiteDownload(final Activity activity, String action, int state) {
+    static void installCuberiteDownload(final Activity activity, String action, State state) {
         SharedPreferences preferences = activity.getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
 
         Intent intent = new Intent(activity, InstallService.class);
@@ -331,7 +331,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         activity.startService(intent);
     }
 
-    private void installCuberiteLocal(int state) {
+    private void installCuberiteLocal(State state) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -341,7 +341,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         intent.setType("*/*");
         try {
-            startActivityForResult(intent, state);
+            startActivityForResult(intent, state.ordinal());
         } catch (ActivityNotFoundException e) {
             MainActivity.showSnackBar(requireActivity(), getString(R.string.status_missing_filemanager));
         }
@@ -457,7 +457,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Intent intent = new Intent(getContext(), InstallService.class);
             intent.setAction("unzip");
             intent.putExtra("uri", selectedFileUri.toString());
-            intent.putExtra("state", requestCode);
+            intent.putExtra("state", State.values()[requestCode]);
             intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
             intent.putExtra("receiver", new ProgressReceiver(getContext(), new Handler()));
 

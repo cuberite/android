@@ -13,7 +13,7 @@ import android.support.v4.os.ResultReceiver;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
-import org.cuberite.android.helpers.State;
+import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.helpers.ProgressReceiver;
 import org.cuberite.android.R;
 
@@ -257,7 +257,7 @@ public class InstallService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         receiver = intent.getParcelableExtra("receiver");
-        int state = intent.getIntExtra("state", State.NEED_DOWNLOAD_BOTH);
+        State state = (State) intent.getSerializableExtra("state");
         String result;
 
         if ((state == State.NEED_DOWNLOAD_BINARY
