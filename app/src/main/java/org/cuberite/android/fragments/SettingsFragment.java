@@ -60,7 +60,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         config.setEscape(false);
         config.setStrictOperator(true);
 
-        // Initialize theme picker and update the state of it
+        // Initialize
+        initializeThemeSettings(preferences);
+        initializeWebadminSettings(cuberiteDir);
+        initializeInstallSettings();
+        initializeAuthenticationSettings(cuberiteDir);
+        initializeInfoSettings(preferences);
+    }
+
+
+
+    // Theme-related methods
+
+    private void initializeThemeSettings(final SharedPreferences preferences) {
+        int getCurrentTheme = preferences.getInt("defaultTheme", MODE_NIGHT_FOLLOW_SYSTEM);
+
         ListPreference theme = findPreference("theme");
         theme.setDialogTitle(getString(R.string.settings_theme_choose));
         theme.setEntries(new CharSequence[]{
@@ -70,35 +84,47 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
         theme.setEntryValues(new CharSequence[]{"light", "dark", "auto"});
 
-        int getCurrentTheme = preferences.getInt("defaultTheme", MODE_NIGHT_FOLLOW_SYSTEM);
-
-        if (getCurrentTheme == MODE_NIGHT_NO) {
-            theme.setValue("light");
-        } else if (getCurrentTheme == MODE_NIGHT_YES) {
-            theme.setValue("dark");
-        } else {
-            theme.setValue("auto");
+        switch (getCurrentTheme) {
+            case MODE_NIGHT_NO:
+                theme.setValue("light");
+                break;
+            case MODE_NIGHT_YES:
+                theme.setValue("dark");
+                break;
+            default:
+                theme.setValue("auto");
+                break;
         }
 
         theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int theme;
-                if (newValue.equals("light")) {
-                    theme = MODE_NIGHT_NO;
-                } else if (newValue.equals("dark")) {
-                    theme = MODE_NIGHT_YES;
-                } else {
-                    theme = MODE_NIGHT_FOLLOW_SYSTEM;
+                int newTheme;
+
+                switch (newValue.toString()) {
+                    case "light":
+                        newTheme = MODE_NIGHT_NO;
+                        break;
+                    case "dark":
+                        newTheme = MODE_NIGHT_YES;
+                        break;
+                    default:
+                        newTheme = MODE_NIGHT_FOLLOW_SYSTEM;
+                        break;
                 }
-                AppCompatDelegate.setDefaultNightMode(theme);
+
+                AppCompatDelegate.setDefaultNightMode(newTheme);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt("defaultTheme", theme);
+                editor.putInt("defaultTheme", newTheme);
                 editor.apply();
                 return true;
             }
         });
+    }
 
-        // Webadmin
+
+    // Webadmin-related methods
+
+    private void initializeWebadminSettings(final File cuberiteDir) {
         final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
 
         String url = null;
@@ -108,6 +134,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 final Ini ini = createWebadminIni(webadminFile);
                 final String ip = CuberiteHelper.getIpAddress(requireContext());
                 int port;
+
                 try {
                     port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
                 } catch (NumberFormatException e) {
@@ -115,6 +142,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     ini.store(webadminFile);
                     port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
                 }
+
                 url = "http://" + ip + ":" + port;
 
                 Preference webadminDescription = findPreference("webadminDescription");
@@ -160,150 +188,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             getString(R.string.settings_webadmin_error)
                     );
                 }
-                return true;
-            }
-        });
-
-        // Install options
-        Preference updateBinary = findPreference("installUpdateBinary");
-        updateBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_BINARY);
-                return true;
-            }
-        });
-
-        Preference updateServer = findPreference("installUpdateServer");
-        updateServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_SERVER);
-                return true;
-            }
-        });
-
-        String abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteHelper.getPreferredABI());
-        Preference setABIText = findPreference("abiText");
-        setABIText.setSummary(setABIText.getSummary() + "\n\n" + abi);
-
-        Preference installBinary = findPreference("installBinary");
-        installBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                pickFile(State.PICK_FILE_BINARY);
-                return true;
-            }
-        });
-
-        Preference installServer = findPreference("installServer");
-        installServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                pickFile(State.PICK_FILE_SERVER);
-                return true;
-            }
-        });
-
-        // Authentication
-        final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
-        final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
-
-        updateAuthenticationToggle(settingsFile, toggleAuthentication);
-
-        toggleAuthentication.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                try {
-                    final Ini ini = new Ini(settingsFile);
-                    int newEnabled;
-
-                    try {
-                        final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-                        newEnabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
-                    } catch (NumberFormatException e) {
-                        newEnabled = 1;
-                    }
-
-                    boolean newEnabledBool = newEnabled != 0;
-                    toggleAuthentication.setChecked(newEnabledBool);
-
-                    ini.put("Authentication", "Authenticate", newEnabled);
-                    ini.store(settingsFile);
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled == 1 ? R.string.enabled : R.string.disabled))
-                    );
-                } catch(IOException e) {
-                    Log.e(LOG, "Something went wrong while opening the ini file", e);
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            getString(R.string.settings_authentication_toggle_error)
-                    );
-                }
-                return true;
-            }
-        });
-
-        // Info
-        Preference infoDebugInfo = findPreference("infoDebugInfo");
-        infoDebugInfo.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
-                dialogBuilder.setTitle(getString(R.string.settings_info_debug));
-                String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
-                        "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
-                        "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                        "Private directory: " + PRIVATE_DIR + "\n" +
-                        "Public directory: " + PUBLIC_DIR + "\n" +
-                        "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Download URL: " + preferences.getString("downloadHost", "");
-                dialogBuilder.setMessage(message);
-                dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
-
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
-                return true;
-            }
-        });
-
-        Preference thirdPartyLicenses = findPreference("thirdPartyLicenses");
-        thirdPartyLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
-                dialogBuilder.setTitle(getString(R.string.settings_info_libraries));
-                String message = getString(R.string.ini4j_license) + "\n\n" +
-                        getString(R.string.ini4j_license_description);
-                dialogBuilder.setMessage(message);
-                dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
-
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
-                return true;
-            }
-        });
-
-        Preference version = findPreference("version");
-        version.setSummary(String.format(getString(R.string.settings_info_version), BuildConfig.VERSION_NAME));
-        version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://download.cuberite.org/android"));
-                startActivity(browserIntent);
                 return true;
             }
         });
@@ -375,27 +259,49 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         dialog.show();
     }
 
-    private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
-        try {
-            final Ini ini = new Ini(settingsFile);
 
-            try {
-                final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
+    // Install-related methods
 
-                if (enabled == 0) {
-                    toggle.setChecked(false);
-                }
-            } catch (NumberFormatException e) {
-                ini.put("Authentication", "Authenticate", 1);
-                ini.store(settingsFile);
-                toggle.setChecked(true);
+    private void initializeInstallSettings() {
+        Preference updateBinary = findPreference("installUpdateBinary");
+        updateBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_BINARY);
+                return true;
             }
-        } catch(IOException e) {
-            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
-            toggle.setShouldDisableView(true);
-            toggle.setEnabled(false);
-            toggle.setChecked(true);
-        }
+        });
+
+        Preference updateServer = findPreference("installUpdateServer");
+        updateServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_SERVER);
+                return true;
+            }
+        });
+
+        String abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteHelper.getPreferredABI());
+        Preference setABIText = findPreference("abiText");
+        setABIText.setSummary(setABIText.getSummary() + "\n\n" + abi);
+
+        Preference installBinary = findPreference("installBinary");
+        installBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                pickFile(State.PICK_FILE_BINARY);
+                return true;
+            }
+        });
+
+        Preference installServer = findPreference("installServer");
+        installServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                pickFile(State.PICK_FILE_SERVER);
+                return true;
+            }
+        });
     }
 
     private final BroadcastReceiver installServiceCallback = new BroadcastReceiver() {
@@ -432,6 +338,151 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.values()[requestCode], data);
         }
     }
+
+
+    // Authentication-related methods
+
+    private void initializeAuthenticationSettings(final File cuberiteDir) {
+        final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
+        final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
+
+        updateAuthenticationToggle(settingsFile, toggleAuthentication);
+
+        toggleAuthentication.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                try {
+                    final Ini ini = new Ini(settingsFile);
+                    int newEnabled;
+
+                    try {
+                        final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
+                        newEnabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
+                    } catch (NumberFormatException e) {
+                        newEnabled = 1;
+                    }
+
+                    boolean newEnabledBool = newEnabled != 0;
+                    toggleAuthentication.setChecked(newEnabledBool);
+
+                    ini.put("Authentication", "Authenticate", newEnabled);
+                    ini.store(settingsFile);
+                    MainActivity.showSnackBar(
+                            requireContext(),
+                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled == 1 ? R.string.enabled : R.string.disabled))
+                    );
+                } catch (IOException e) {
+                    Log.e(LOG, "Something went wrong while opening the ini file", e);
+                    MainActivity.showSnackBar(
+                            requireContext(),
+                            getString(R.string.settings_authentication_toggle_error)
+                    );
+                }
+                return true;
+            }
+        });
+    }
+
+    private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
+        try {
+            final Ini ini = new Ini(settingsFile);
+
+            try {
+                final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
+
+                if (enabled == 0) {
+                    toggle.setChecked(false);
+                }
+            } catch (NumberFormatException e) {
+                ini.put("Authentication", "Authenticate", 1);
+                ini.store(settingsFile);
+                toggle.setChecked(true);
+            }
+        } catch(IOException e) {
+            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
+            toggle.setShouldDisableView(true);
+            toggle.setEnabled(false);
+            toggle.setChecked(true);
+        }
+    }
+
+
+    // Info-related methods
+
+    private void initializeInfoSettings(final SharedPreferences preferences) {
+        Preference infoDebugInfo = findPreference("infoDebugInfo");
+        infoDebugInfo.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showDebugInfoPopup(preferences);
+                return true;
+            }
+        });
+
+        Preference thirdPartyLicenses = findPreference("thirdPartyLicenses");
+        thirdPartyLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showThirdPartyLicencePopup();
+                return true;
+            }
+        });
+
+        Preference version = findPreference("version");
+        version.setSummary(String.format(getString(R.string.settings_info_version), BuildConfig.VERSION_NAME));
+        version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://download.cuberite.org/android"));
+                startActivity(browserIntent);
+                return true;
+            }
+        });
+    }
+
+    private void showDebugInfoPopup(SharedPreferences preferences) {
+        final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
+                "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
+                "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
+                "Private directory: " + PRIVATE_DIR + "\n" +
+                "Public directory: " + PUBLIC_DIR + "\n" +
+                "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
+                "Download URL: " + preferences.getString("downloadHost", "");
+
+        final AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.settings_info_debug))
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    private void showThirdPartyLicencePopup() {
+        final String message = getString(R.string.ini4j_license) + "\n\n" +
+                getString(R.string.ini4j_license_description);
+
+        final AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.settings_info_libraries))
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+
+    // Listeners
 
     @Override
     public void onPause() {

@@ -32,7 +32,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha02'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0-alpha05'
+    implementation 'com.google.android.material:material:1.2.0-alpha06'
     implementation 'org.ini4j:ini4j:0.5.4'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }
