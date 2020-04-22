@@ -24,31 +24,31 @@ public class StateHelper {
 
     public static State getState(Context context) {
         // Logging tag
-        String LOG = "Cuberite/Status";
+        String LOG = "Cuberite/State";
 
         SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
-        State state;
         boolean hasBinary = false;
         boolean hasServer = false;
 
-        // Install state
         if (new File(PRIVATE_DIR + "/" + preferences.getString("executableName", "")).exists()) {
             hasBinary = true;
         }
+
         if (new File(preferences.getString("cuberiteLocation", "")).exists()) {
             hasServer = true;
         }
 
+        // Update state
+        State state = State.READY;
+
         if (CuberiteHelper.isCuberiteRunning(context)) {
             state = State.RUNNING;
-        } else if (hasBinary && hasServer) {
-            state = State.READY;
-        } else if (!hasServer && !hasBinary) {
+        } else if (!hasBinary && !hasServer) {
             state = State.NEED_DOWNLOAD_BOTH;
+        } else if (!hasBinary) {
+            state = State.NEED_DOWNLOAD_BINARY;
         } else if (!hasServer) {
             state = State.NEED_DOWNLOAD_SERVER;
-        } else {
-            state = State.NEED_DOWNLOAD_BINARY;
         }
 
         Log.d(LOG, "Getting State: " + state);

@@ -31,22 +31,25 @@ public class CuberiteHelper {
 
             if (curText.toLowerCase().startsWith("log: ")) {
                 curText = curText.replaceFirst("(?i)log: ", "");
-            } else if (curText.toLowerCase().startsWith("info:")) {
+            }
+            else if (curText.toLowerCase().startsWith("info: ")) {
                 curText = curText.replaceFirst("(?i)info: ", "");
                 curText = "<font color= \"#FFA500\">" + curText + "</font>";
-            } else if (curText.toLowerCase().startsWith("warning: ")) {
+            }
+            else if (curText.toLowerCase().startsWith("warning: ")) {
                 curText = curText.replaceFirst("(?i)warning: ", "");
                 curText = "<font color= \"#FF0000\">" + curText + "</font>";
-            } else if (curText.toLowerCase().startsWith("error: ")) {
+            }
+            else if (curText.toLowerCase().startsWith("error: ")) {
                 curText = curText.replaceFirst("(?i)error: ", "");
                 curText = "<font color=\"#8B0000\">" + curText + "</font>";
             }
 
-            if (consoleOutput.length() == 0) {
-                logLine.append(curText);
-            } else {
-                logLine.append("<br>").append(curText);
+            if (consoleOutput.length() > 0) {
+                logLine.append(System.getProperty("line.separator"));
             }
+
+            logLine.append(curText);
         }
         consoleOutput.append(logLine);
         Intent intent = new Intent("updateLog");

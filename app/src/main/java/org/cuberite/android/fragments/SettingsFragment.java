@@ -414,7 +414,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         infoDebugInfo.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                showDebugInfoPopup(preferences);
+                final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
+                        "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
+                        "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
+                        "Private directory: " + PRIVATE_DIR + "\n" +
+                        "Public directory: " + PUBLIC_DIR + "\n" +
+                        "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
+                        "Download URL: " + preferences.getString("downloadHost", "");
+                showInfoPopup(message);
                 return true;
             }
         });
@@ -423,7 +430,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         thirdPartyLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                showThirdPartyLicencePopup();
+                final String message = getString(R.string.ini4j_license) + "\n\n" +
+                        getString(R.string.ini4j_license_description);
+                showInfoPopup(message);
                 return true;
             }
         });
@@ -433,40 +442,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://download.cuberite.org/android"));
+                final Intent browserIntent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://download.cuberite.org/android")
+                );
                 startActivity(browserIntent);
                 return true;
             }
         });
     }
 
-    private void showDebugInfoPopup(SharedPreferences preferences) {
-        final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
-                "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
-                "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                "Private directory: " + PRIVATE_DIR + "\n" +
-                "Public directory: " + PUBLIC_DIR + "\n" +
-                "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                "Download URL: " + preferences.getString("downloadHost", "");
-
-        final AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.settings_info_debug))
-                .setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                    }
-                })
-                .create();
-        dialog.show();
-    }
-
-    private void showThirdPartyLicencePopup() {
-        final String message = getString(R.string.ini4j_license) + "\n\n" +
-                getString(R.string.ini4j_license_description);
-
+    private void showInfoPopup(String message) {
         final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.settings_info_libraries))
                 .setMessage(message)

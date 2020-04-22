@@ -15,13 +15,13 @@ public class InstallHelper {
     public static void installCuberiteDownload(final Activity activity, State state) {
         SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PACKAGE_NAME, Context.MODE_PRIVATE);
 
-        Intent intent = new Intent(activity, InstallService.class);
-        intent.setAction("download");
-        intent.putExtra("downloadHost", preferences.getString("downloadHost", ""));
-        intent.putExtra("state", state);
-        intent.putExtra("executableName", preferences.getString("executableName", ""));
-        intent.putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""));
-        intent.putExtra("receiver", new ProgressReceiver(activity, new Handler()));
+        Intent intent = new Intent(activity, InstallService.class)
+                .setAction("download")
+                .putExtra("downloadHost", preferences.getString("downloadHost", ""))
+                .putExtra("state", state)
+                .putExtra("executableName", preferences.getString("executableName", ""))
+                .putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""))
+                .putExtra("receiver", new ProgressReceiver(activity, new Handler()));
 
         activity.startService(intent);
     }
@@ -32,12 +32,12 @@ public class InstallHelper {
         if (data != null) {
             Uri selectedFileUri = data.getData();
 
-            Intent intent = new Intent(activity, InstallService.class);
-            intent.setAction("unzip");
-            intent.putExtra("uri", selectedFileUri.toString());
-            intent.putExtra("state", state);
-            intent.putExtra("targetLocation", preferences.getString("cuberiteLocation", ""));
-            intent.putExtra("receiver", new ProgressReceiver(activity, new Handler()));
+            Intent intent = new Intent(activity, InstallService.class)
+                    .setAction("unzip")
+                    .putExtra("uri", selectedFileUri.toString())
+                    .putExtra("state", state)
+                    .putExtra("targetLocation", preferences.getString("cuberiteLocation", ""))
+                    .putExtra("receiver", new ProgressReceiver(activity, new Handler()));
 
             activity.startService(intent);
         }
