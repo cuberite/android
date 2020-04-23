@@ -46,7 +46,8 @@ public class CuberiteHelper {
             }
 
             if (consoleOutput.length() > 0) {
-                logLine.append(System.getProperty("line.separator"));
+                // Line break
+                logLine.append("<br/>");
             }
 
             logLine.append(curText);
