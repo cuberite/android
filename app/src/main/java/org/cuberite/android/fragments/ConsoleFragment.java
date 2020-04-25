@@ -26,16 +26,13 @@ import org.cuberite.android.R;
 import org.cuberite.android.services.CuberiteService;
 
 public class ConsoleFragment extends Fragment {
-    // Logging tag
-    private String LOG = "Cuberite/Console";
-
     private TextView logView;
     private EditText inputLine;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_console, null);
+        return inflater.inflate(R.layout.fragment_console, container, false);
     }
 
     @Override
@@ -48,7 +45,7 @@ public class ConsoleFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String line = inputLine.getText().toString();
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getActivity())) {
+                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(requireActivity())) {
                         sendExecuteLine(line);
                         inputLine.setText("");
                     }
@@ -64,7 +61,7 @@ public class ConsoleFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String line = inputLine.getText().toString();
-                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(getActivity())) {
+                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(requireActivity())) {
                     sendExecuteLine(line);
                     inputLine.setText("");
                 }
@@ -74,17 +71,20 @@ public class ConsoleFragment extends Fragment {
     }
 
     private void sendExecuteLine(String line) {
+        // Logging tag
+        String LOG = "Cuberite/Console";
+
         Log.d(LOG, "Executing " + line);
         Intent intent = new Intent("executeLine");
         intent.putExtra("message", line);
-        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
     }
 
     private BroadcastReceiver updateLog = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
-            String message = CuberiteService.getLog();
+            String message = CuberiteService.getConsoleOutput();
             final ScrollView scrollView = (ScrollView) logView.getParent();
 
             boolean shouldScroll = (logView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= 0;
@@ -105,13 +105,13 @@ public class ConsoleFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(updateLog);
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(updateLog);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(updateLog, new IntentFilter("updateLog"));
-        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent("updateLog"));
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(updateLog, new IntentFilter("updateLog"));
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent("updateLog"));
     }
 }

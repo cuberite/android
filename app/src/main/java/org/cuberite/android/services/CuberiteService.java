@@ -1,6 +1,5 @@
 package org.cuberite.android.services;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.IntentService;
 import android.app.NotificationChannel;
@@ -33,17 +32,19 @@ public class CuberiteService extends IntentService {
     // Logging tag
     private static String LOG = "Cuberite/CuberiteService";
 
-    private static String log = "";
+    private static StringBuilder consoleOutput = new StringBuilder();
 
     public CuberiteService() {
-        super("ServerService");
+        super("CuberiteService");
     }
 
-    private void addLog(String string) {
-        String logLine = "";
+    private void addConsoleOutput(String string) {
+        StringBuilder logLine = new StringBuilder();
         String[] text = string.split("\\n");
+
         for (String line : text) {
             String curText = TextUtils.htmlEncode(line);
+
             if (curText.toLowerCase().startsWith("log: ")) {
                 curText = curText.replaceFirst("(?i)log: ", "");
             } else if (curText.toLowerCase().startsWith("info:")) {
@@ -57,19 +58,19 @@ public class CuberiteService extends IntentService {
                 curText = "<font color=\"#8B0000\">" + curText + "</font>";
             }
 
-            if (log.isEmpty()) {
-                logLine = curText;
+            if (consoleOutput.length() == 0) {
+                logLine.append(curText);
             } else {
-                logLine += "<br>" + curText;
+                logLine.append("<br>").append(curText);
             }
         }
-        log += logLine;
+        consoleOutput.append(logLine);
         Intent intent = new Intent("updateLog");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    public static String getLog() {
-        return log;
+    public static String getConsoleOutput() {
+        return consoleOutput.toString();
     }
 
     public static String getIpAddress(Context context) {
@@ -86,6 +87,7 @@ public class CuberiteService extends IntentService {
 
     public static boolean isCuberiteRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (CuberiteService.class.getName().equals(service.service.getClassName())) {
                 return true;
@@ -98,7 +100,7 @@ public class CuberiteService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(LOG, "Starting service...");
 
-        log = "";
+        consoleOutput = new StringBuilder();
         final String ip = getIpAddress(getBaseContext());
         final String binary = intent.getStringExtra("binary");
         final String location = intent.getStringExtra("location");
@@ -140,7 +142,7 @@ public class CuberiteService extends IntentService {
             ProcessBuilder processBuilder = new ProcessBuilder(binary, "--no-output-buffering");
             processBuilder.directory(new File(location).getAbsoluteFile());
             processBuilder.redirectErrorStream(true);
-            addLog("Info: Cuberite is starting...");
+            addConsoleOutput("Info: Cuberite is starting...");
             Log.d(LOG, "Starting process...");
             final Process process = processBuilder.start();
 
@@ -152,11 +154,11 @@ public class CuberiteService extends IntentService {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     final String action = intent.getAction();
-                    if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                    if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
                         NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 
-                        if (info.getState() == NetworkInfo.State.CONNECTED ||
-                        info.getState() == NetworkInfo.State.DISCONNECTED) {
+                        if (NetworkInfo.State.CONNECTED.equals(info.getState())
+                                || NetworkInfo.State.DISCONNECTED.equals(info.getState())) {
                             Log.d(LOG, "Updating notification IP due to network change");
                             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                             final String ip = getIpAddress(getBaseContext());
@@ -214,7 +216,7 @@ public class CuberiteService extends IntentService {
             try {
                 while ((line = processScanner.nextLine()) != null) {
                     Log.i(LOG, line);
-                    addLog(line);
+                    addConsoleOutput(line);
                 }
             } catch (NoSuchElementException e) {
                 // Do nothing. Workaround for issues in older Android versions.

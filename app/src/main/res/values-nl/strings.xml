@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="do_install_cuberite">Installeer Cuberite</string>
     <string name="do_start_cuberite">Start Server</string>
@@ -62,7 +63,6 @@
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Debug informatie</string>
     <string name="settings_info_libraries">Bibliotheken van derden</string>
-    <string name="settings_info_libraries_explanation">Deze app gebruikt bibliotheken van derden voor bepaalde functies. Hieronder is informatie over deze bibliotheken en hun licenties</string>
 
     <string name="ini4j_license">Licentie voor de [ini4j] bibliotheken (gebruikt voor het aanpassen van de Cuberite instellingen)</string>
 </resources>

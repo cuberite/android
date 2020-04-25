@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="do_install_cuberite">Instalar o Cuberite</string>
     <string name="do_start_cuberite">Iniciar o servidor</string>
@@ -62,7 +63,6 @@
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Informações de Depuração</string>
     <string name="settings_info_libraries">Bibliotecas de terceiros</string>
-    <string name="settings_info_libraries_explanation">Este aplicativo usa bibliotecas de terceiros para prover certas funções. Abaixo algumas informações sobre essas bibliotecas e suas respectivas licenças</string>
 
     <string name="ini4j_license">Licença para a biblioteca [ini4j] (usada para manipular as configurações do Cuberite)</string>
 </resources>
