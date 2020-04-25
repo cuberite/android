@@ -19,13 +19,10 @@
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_install_success">Successfully installed Cuberite!</string>
-    <string name="status_download_error">Download error:</string>
-    <string name="status_no_connection">Please verify that your internet connection works before downloading.</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
     <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
- <!-- yet unused -->   <string name="status_program_exited">Info: Cuberite exited with code: </string>
     <string name="status_permissions_needed">Permissions needed</string>
     <string name="status_shasum_error">SHA-1 validation error</string>
     <string name="status_missing_filemanager">No filemanager found: Please install one</string>
@@ -48,10 +45,6 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_auto">Automatic</string>
 
-    <string name="settings_download_host">Download Server</string>
-    <string name="settings_download_host_summary">The server from which Cuberite will download from. If you are running your own (automated) builds, you can change this setting and Cuberite will use your own server. Please note, that in order to have working automatic updates, the server needs to provide valid SHA-1 files.</string>
-
-    <string name="settings_install_heading">Installation options</string>
     <string name="settings_install_update">Perform Cuberite update</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>
     <string name="settings_install_update_binary">Download and install Cuberite binary</string>
@@ -66,14 +59,11 @@
     <string name="settings_webadmin_explanation">For fine-tuning your server, you are entitled to use the built-in Webadmin. Use the settings here to set a username and password for it</string>
     <string name="settings_webadmin_open">Open Webadmin</string>
     <string name="settings_webadmin_login">Change login credentials</string>
-    <string name="settings_webadmin_not_installed_title">Cuberite is not installed</string>
-    <string name="settings_webadmin_not_installed">Before setting the Webadmin credentials, Cuberite needs to be installed before. You can either choose to install it now or just close this dialog</string>
     <string name="settings_webadmin_not_running">Cuberite needs to be running before you can access the Webadmin</string>
-    <string name="settings_webadmin_error">Something went wrong while accessing the Webadmin configuration</string>
-    <string name="settings_webadmin_success">Success! The new credentials are activated when you start Cuberite the next time</string>
+    <string name="settings_webadmin_error">Cuberite needs to be installed before setting the Webadmin credentials</string>
+    <string name="settings_webadmin_success">Success! The new credentials are activated the next time you start Cuberite</string>
 
     <string name="settings_troubleshooting_heading">Troubleshooting</string>
-    <string name="settings_authentication_errors">Authentication errors</string>
     <string name="settings_authentication_errors_explanation">If you have troubles connecting to Cuberite and get the message \"Failed to authenticate!\", you might want to disable authentication.</string>
     <string name="settings_authentication_toggle">Authentication</string>
     <string name="settings_authentication_toggle_error">Something went wrong while accessing the Server configuration</string>

@@ -23,7 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.cuberite.android.R;
-import org.cuberite.android.services.CuberiteService;
+import org.cuberite.android.helpers.CuberiteHelper;
 
 public class ConsoleFragment extends Fragment {
     private TextView logView;
@@ -43,12 +43,10 @@ public class ConsoleFragment extends Fragment {
         inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                String line = inputLine.getText().toString();
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (!line.isEmpty() && CuberiteService.isCuberiteRunning(requireActivity())) {
-                        sendExecuteLine(line);
-                        inputLine.setText("");
-                    }
+                    String command = inputLine.getText().toString();
+                    sendExecuteCommand(command);
+                    inputLine.setText("");
                     // return true makes sure the keyboard doesn't close
                     return true;
                 }
@@ -60,31 +58,33 @@ public class ConsoleFragment extends Fragment {
         sendCommandButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String line = inputLine.getText().toString();
-                if (!line.isEmpty() && CuberiteService.isCuberiteRunning(requireActivity())) {
-                    sendExecuteLine(line);
-                    inputLine.setText("");
-                }
+                String command = inputLine.getText().toString();
+                sendExecuteCommand(command);
+                inputLine.setText("");
             }
         });
         TooltipCompat.setTooltipText(sendCommandButton, getString(R.string.do_execute_line));
     }
 
-    private void sendExecuteLine(String line) {
-        // Logging tag
-        String LOG = "Cuberite/Console";
+    private void sendExecuteCommand(String command) {
+        if (!command.isEmpty()
+                && CuberiteHelper.isCuberiteRunning(requireActivity())) {
+            // Logging tag
+            String LOG = "Cuberite/Console";
 
-        Log.d(LOG, "Executing " + line);
-        Intent intent = new Intent("executeLine");
-        intent.putExtra("message", line);
-        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
+            Log.d(LOG, "Executing " + command);
+            Intent intent = new Intent("executeCommand");
+            intent.putExtra("message", command);
+            LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
+        }
     }
 
-    private BroadcastReceiver updateLog = new BroadcastReceiver() {
+    // Broadcast receivers
+    private final BroadcastReceiver updateLog = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
-            String message = CuberiteService.getConsoleOutput();
+            String message = CuberiteHelper.getConsoleOutput();
             final ScrollView scrollView = (ScrollView) logView.getParent();
 
             boolean shouldScroll = (logView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= 0;
