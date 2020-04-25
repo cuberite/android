@@ -82,6 +82,7 @@ public class ControlFragment extends Fragment {
             });
         } else if (state == State.READY) {
             int colorTo = ContextCompat.getColor(requireContext(), R.color.accent);
+
             animateColorChange(mainButton, mainButtonColor, colorTo);
             mainButton.setText(getText(R.string.do_start_cuberite));
             mainButton.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +93,7 @@ public class ControlFragment extends Fragment {
             });
         } else {
             int colorTo = ContextCompat.getColor(requireContext(), R.color.accent);
+
             animateColorChange(mainButton, mainButtonColor, colorTo);
             mainButton.setText(getText(R.string.do_install_cuberite));
             mainButton.setOnClickListener(new View.OnClickListener() {

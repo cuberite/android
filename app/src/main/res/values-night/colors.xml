@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#1E9E73</color>
     <color name="bg">#202124</color>
-    <color name="primary">#bdbdbe</color>
+    <color name="icon">#bdbdbe</color>
     <color name="bar">#313236</color>
-    <color name="accent">#1E9E73</color>
     <color name="warning">#ED9D56</color>
     <color name="danger">#F65E5A</color>
-    <color name="white">#ffffff</color>
 </resources>
