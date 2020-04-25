@@ -19,7 +19,6 @@
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_install_success">Successfully installed Cuberite!</string>
-    <string name="status_no_connection">Please verify that your internet connection works before downloading</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>

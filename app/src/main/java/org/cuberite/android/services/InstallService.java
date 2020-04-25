@@ -173,7 +173,7 @@ public class InstallService extends IntentService {
             }
             Log.d(LOG, "Finished downloading");
         } catch (Exception e) {
-            result = getString(R.string.status_no_connection);
+            result = e.getMessage();
             Log.e(LOG, "An error occurred when downloading a zip", e);
         } finally {
             try {
