@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:elevation="10dp"
+        android:elevation="10dp" tools:targetApi="lollipop"
         android:background="@color/bg">
 
         <EditText
@@ -38,7 +38,8 @@
             android:layout_toStartOf="@+id/executeLine"
             android:layout_toLeftOf="@+id/executeLine"
             android:singleLine="true"
-            tools:ignore="Autofill"/>
+            tools:ignore="Autofill"
+            android:inputType="textNoSuggestions" />
 
         <ImageView
             style="@style/Widget.AppCompat.ActionButton"
