@@ -28,7 +28,7 @@
         app:title="@string/settings_install_update">
         <Preference
             app:summary="@string/settings_install_update_explanation"
-            app:icon="@drawable/ic_cloud_download"
+            app:icon="@drawable/ic_download"
             app:enableCopying="true"
             app:selectable="false" />
         <Preference

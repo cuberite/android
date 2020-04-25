@@ -19,7 +19,5 @@
         android:layout_gravity="bottom"
         android:background="@color/bar"
         app:elevation="12dp"
-        app:itemIconTint="@color/menu_item_color"
-        app:itemTextColor="@color/menu_item_color"
         app:menu="@menu/bottom_navigation" />
 </FrameLayout>
