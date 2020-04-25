@@ -414,6 +414,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         infoDebugInfo.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                final String title = getString(R.string.settings_info_debug);
                 final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
                         "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
                         "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
@@ -421,7 +422,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         "Public directory: " + PUBLIC_DIR + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
                         "Download URL: " + preferences.getString("downloadHost", "");
-                showInfoPopup(message);
+                showInfoPopup(title, message);
                 return true;
             }
         });
@@ -430,9 +431,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         thirdPartyLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                final String title = getString(R.string.settings_info_libraries);
                 final String message = getString(R.string.ini4j_license) + "\n\n" +
                         getString(R.string.ini4j_license_description);
-                showInfoPopup(message);
+                showInfoPopup(title, message);
                 return true;
             }
         });
@@ -452,9 +454,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void showInfoPopup(String message) {
+    private void showInfoPopup(String title, String message) {
         final AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.settings_info_libraries))
+                .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
