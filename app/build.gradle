@@ -5,6 +5,7 @@ android {
     buildToolsVersion '29.0.2'
     defaultConfig {
         applicationId "org.cuberite.android"
+        resConfigs "en", "de", "nl", "pt"
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 8
@@ -16,8 +17,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+                    'proguard-android-optimize.txt')
         }
     }
     compileOptions {
@@ -29,10 +29,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.2.0-beta01'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha02'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'com.google.android.material:material:1.2.0-alpha06'
     implementation 'org.ini4j:ini4j:0.5.4'
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }
