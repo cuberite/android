@@ -42,6 +42,7 @@ public class ProgressReceiver extends ResultReceiver {
                 progressDialog = new ProgressDialog(cont);
                 progressDialog.setTitle(title);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.setIndeterminate(true);
                 progressDialog.show();
 
                 progressDialog.setCanceledOnTouchOutside(false);

@@ -13,9 +13,9 @@
     <string name="do_open_settings">Einstellungen</string>
 
     <string name="status_downloading_cuberite">Lade Cuberite herunter…</string>
+    <string name="status_shasum_error">Integritätsfehler</string>
     <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
     <string name="status_permissions_needed">Berechtigung benötigt</string>
-    <string name="status_shasum_error">Integritätsfehler</string>
     <string name="status_missing_filemanager">Kein Dateimanager gefunden: bitte einen zu Installieren</string>
 
     <string name="notification_cuberite_running">Cuberite läuft!</string>
@@ -26,7 +26,6 @@
     <string name="inputLine_hint">Befehl eingeben…</string>
 
     <string name="message_externalstorage_permission">Normalerweise versucht Cuberite die Welt auf der SDCard zu speichern, diese kann dann von anderen Apps geöffnet werden. Wenn sie Cuberite nicht die Rechte geben wollen, können sie \"nicht nochmal fragen\" wählen. Cuberite wird dann die Daten intern speichern.</string>
-    <string name="message_shasum_not_matching">Die SHA-1 Summen stimmen nicht überein. Das kann bedeuten, dass jemand versucht sie zu spoofen, es kann sich aber auch nur um einen Fehler handeln. Versuchen sie es erneut. Sollte der Fehler weiter auftreten können Sie Cuberite über die Einstellungen manuell installieren</string>
 
     <string name="title_activity_settings">@string/do_open_settings</string>
 
