@@ -39,7 +39,6 @@ public class InstallService extends IntentService {
     // Logging tag
     private static final String LOG = "Cuberite/InstallService";
 
-    private boolean retryDownload;
     private ResultReceiver receiver;
 
     public InstallService() {
@@ -62,7 +61,7 @@ public class InstallService extends IntentService {
 
     // Download verification
 
-    private String downloadVerify(String url, String target) {
+    private String downloadVerify(String url, String target, int retryCount) {
         String zipFileError = download(url, target);
         if (zipFileError != null) {
             return zipFileError;
@@ -81,10 +80,9 @@ public class InstallService extends IntentService {
             if (!shaFileContent.equals(zipSha)) {
                 Log.d(LOG, "SHA-1 check didn't pass");
 
-                // Retry once
-                if (!retryDownload) {
-                    retryDownload = true;
-                    return downloadVerify(url, target);
+                if (retryCount > 0) {
+                    // Retry if verification failed
+                    return downloadVerify(url, target, retryCount - 1);
                 }
 
                 return getString(R.string.status_shasum_error);
@@ -301,7 +299,9 @@ public class InstallService extends IntentService {
 
             // Download
             Log.i(LOG, "Downloading " + state);
-            result = downloadVerify(zipUrl, zipTarget);
+
+            final int retryCount = 1;
+            result = downloadVerify(zipUrl, zipTarget, retryCount);
 
             if (result == null) {
                 result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetDirectory));
