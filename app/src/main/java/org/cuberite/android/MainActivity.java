@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private AlertDialog permissionPopup;
     private static BottomNavigationView navigation;
 
-    public static String PRIVATE_DIR;
-    public static String PUBLIC_DIR;
+    private String PRIVATE_DIR;
+    private String PUBLIC_DIR;
     private final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
 
     @Override
