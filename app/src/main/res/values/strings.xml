@@ -17,6 +17,7 @@
     <string name="do_open_settings">Settings</string>
 
     <string name="status_downloading_cuberite">Downloading Cuberite…</string>
+    <string name="status_shasum_error">SHA-1 validation error</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_install_success">Successfully installed Cuberite!</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
@@ -24,7 +25,6 @@
     <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
     <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
     <string name="status_permissions_needed">Permissions needed</string>
-    <string name="status_shasum_error">SHA-1 validation error</string>
     <string name="status_missing_filemanager">No filemanager found: Please install one</string>
 
     <string name="notification_cuberite_running">Cuberite is running!</string>
@@ -35,7 +35,6 @@
     <string name="inputLine_hint">Enter commands…</string>
 
     <string name="message_externalstorage_permission">Cuberite stores its worlds on the external storage by default, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"Deny\" option and Cuberite will use the app\'s private storage.</string>
-    <string name="message_shasum_not_matching">SHA-1 sums don\'t match. This may indicate an attempt to spoof you, or just a download error. Please try downloading Cuberite again, and if the error persists, you may bypass the check by installing Cuberite via the settings.</string>
 
     <string name="title_activity_settings">Settings</string>
 

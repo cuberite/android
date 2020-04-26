@@ -21,6 +21,7 @@ import org.cuberite.android.R;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ public class InstallService extends IntentService {
     // Logging tag
     private static final String LOG = "Cuberite/InstallService";
 
+    private boolean retryDownload;
     private ResultReceiver receiver;
 
     public InstallService() {
@@ -74,17 +76,24 @@ public class InstallService extends IntentService {
         }
 
         try {
-            String shaFile = new Scanner(new File(target + ".sha1")).useDelimiter("\\Z").next().split(" ", 2)[0];
+            String shaFileContent = new Scanner(new File(target + ".sha1")).useDelimiter("\\Z").next().split(" ", 2)[0];
             new File(target + ".sha1").delete();
-            if (!shaFile.equals(zipSha)) {
-                showVerifyErrorPopup();
+            if (!shaFileContent.equals(zipSha)) {
                 Log.d(LOG, "SHA-1 check didn't pass");
+
+                // Retry once
+                if (!retryDownload) {
+                    retryDownload = true;
+                    return downloadVerify(url, target);
+                }
+
+                return getString(R.string.status_shasum_error);
             } else {
                 Log.d(LOG, "SHA-1 check passed successfully with checksum " + zipSha);
             }
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             Log.e(LOG, "Something went wrong while generating checksum", e);
-            return "";
+            return getString(R.string.status_shasum_error);
         }
         return null;
     }
@@ -114,15 +123,6 @@ public class InstallService extends IntentService {
         }
     }
 
-    private void showVerifyErrorPopup() {
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.status_shasum_error))
-                .setMessage(R.string.message_shasum_not_matching)
-                .setPositiveButton(R.string.ok, null)
-                .create();
-        dialog.show();
-    }
-
 
     // Download
 
@@ -145,6 +145,7 @@ public class InstallService extends IntentService {
 
             URL url = new URL(stringUrl);
             connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(10000); // 10 secs
             connection.connect();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
