@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 
-import org.cuberite.android.MainActivity;
 import org.cuberite.android.helpers.StateHelper.State;
 import org.cuberite.android.receivers.ProgressReceiver;
 import org.cuberite.android.services.InstallService;
