@@ -8,14 +8,14 @@ import android.os.Bundle;
 import android.os.PowerManager;
 
 import android.support.v4.os.ResultReceiver;
-import androidx.appcompat.app.AlertDialog;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 
 import org.cuberite.android.helpers.CuberiteHelper;
 import org.cuberite.android.helpers.StateHelper.State;
-import org.cuberite.android.helpers.ProgressReceiver;
+import org.cuberite.android.receivers.ProgressReceiver;
 import org.cuberite.android.R;
 
 import java.io.BufferedOutputStream;
@@ -32,8 +32,6 @@ import java.security.MessageDigest;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class InstallService extends IntentService {
     // Logging tag
@@ -93,6 +91,7 @@ public class InstallService extends IntentService {
             Log.e(LOG, "Something went wrong while generating checksum", e);
             return getString(R.string.status_shasum_error);
         }
+
         return null;
     }
 
@@ -283,28 +282,29 @@ public class InstallService extends IntentService {
             result = getString(R.string.status_update_binary_error);
         } else if ("unzip".equals(intent.getAction())) {
             final Uri uri = Uri.parse(intent.getStringExtra("uri"));
-            final String targetLocation = (state == State.PICK_FILE_BINARY ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
+            final String targetFolder = (state == State.PICK_FILE_BINARY ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder"));
             receiver = intent.getParcelableExtra("receiver");
 
-            result = unzip(uri, new File(targetLocation));
+            result = unzip(uri, new File(targetFolder));
         } else {
             final String downloadHost = intent.getStringExtra("downloadHost");
             final String abi = CuberiteHelper.getPreferredABI();
-            final String executableName = intent.getStringExtra("executableName");
-            final String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
 
-            final String zipTarget = PRIVATE_DIR + "/" + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? executableName : "server") + ".zip";
-            final String zipUrl = downloadHost + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
+            final String targetFolder = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder"));
+            final String targetFileName = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
+
+            final String downloadUrl = downloadHost + targetFileName;
+            final String zipTarget = this.getFilesDir().getAbsolutePath() + "/" + targetFileName;  // Download all zip files to private storage
             receiver = intent.getParcelableExtra("receiver");
 
             // Download
             Log.i(LOG, "Downloading " + state);
 
             final int retryCount = 1;
-            result = downloadVerify(zipUrl, zipTarget, retryCount);
+            result = downloadVerify(downloadUrl, zipTarget, retryCount);
 
             if (result == null) {
-                result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetDirectory));
+                result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetFolder));
 
                 if (!new File(zipTarget).delete()) {
                     Log.w(LOG, getString(R.string.status_delete_file_error));

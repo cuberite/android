@@ -9,25 +9,25 @@ import android.os.Handler;
 
 import org.cuberite.android.MainActivity;
 import org.cuberite.android.helpers.StateHelper.State;
+import org.cuberite.android.receivers.ProgressReceiver;
 import org.cuberite.android.services.InstallService;
 
 public class InstallHelper {
     public static void installCuberiteDownload(final Activity activity, State state) {
-        SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PACKAGE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = activity.getSharedPreferences(activity.getPackageName(), Context.MODE_PRIVATE);
 
         Intent intent = new Intent(activity, InstallService.class)
                 .setAction("download")
-                .putExtra("downloadHost", preferences.getString("downloadHost", ""))
+                .putExtra("downloadHost", "https://download.cuberite.org/androidbinaries/")
                 .putExtra("state", state)
-                .putExtra("executableName", preferences.getString("executableName", ""))
-                .putExtra("targetDirectory", preferences.getString("cuberiteLocation", ""))
+                .putExtra("targetFolder", preferences.getString("cuberiteLocation", ""))
                 .putExtra("receiver", new ProgressReceiver(activity, new Handler()));
 
         activity.startService(intent);
     }
 
     public static void installCuberiteLocal(Activity activity, State state, Intent data) {
-        SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PACKAGE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = activity.getSharedPreferences(activity.getPackageName(), Context.MODE_PRIVATE);
 
         if (data != null) {
             Uri selectedFileUri = data.getData();
@@ -36,7 +36,7 @@ public class InstallHelper {
                     .setAction("unzip")
                     .putExtra("uri", selectedFileUri.toString())
                     .putExtra("state", state)
-                    .putExtra("targetLocation", preferences.getString("cuberiteLocation", ""))
+                    .putExtra("targetFolder", preferences.getString("cuberiteLocation", ""))
                     .putExtra("receiver", new ProgressReceiver(activity, new Handler()));
 
             activity.startService(intent);

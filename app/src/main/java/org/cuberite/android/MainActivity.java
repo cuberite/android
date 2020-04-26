@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private AlertDialog permissionPopup;
     private static BottomNavigationView navigation;
 
-    public static String PACKAGE_NAME;
     public static String PRIVATE_DIR;
     public static String PUBLIC_DIR;
     private final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
@@ -54,21 +53,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         navigation.setOnNavigationItemSelectedListener(this);
 
         // Initialize settings
-        // PACKAGE_NAME: org.cuberite.android
-        // PRIVATE_DIR: /data/0/org.cuberite.android/files
-        // On most devices
-        PACKAGE_NAME = this.getPackageName();
+        preferences = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
+
         PRIVATE_DIR = this.getFilesDir().getAbsolutePath();
         PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        preferences = getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
-
-        editor.putString("downloadHost", "https://download.cuberite.org/androidbinaries/");
-        editor.putString("executableName", "Cuberite");
-        editor.apply();
     }
 
     @Override

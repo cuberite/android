@@ -7,8 +7,6 @@ import android.util.Log;
 import java.io.File;
 
 import static android.content.Context.MODE_PRIVATE;
-import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class StateHelper {
     public enum State {
@@ -22,15 +20,23 @@ public class StateHelper {
         STOPPING
     }
 
+    public static boolean isCuberiteInstalled(Context context) {
+        return (
+                getState(context) != State.NEED_DOWNLOAD_BINARY
+                && getState(context) != State.NEED_DOWNLOAD_SERVER
+                && getState(context) != State.NEED_DOWNLOAD_BOTH
+        );
+    }
+
     public static State getState(Context context) {
         // Logging tag
         String LOG = "Cuberite/State";
 
-        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         boolean hasBinary = false;
         boolean hasServer = false;
 
-        if (new File(PRIVATE_DIR + "/" + preferences.getString("executableName", "")).exists()) {
+        if (new File(context.getFilesDir().getAbsolutePath() + "/" + CuberiteHelper.getExecutableName()).exists()) {
             hasBinary = true;
         }
 

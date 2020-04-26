@@ -44,6 +44,10 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_auto">Automatic</string>
 
+    <string name="settings_startup_toggle">Start Cuberite on boot</string>
+    <string name="settings_startup_explanation">Starts Cuberite automatically when you boot up your device</string>
+
+
     <string name="settings_install_update">Perform Cuberite update</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>
     <string name="settings_install_update_binary">Download and install Cuberite binary</string>

@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -40,9 +41,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-import static org.cuberite.android.MainActivity.PUBLIC_DIR;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     // Logging tag
@@ -52,7 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
 
-        final SharedPreferences preferences = requireContext().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
+        final SharedPreferences preferences = requireContext().getSharedPreferences(requireContext().getPackageName(), MODE_PRIVATE);
         final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
 
         // Ini4j config
@@ -62,6 +60,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         // Initialize
         initializeThemeSettings(preferences);
+        initializeStartupSettings(preferences);
         initializeWebadminSettings(cuberiteDir);
         initializeInstallSettings();
         initializeAuthenticationSettings(cuberiteDir);
@@ -116,6 +115,38 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt("defaultTheme", newTheme);
                 editor.apply();
+                return true;
+            }
+        });
+    }
+
+
+    // Startup-related methods
+
+    private void initializeStartupSettings(final SharedPreferences preferences) {
+        final boolean startOnBoot = preferences.getBoolean("startOnBoot", false);
+
+        final SwitchPreferenceCompat startupToggle = findPreference("startupToggle");
+
+        if (!StateHelper.isCuberiteInstalled(requireContext())) {
+            startupToggle.setShouldDisableView(true);
+            startupToggle.setEnabled(false);
+        }
+
+        startupToggle.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                final boolean newStartOnBoot = !startOnBoot;
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("startOnBoot", newStartOnBoot);
+                editor.apply();
+
+                if (newStartOnBoot) {
+                    startupToggle.setChecked(true);
+                } else {
+                    startupToggle.setChecked(false);
+                }
                 return true;
             }
         });
@@ -418,8 +449,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
                         "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
                         "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                        "Private directory: " + PRIVATE_DIR + "\n" +
-                        "Public directory: " + PUBLIC_DIR + "\n" +
+                        "Private directory: " + requireContext().getFilesDir().getAbsolutePath() + "\n" +
+                        "Public directory: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
                         "Download URL: " + preferences.getString("downloadHost", "");
                 showInfoPopup(title, message);
@@ -481,6 +512,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(installServiceCallback, new IntentFilter("InstallService.callback"));
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                installServiceCallback,
+                new IntentFilter("InstallService.callback")
+        );
     }
 }
