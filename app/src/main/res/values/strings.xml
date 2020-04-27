@@ -45,7 +45,7 @@
     <string name="settings_theme_auto">Automatic</string>
 
     <string name="settings_startup_toggle">Start Cuberite on boot</string>
-    <string name="settings_startup_explanation">Starts Cuberite automatically when you boot up your device</string>
+    <string name="settings_startup_explanation">Start Cuberite automatically when you boot up your device</string>
 
 
     <string name="settings_install_update">Perform Cuberite update</string>
