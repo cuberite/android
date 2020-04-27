@@ -14,7 +14,6 @@
 
     <string name="status_downloading_cuberite">Transferindo o Cuberite…</string>
     <string name="status_shasum_error">Erro ao executar a validação SHA-1</string>
-    <string name="status_delete_file_error">Algo deu errado: Não foi possível apagar o arquivo</string>
     <string name="status_permissions_needed">Permissões necessarias</string>
     <string name="status_missing_filemanager">Nenhum explorador de arquivos encontrado: Por favor instale um</string>
 

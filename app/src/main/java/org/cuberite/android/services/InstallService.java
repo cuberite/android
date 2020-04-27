@@ -244,7 +244,7 @@ public class InstallService extends IntentService {
 
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (zipEntry.isDirectory()) {
-                new File(targetLocation.getAbsolutePath() + "/" + zipEntry.getName()).mkdir();
+                new File(targetLocation, zipEntry.getName()).mkdir();
             } else {
                 FileOutputStream outputStream = new FileOutputStream(targetLocation.getAbsolutePath() + "/" + zipEntry.getName());
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
@@ -263,7 +263,7 @@ public class InstallService extends IntentService {
     }
 
     private void createNoMediaFile(String filePath) {
-        final File noMedia = new File(filePath + "/.nomedia");
+        final File noMedia = new File(filePath, ".nomedia");
         try {
             noMedia.createNewFile();
         } catch (IOException e) {
@@ -300,7 +300,7 @@ public class InstallService extends IntentService {
 
             final String targetFileName = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
             final String downloadUrl = downloadHost + targetFileName;
-            final File targetZip = new File(this.getFilesDir().getAbsolutePath() + "/" + targetFileName);  // Download all zip files to internal storage
+            final File tempZip = new File(this.getCacheDir(), targetFileName);  // Zip files are temporary
             final File targetFolder = new File(
                     state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
             );
@@ -310,13 +310,13 @@ public class InstallService extends IntentService {
             Log.i(LOG, "Downloading " + state);
 
             final int retryCount = 1;
-            result = downloadVerify(downloadUrl, targetZip, retryCount);
+            result = downloadVerify(downloadUrl, tempZip, retryCount);
 
             if (result == null) {
-                result = unzip(Uri.fromFile(targetZip), targetFolder);
+                result = unzip(Uri.fromFile(tempZip), targetFolder);
 
-                if (!targetZip.delete()) {
-                    Log.w(LOG, getString(R.string.status_delete_file_error));
+                if (!tempZip.delete()) {
+                    Log.w(LOG, "Failed to delete downloaded zip file");
                 }
             }
 
