@@ -452,7 +452,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         "Private directory: " + requireContext().getFilesDir() + "\n" +
                         "Public directory: " + Environment.getExternalStorageDirectory() + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Download URL: " + preferences.getString("downloadHost", "");
+                        "Download URL: " + InstallHelper.getDownloadHost();
                 showInfoPopup(title, message);
                 return true;
             }
