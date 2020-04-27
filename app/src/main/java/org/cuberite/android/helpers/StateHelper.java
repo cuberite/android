@@ -32,7 +32,7 @@ public class StateHelper {
         // Logging tag
         String LOG = "Cuberite/State";
 
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
+        final SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         boolean hasBinary = false;
         boolean hasServer = false;
 

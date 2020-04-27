@@ -43,7 +43,6 @@ public class CuberiteService extends IntentService {
         final SharedPreferences preferences = getApplicationContext().getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
         final String ip = CuberiteHelper.getIpAddress(getApplicationContext());
         final String executableName = CuberiteHelper.getExecutableName();
-        final String binary = this.getFilesDir().getAbsolutePath() + "/" + executableName;
         final String location = preferences.getString("cuberiteLocation", "");
 
         final String CHANNEL_ID = "cuberiteservice";
@@ -78,10 +77,10 @@ public class CuberiteService extends IntentService {
 
         try {
             // Make sure we can execute the binary
-            new File(binary).setExecutable(true, true);
+            new File(this.getFilesDir(), executableName).setExecutable(true, true);
             // Initiate ProcessBuilder with the command at the given location
-            ProcessBuilder processBuilder = new ProcessBuilder(binary, "--no-output-buffering");
-            processBuilder.directory(new File(location).getAbsoluteFile());
+            ProcessBuilder processBuilder = new ProcessBuilder(this.getFilesDir() + "/" + executableName, "--no-output-buffering");
+            processBuilder.directory(new File(location));
             processBuilder.redirectErrorStream(true);
             CuberiteHelper.addConsoleOutput(getApplicationContext(), "Info: Cuberite is starting...");
             Log.d(LOG, "Starting process...");

@@ -449,8 +449,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
                         "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
                         "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                        "Private directory: " + requireContext().getFilesDir().getAbsolutePath() + "\n" +
-                        "Public directory: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "\n" +
+                        "Private directory: " + requireContext().getFilesDir() + "\n" +
+                        "Public directory: " + Environment.getExternalStorageDirectory() + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
                         "Download URL: " + preferences.getString("downloadHost", "");
                 showInfoPopup(title, message);

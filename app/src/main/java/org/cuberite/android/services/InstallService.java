@@ -66,7 +66,7 @@ public class InstallService extends IntentService {
         }
 
         // Verifying file
-        final String shaError = download(url + ".sha1", new File(targetLocation.getAbsolutePath() + ".sha1"));
+        final String shaError = download(url + ".sha1", new File(targetLocation + ".sha1"));
         if (shaError != null) {
             return shaError;
         }
@@ -74,12 +74,12 @@ public class InstallService extends IntentService {
         try {
             final String generatedSha = generateSha1(targetLocation);
             final String downloadedSha = new Scanner(
-                    new File(targetLocation.getAbsolutePath() + ".sha1")
+                    new File(targetLocation + ".sha1")
             )
                     .useDelimiter("\\Z")
                     .next()
                     .split(" ", 2)[0];
-            new File(targetLocation.getAbsolutePath() + ".sha1").delete();
+            new File(targetLocation + ".sha1").delete();
 
             if (!downloadedSha.equals(generatedSha)) {
                 Log.d(LOG, "SHA-1 check didn't pass");
@@ -207,7 +207,7 @@ public class InstallService extends IntentService {
     private String unzip(Uri fileUri, File targetLocation) {
         String result = getString(R.string.status_install_success);
 
-        Log.i(LOG, "Unzipping " + fileUri + " to " + targetLocation.getAbsolutePath());
+        Log.i(LOG, "Unzipping " + fileUri + " to " + targetLocation);
 
         final PowerManager.WakeLock wakeLock = acquireWakelock();
 
@@ -216,7 +216,7 @@ public class InstallService extends IntentService {
         }
 
         // Create a .nomedia file in the server directory to prevent images from showing in gallery
-        createNoMediaFile(targetLocation.getAbsolutePath());
+        createNoMediaFile(targetLocation);
 
         Bundle bundleInit = new Bundle();
         bundleInit.putString("title", getString(R.string.status_installing_cuberite));
@@ -246,7 +246,7 @@ public class InstallService extends IntentService {
             if (zipEntry.isDirectory()) {
                 new File(targetLocation, zipEntry.getName()).mkdir();
             } else {
-                FileOutputStream outputStream = new FileOutputStream(targetLocation.getAbsolutePath() + "/" + zipEntry.getName());
+                FileOutputStream outputStream = new FileOutputStream(targetLocation + "/" + zipEntry.getName());
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
                 byte[] buffer = new byte[1024];
                 int read;
@@ -262,8 +262,8 @@ public class InstallService extends IntentService {
         zipInputStream.close();
     }
 
-    private void createNoMediaFile(String filePath) {
-        final File noMedia = new File(filePath, ".nomedia");
+    private void createNoMediaFile(File targetFolder) {
+        final File noMedia = new File(targetFolder, ".nomedia");
         try {
             noMedia.createNewFile();
         } catch (IOException e) {
