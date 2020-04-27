@@ -124,29 +124,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // Startup-related methods
 
     private void initializeStartupSettings(final SharedPreferences preferences) {
-        final boolean startOnBoot = preferences.getBoolean("startOnBoot", false);
-
         final SwitchPreferenceCompat startupToggle = findPreference("startupToggle");
-
-        if (!StateHelper.isCuberiteInstalled(requireContext())) {
-            startupToggle.setShouldDisableView(true);
-            startupToggle.setEnabled(false);
-        }
-
         startupToggle.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                final boolean newStartOnBoot = !startOnBoot;
+                final boolean newStartOnBoot = !preferences.getBoolean("startOnBoot", false);
 
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("startOnBoot", newStartOnBoot);
                 editor.apply();
 
-                if (newStartOnBoot) {
-                    startupToggle.setChecked(true);
-                } else {
-                    startupToggle.setChecked(false);
-                }
+                startupToggle.setChecked(newStartOnBoot);
                 return true;
             }
         });
@@ -384,23 +372,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     final Ini ini = new Ini(settingsFile);
-                    int newEnabled;
+                    boolean newEnabled = true;
 
                     try {
-                        final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-                        newEnabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
-                    } catch (NumberFormatException e) {
-                        newEnabled = 1;
+                        newEnabled = Integer.parseInt(ini.get("Authentication", "Authenticate")) == 0;
+                    } catch (NumberFormatException ignored) {
                     }
 
-                    boolean newEnabledBool = newEnabled != 0;
-                    toggleAuthentication.setChecked(newEnabledBool);
+                    toggleAuthentication.setChecked(newEnabled);
 
-                    ini.put("Authentication", "Authenticate", newEnabled);
+                    ini.put("Authentication", "Authenticate", newEnabled ? 1 : 0);
                     ini.store(settingsFile);
                     MainActivity.showSnackBar(
                             requireContext(),
-                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled == 1 ? R.string.enabled : R.string.disabled))
+                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled ? R.string.enabled : R.string.disabled))
                     );
                 } catch (IOException e) {
                     Log.e(LOG, "Something went wrong while opening the ini file", e);
