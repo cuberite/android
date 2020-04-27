@@ -59,34 +59,40 @@ public class InstallService extends IntentService {
 
     // Download verification
 
-    private String downloadVerify(String url, String target, int retryCount) {
-        String zipFileError = download(url, target);
+    private String downloadVerify(String url, File targetLocation, int retryCount) {
+        final String zipFileError = download(url, targetLocation);
         if (zipFileError != null) {
             return zipFileError;
         }
 
         // Verifying file
-        String zipSha = generateSha1(target);
-        String shaError = download(url + ".sha1", target + ".sha1");
+        final String shaError = download(url + ".sha1", new File(targetLocation.getAbsolutePath() + ".sha1"));
         if (shaError != null) {
             return shaError;
         }
 
         try {
-            String shaFileContent = new Scanner(new File(target + ".sha1")).useDelimiter("\\Z").next().split(" ", 2)[0];
-            new File(target + ".sha1").delete();
-            if (!shaFileContent.equals(zipSha)) {
+            final String generatedSha = generateSha1(targetLocation);
+            final String downloadedSha = new Scanner(
+                    new File(targetLocation.getAbsolutePath() + ".sha1")
+            )
+                    .useDelimiter("\\Z")
+                    .next()
+                    .split(" ", 2)[0];
+            new File(targetLocation.getAbsolutePath() + ".sha1").delete();
+
+            if (!downloadedSha.equals(generatedSha)) {
                 Log.d(LOG, "SHA-1 check didn't pass");
 
                 if (retryCount > 0) {
                     // Retry if verification failed
-                    return downloadVerify(url, target, retryCount - 1);
+                    return downloadVerify(url, targetLocation, retryCount - 1);
                 }
 
                 return getString(R.string.status_shasum_error);
-            } else {
-                Log.d(LOG, "SHA-1 check passed successfully with checksum " + zipSha);
             }
+
+            Log.d(LOG, "SHA-1 check passed successfully with checksum " + generatedSha);
         } catch (FileNotFoundException e) {
             Log.e(LOG, "Something went wrong while generating checksum", e);
             return getString(R.string.status_shasum_error);
@@ -95,10 +101,10 @@ public class InstallService extends IntentService {
         return null;
     }
 
-    private String generateSha1(String location) {
+    private String generateSha1(File targetLocation) {
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            InputStream input = new FileInputStream(location);
+            InputStream input = new FileInputStream(targetLocation);
             byte[] buffer = new byte[8192];
             int len = input.read(buffer);
 
@@ -123,7 +129,7 @@ public class InstallService extends IntentService {
 
     // Download
 
-    private String download(String stringUrl, String targetLocation) {
+    private String download(String stringUrl, File targetLocation) {
         final PowerManager.WakeLock wakeLock = acquireWakelock();
 
         String result = null;
@@ -282,31 +288,34 @@ public class InstallService extends IntentService {
             result = getString(R.string.status_update_binary_error);
         } else if ("unzip".equals(intent.getAction())) {
             final Uri uri = Uri.parse(intent.getStringExtra("uri"));
-            final String targetFolder = (state == State.PICK_FILE_BINARY ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder"));
+            final File targetFolder = new File(
+                    state == State.PICK_FILE_BINARY ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
+            );
             receiver = intent.getParcelableExtra("receiver");
 
-            result = unzip(uri, new File(targetFolder));
+            result = unzip(uri, targetFolder);
         } else {
             final String downloadHost = intent.getStringExtra("downloadHost");
             final String abi = CuberiteHelper.getPreferredABI();
 
-            final String targetFolder = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder"));
             final String targetFileName = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
-
             final String downloadUrl = downloadHost + targetFileName;
-            final String zipTarget = this.getFilesDir().getAbsolutePath() + "/" + targetFileName;  // Download all zip files to private storage
+            final File targetZip = new File(this.getFilesDir().getAbsolutePath() + "/" + targetFileName);  // Download all zip files to internal storage
+            final File targetFolder = new File(
+                    state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
+            );
             receiver = intent.getParcelableExtra("receiver");
 
             // Download
             Log.i(LOG, "Downloading " + state);
 
             final int retryCount = 1;
-            result = downloadVerify(downloadUrl, zipTarget, retryCount);
+            result = downloadVerify(downloadUrl, targetZip, retryCount);
 
             if (result == null) {
-                result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetFolder));
+                result = unzip(Uri.fromFile(targetZip), targetFolder);
 
-                if (!new File(zipTarget).delete()) {
+                if (!targetZip.delete()) {
                     Log.w(LOG, getString(R.string.status_delete_file_error));
                 }
             }
