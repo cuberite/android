@@ -144,7 +144,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // Webadmin-related methods
 
     private void initializeWebadminSettings(final File cuberiteDir) {
-        final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
+        final File webadminFile = new File(cuberiteDir, "webadmin.ini");
 
         String url = null;
 
@@ -363,7 +363,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeAuthenticationSettings(final File cuberiteDir) {
         final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
-        final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
+        final File settingsFile = new File(cuberiteDir, "settings.ini");
 
         updateAuthenticationToggle(settingsFile, toggleAuthentication);
 
@@ -401,6 +401,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
         try {
+            if (settingsFile.exists()) {
+                settingsFile.createNewFile();
+            }
+
             final Ini ini = new Ini(settingsFile);
 
             try {
@@ -412,13 +416,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } catch (NumberFormatException e) {
                 ini.put("Authentication", "Authenticate", 1);
                 ini.store(settingsFile);
+
                 toggle.setChecked(true);
             }
         } catch(IOException e) {
-            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
+            Log.e(LOG, "Settings.ini couldn't be created, disabling authentication toggle");
+
             toggle.setShouldDisableView(true);
             toggle.setEnabled(false);
-            toggle.setChecked(true);
         }
     }
 
