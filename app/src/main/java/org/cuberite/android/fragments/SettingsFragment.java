@@ -401,7 +401,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
         try {
-            if (settingsFile.exists()) {
+            if (!settingsFile.exists()) {
                 settingsFile.createNewFile();
             }
 
