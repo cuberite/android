@@ -7,10 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 
-import android.support.v4.os.ResultReceiver;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import org.cuberite.android.helpers.CuberiteHelper;

@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.os.ResultReceiver;
+import android.os.ResultReceiver;
 
 public class ProgressReceiver extends ResultReceiver {
     public static final int PROGRESS_START_INDETERMINATE = 0;
