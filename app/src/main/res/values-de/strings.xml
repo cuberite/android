@@ -14,7 +14,6 @@
 
     <string name="status_downloading_cuberite">Lade Cuberite herunter…</string>
     <string name="status_shasum_error">Integritätsfehler</string>
-    <string name="status_delete_file_error">Fehler: konnte Datei nicht löschen</string>
     <string name="status_permissions_needed">Berechtigung benötigt</string>
     <string name="status_missing_filemanager">Kein Dateimanager gefunden: bitte einen zu Installieren</string>
 

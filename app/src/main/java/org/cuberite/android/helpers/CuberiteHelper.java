@@ -65,6 +65,10 @@ public class CuberiteHelper {
         consoleOutput = new StringBuilder();
     }
 
+    public static String getExecutableName() {
+        return "Cuberite";
+    }
+
     public static String getIpAddress(Context context) {
         WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -106,7 +110,11 @@ public class CuberiteHelper {
         Log.d(LOG, "Starting Cuberite");
 
         Intent serviceIntent = new Intent(context, CuberiteService.class);
-        context.startService(serviceIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
+        }
     }
 
     public static void stopCuberite(Context context) {

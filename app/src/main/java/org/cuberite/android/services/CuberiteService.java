@@ -26,9 +26,6 @@ import java.io.OutputStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-
 public class CuberiteService extends IntentService {
     // Logging tag
     private static final String LOG = "Cuberite/ServerService";
@@ -43,9 +40,9 @@ public class CuberiteService extends IntentService {
 
         CuberiteHelper.resetConsoleOutput();
 
-        final SharedPreferences preferences = getApplicationContext().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
+        final SharedPreferences preferences = getApplicationContext().getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
         final String ip = CuberiteHelper.getIpAddress(getApplicationContext());
-        final String binary = PRIVATE_DIR + "/" + preferences.getString("executableName", "Cuberite");
+        final String executableName = CuberiteHelper.getExecutableName();
         final String location = preferences.getString("cuberiteLocation", "");
 
         final String CHANNEL_ID = "cuberiteservice";
@@ -80,10 +77,10 @@ public class CuberiteService extends IntentService {
 
         try {
             // Make sure we can execute the binary
-            new File(binary).setExecutable(true, true);
+            new File(this.getFilesDir(), executableName).setExecutable(true, true);
             // Initiate ProcessBuilder with the command at the given location
-            ProcessBuilder processBuilder = new ProcessBuilder(binary, "--no-output-buffering");
-            processBuilder.directory(new File(location).getAbsoluteFile());
+            ProcessBuilder processBuilder = new ProcessBuilder(this.getFilesDir() + "/" + executableName, "--no-output-buffering");
+            processBuilder.directory(new File(location));
             processBuilder.redirectErrorStream(true);
             CuberiteHelper.addConsoleOutput(getApplicationContext(), "Info: Cuberite is starting...");
             Log.d(LOG, "Starting process...");
@@ -113,7 +110,7 @@ public class CuberiteService extends IntentService {
             };
 
             IntentFilter intentFilter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-            registerReceiver(updateIp, intentFilter);
+            LocalBroadcastManager.getInstance(this).registerReceiver(updateIp, intentFilter);
 
             // Communication with the activity
             BroadcastReceiver stop = new BroadcastReceiver() {

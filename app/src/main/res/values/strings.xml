@@ -22,7 +22,6 @@
     <string name="status_install_success">Successfully installed Cuberite!</string>
     <string name="status_unzip_error">Failed to unzip the server files</string>
     <string name="status_update_binary_error">Please stop the server before updating the binary</string>
-    <string name="status_delete_file_error">Something went wrong: Couldn\'t delete file</string>
     <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
     <string name="status_permissions_needed">Permissions needed</string>
     <string name="status_missing_filemanager">No filemanager found: Please install one</string>
@@ -43,6 +42,10 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_auto">Automatic</string>
+
+    <string name="settings_startup_toggle">Start Cuberite on boot</string>
+    <string name="settings_startup_explanation">Start Cuberite automatically when you boot up your device</string>
+
 
     <string name="settings_install_update">Perform Cuberite update</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>

@@ -6,6 +6,10 @@
             app:key="theme"
             app:title="@string/settings_theme"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="startupToggle"
+            app:title="@string/settings_startup_toggle"
+            app:summary="@string/settings_startup_explanation" />
     </PreferenceCategory>
 
     <PreferenceCategory
