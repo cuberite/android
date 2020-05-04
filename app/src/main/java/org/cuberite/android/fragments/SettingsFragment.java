@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -40,9 +41,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static org.cuberite.android.MainActivity.PACKAGE_NAME;
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
-import static org.cuberite.android.MainActivity.PUBLIC_DIR;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     // Logging tag
@@ -52,7 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
 
-        final SharedPreferences preferences = requireContext().getSharedPreferences(PACKAGE_NAME, MODE_PRIVATE);
+        final SharedPreferences preferences = requireContext().getSharedPreferences(requireContext().getPackageName(), MODE_PRIVATE);
         final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
 
         // Ini4j config
@@ -62,6 +60,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         // Initialize
         initializeThemeSettings(preferences);
+        initializeStartupSettings(preferences);
         initializeWebadminSettings(cuberiteDir);
         initializeInstallSettings();
         initializeAuthenticationSettings(cuberiteDir);
@@ -122,10 +121,30 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
 
+    // Startup-related methods
+
+    private void initializeStartupSettings(final SharedPreferences preferences) {
+        final SwitchPreferenceCompat startupToggle = findPreference("startupToggle");
+        startupToggle.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                final boolean newStartOnBoot = !preferences.getBoolean("startOnBoot", false);
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("startOnBoot", newStartOnBoot);
+                editor.apply();
+
+                startupToggle.setChecked(newStartOnBoot);
+                return true;
+            }
+        });
+    }
+
+
     // Webadmin-related methods
 
     private void initializeWebadminSettings(final File cuberiteDir) {
-        final File webadminFile = new File(cuberiteDir.getAbsolutePath() + "/webadmin.ini");
+        final File webadminFile = new File(cuberiteDir, "webadmin.ini");
 
         String url = null;
 
@@ -344,7 +363,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeAuthenticationSettings(final File cuberiteDir) {
         final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
-        final File settingsFile = new File(cuberiteDir.getAbsolutePath() + "/settings.ini");
+        final File settingsFile = new File(cuberiteDir, "settings.ini");
 
         updateAuthenticationToggle(settingsFile, toggleAuthentication);
 
@@ -353,23 +372,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     final Ini ini = new Ini(settingsFile);
-                    int newEnabled;
+                    boolean newEnabled = true;
 
                     try {
-                        final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-                        newEnabled = enabled ^ 1; // XOR: 0 ^ 1 => 1, 1 ^ 1 => 0
-                    } catch (NumberFormatException e) {
-                        newEnabled = 1;
+                        newEnabled = Integer.parseInt(ini.get("Authentication", "Authenticate")) == 0;
+                    } catch (NumberFormatException ignored) {
                     }
 
-                    boolean newEnabledBool = newEnabled != 0;
-                    toggleAuthentication.setChecked(newEnabledBool);
+                    toggleAuthentication.setChecked(newEnabled);
 
-                    ini.put("Authentication", "Authenticate", newEnabled);
+                    ini.put("Authentication", "Authenticate", newEnabled ? 1 : 0);
                     ini.store(settingsFile);
                     MainActivity.showSnackBar(
                             requireContext(),
-                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled == 1 ? R.string.enabled : R.string.disabled))
+                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled ? R.string.enabled : R.string.disabled))
                     );
                 } catch (IOException e) {
                     Log.e(LOG, "Something went wrong while opening the ini file", e);
@@ -385,6 +401,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
         try {
+            if (!settingsFile.exists()) {
+                settingsFile.createNewFile();
+            }
+
             final Ini ini = new Ini(settingsFile);
 
             try {
@@ -396,13 +416,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } catch (NumberFormatException e) {
                 ini.put("Authentication", "Authenticate", 1);
                 ini.store(settingsFile);
+
                 toggle.setChecked(true);
             }
         } catch(IOException e) {
-            Log.e(LOG, "Settings.ini doesn't exist, disabling authentication toggle");
+            Log.e(LOG, "Settings.ini couldn't be created, disabling authentication toggle");
+
             toggle.setShouldDisableView(true);
             toggle.setEnabled(false);
-            toggle.setChecked(true);
         }
     }
 
@@ -418,10 +439,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
                         "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
                         "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                        "Private directory: " + PRIVATE_DIR + "\n" +
-                        "Public directory: " + PUBLIC_DIR + "\n" +
+                        "Private directory: " + requireContext().getFilesDir() + "\n" +
+                        "Public directory: " + Environment.getExternalStorageDirectory() + "\n" +
                         "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Download URL: " + preferences.getString("downloadHost", "");
+                        "Download URL: " + InstallHelper.getDownloadHost();
                 showInfoPopup(title, message);
                 return true;
             }
@@ -481,6 +502,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(installServiceCallback, new IntentFilter("InstallService.callback"));
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                installServiceCallback,
+                new IntentFilter("InstallService.callback")
+        );
     }
 }

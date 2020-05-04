@@ -7,15 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 
-import android.support.v4.os.ResultReceiver;
-import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import org.cuberite.android.helpers.CuberiteHelper;
 import org.cuberite.android.helpers.StateHelper.State;
-import org.cuberite.android.helpers.ProgressReceiver;
+import org.cuberite.android.receivers.ProgressReceiver;
 import org.cuberite.android.R;
 
 import java.io.BufferedOutputStream;
@@ -32,8 +31,6 @@ import java.security.MessageDigest;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static org.cuberite.android.MainActivity.PRIVATE_DIR;
 
 public class InstallService extends IntentService {
     // Logging tag
@@ -61,45 +58,52 @@ public class InstallService extends IntentService {
 
     // Download verification
 
-    private String downloadVerify(String url, String target, int retryCount) {
-        String zipFileError = download(url, target);
+    private String downloadVerify(String url, File targetLocation, int retryCount) {
+        final String zipFileError = download(url, targetLocation);
         if (zipFileError != null) {
             return zipFileError;
         }
 
         // Verifying file
-        String zipSha = generateSha1(target);
-        String shaError = download(url + ".sha1", target + ".sha1");
+        final String shaError = download(url + ".sha1", new File(targetLocation + ".sha1"));
         if (shaError != null) {
             return shaError;
         }
 
         try {
-            String shaFileContent = new Scanner(new File(target + ".sha1")).useDelimiter("\\Z").next().split(" ", 2)[0];
-            new File(target + ".sha1").delete();
-            if (!shaFileContent.equals(zipSha)) {
+            final String generatedSha = generateSha1(targetLocation);
+            final String downloadedSha = new Scanner(
+                    new File(targetLocation + ".sha1")
+            )
+                    .useDelimiter("\\Z")
+                    .next()
+                    .split(" ", 2)[0];
+            new File(targetLocation + ".sha1").delete();
+
+            if (!downloadedSha.equals(generatedSha)) {
                 Log.d(LOG, "SHA-1 check didn't pass");
 
                 if (retryCount > 0) {
                     // Retry if verification failed
-                    return downloadVerify(url, target, retryCount - 1);
+                    return downloadVerify(url, targetLocation, retryCount - 1);
                 }
 
                 return getString(R.string.status_shasum_error);
-            } else {
-                Log.d(LOG, "SHA-1 check passed successfully with checksum " + zipSha);
             }
+
+            Log.d(LOG, "SHA-1 check passed successfully with checksum " + generatedSha);
         } catch (FileNotFoundException e) {
             Log.e(LOG, "Something went wrong while generating checksum", e);
             return getString(R.string.status_shasum_error);
         }
+
         return null;
     }
 
-    private String generateSha1(String location) {
+    private String generateSha1(File targetLocation) {
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            InputStream input = new FileInputStream(location);
+            InputStream input = new FileInputStream(targetLocation);
             byte[] buffer = new byte[8192];
             int len = input.read(buffer);
 
@@ -124,7 +128,7 @@ public class InstallService extends IntentService {
 
     // Download
 
-    private String download(String stringUrl, String targetLocation) {
+    private String download(String stringUrl, File targetLocation) {
         final PowerManager.WakeLock wakeLock = acquireWakelock();
 
         String result = null;
@@ -202,7 +206,7 @@ public class InstallService extends IntentService {
     private String unzip(Uri fileUri, File targetLocation) {
         String result = getString(R.string.status_install_success);
 
-        Log.i(LOG, "Unzipping " + fileUri + " to " + targetLocation.getAbsolutePath());
+        Log.i(LOG, "Unzipping " + fileUri + " to " + targetLocation);
 
         final PowerManager.WakeLock wakeLock = acquireWakelock();
 
@@ -211,7 +215,7 @@ public class InstallService extends IntentService {
         }
 
         // Create a .nomedia file in the server directory to prevent images from showing in gallery
-        createNoMediaFile(targetLocation.getAbsolutePath());
+        createNoMediaFile(targetLocation);
 
         Bundle bundleInit = new Bundle();
         bundleInit.putString("title", getString(R.string.status_installing_cuberite));
@@ -239,9 +243,9 @@ public class InstallService extends IntentService {
 
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (zipEntry.isDirectory()) {
-                new File(targetLocation.getAbsolutePath() + "/" + zipEntry.getName()).mkdir();
+                new File(targetLocation, zipEntry.getName()).mkdir();
             } else {
-                FileOutputStream outputStream = new FileOutputStream(targetLocation.getAbsolutePath() + "/" + zipEntry.getName());
+                FileOutputStream outputStream = new FileOutputStream(targetLocation + "/" + zipEntry.getName());
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
                 byte[] buffer = new byte[1024];
                 int read;
@@ -257,8 +261,8 @@ public class InstallService extends IntentService {
         zipInputStream.close();
     }
 
-    private void createNoMediaFile(String filePath) {
-        final File noMedia = new File(filePath + "/.nomedia");
+    private void createNoMediaFile(File targetFolder) {
+        final File noMedia = new File(targetFolder, ".nomedia");
         try {
             noMedia.createNewFile();
         } catch (IOException e) {
@@ -283,31 +287,35 @@ public class InstallService extends IntentService {
             result = getString(R.string.status_update_binary_error);
         } else if ("unzip".equals(intent.getAction())) {
             final Uri uri = Uri.parse(intent.getStringExtra("uri"));
-            final String targetLocation = (state == State.PICK_FILE_BINARY ? PRIVATE_DIR : intent.getStringExtra("targetLocation"));
+            final File targetFolder = new File(
+                    state == State.PICK_FILE_BINARY ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
+            );
             receiver = intent.getParcelableExtra("receiver");
 
-            result = unzip(uri, new File(targetLocation));
+            result = unzip(uri, targetFolder);
         } else {
             final String downloadHost = intent.getStringExtra("downloadHost");
             final String abi = CuberiteHelper.getPreferredABI();
-            final String executableName = intent.getStringExtra("executableName");
-            final String targetDirectory = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? PRIVATE_DIR : intent.getStringExtra("targetDirectory"));
 
-            final String zipTarget = PRIVATE_DIR + "/" + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? executableName : "server") + ".zip";
-            final String zipUrl = downloadHost + (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
+            final String targetFileName = (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? abi : "server") + ".zip";
+            final String downloadUrl = downloadHost + targetFileName;
+            final File tempZip = new File(this.getCacheDir(), targetFileName);  // Zip files are temporary
+            final File targetFolder = new File(
+                    state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
+            );
             receiver = intent.getParcelableExtra("receiver");
 
             // Download
             Log.i(LOG, "Downloading " + state);
 
             final int retryCount = 1;
-            result = downloadVerify(zipUrl, zipTarget, retryCount);
+            result = downloadVerify(downloadUrl, tempZip, retryCount);
 
             if (result == null) {
-                result = unzip(Uri.fromFile(new File(zipTarget)), new File(targetDirectory));
+                result = unzip(Uri.fromFile(tempZip), targetFolder);
 
-                if (!new File(zipTarget).delete()) {
-                    Log.w(LOG, getString(R.string.status_delete_file_error));
+                if (!tempZip.delete()) {
+                    Log.w(LOG, "Failed to delete downloaded zip file");
                 }
             }
 

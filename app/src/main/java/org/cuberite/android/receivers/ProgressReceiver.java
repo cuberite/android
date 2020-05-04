@@ -1,10 +1,12 @@
-package org.cuberite.android.helpers;
+package org.cuberite.android.receivers;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.os.ResultReceiver;
+import android.os.ResultReceiver;
+
+import org.cuberite.android.R;
 
 public class ProgressReceiver extends ResultReceiver {
     public static final int PROGRESS_START_INDETERMINATE = 0;
@@ -16,10 +18,11 @@ public class ProgressReceiver extends ResultReceiver {
 
     private ProgressDialog progressDialog;
 
-    ProgressReceiver(Context context, Handler handler) {
+    public ProgressReceiver(Context context, Handler handler) {
         super(handler);
         cont = context;
     }
+
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);

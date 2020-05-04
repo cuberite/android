@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="BaseTheme.v23" />
+
+    <style name="BaseTheme.v23" parent="BaseTheme.v21">
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:windowLightStatusBar">true</item>
-
-        <item name="android:colorBackground">@color/bg</item>
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorSecondary">@color/primary</item>
     </style>
 </resources>
