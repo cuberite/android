@@ -21,10 +21,11 @@ public class StateHelper {
     }
 
     public static boolean isCuberiteInstalled(Context context) {
+        State state = getState(context);
         return (
-                getState(context) != State.NEED_DOWNLOAD_BINARY
-                && getState(context) != State.NEED_DOWNLOAD_SERVER
-                && getState(context) != State.NEED_DOWNLOAD_BOTH
+                state != State.NEED_DOWNLOAD_BINARY
+                && state != State.NEED_DOWNLOAD_SERVER
+                && state != State.NEED_DOWNLOAD_BOTH
         );
     }
 
