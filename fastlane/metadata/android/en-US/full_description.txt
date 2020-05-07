@@ -1,0 +1,5 @@
+An easy way to run a Minecraft server on your phone.
+
+Cuberite is a Free and Open Source (FOSS) game server compatible with Minecraft Java Edition. Cuberite is designed with performance, configurability, and extensibility in mind, and also aims to accurately recreate most Minecraft features. The server is written in C++, and there is an extensive plugin system that allows for the user to write their own plugins with Lua.
+
+Cuberite currently supports Minecraft Java Edition 1.8 - 1.12.2.

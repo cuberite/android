@@ -1,0 +1,5 @@
+- Updated some translation data
+- Change overall design to match Cuberite's color scheme
+- Fix download errors on older and more recent devices
+- Work around Cuberite's output buffering bug
+- Add .nomedia file for Cuberite's server directory so it's ignored in the media picker

@@ -1,0 +1,2 @@
+- Revert API version to 28 to allow Cuberite to run on recent devices
+- Use alternative method of tinting icons

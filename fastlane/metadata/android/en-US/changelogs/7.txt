@@ -1,0 +1,3 @@
+- Use new URL for Cuberite downloads
+- Use simpler method for getting contents of picked files
+- Several theme cleanups and corrections
