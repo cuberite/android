@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0
