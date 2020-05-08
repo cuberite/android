@@ -1,0 +1,3 @@
+- Show correct progress when unpacking Cuberite
+- Major UI rework
+- Rework permission handling

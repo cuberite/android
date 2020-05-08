@@ -1,4 +1,6 @@
 # Changelog
+## Version 1.5.1 (2020-05-08)
+- Add fastlane structure for F-Droid inclusion
 ## Version 1.5 (2020-05-07)
 - Add option to automatically start Cuberite on device bootup
 - Major code rework and cleanup
