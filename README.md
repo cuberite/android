@@ -1,4 +1,4 @@
-# Cuberite for Android™ [![https://github.com/cuberite/android/actions?query=workflow:"Android+CI"](https://github.com/cuberite/android/workflows/Android%20CI/badge.svg)](https://github.com/cuberite/android/actions?query=workflow:"Android+CI")
+# Cuberite for Android™
 
 An easy way to run a Minecraft server on your phone.
 
@@ -17,6 +17,14 @@ APK files are available on the [release page](https://github.com/cuberite/androi
 - [Website](https://cuberite.org/)
 - [Main Repository](https://github.com/cuberite/cuberite)
 - [User's Manual](https://book.cuberite.org/)
+
+
+## CI Status
+
+- Android App:
+[![](https://github.com/cuberite/android/workflows/Android%20CI/badge.svg)](https://github.com/cuberite/android/actions?query=workflow:"Android+CI")
+- Android Builds:
+[![](https://img.shields.io/jenkins/build.svg?jobUrl=https%3A%2F%2Fbuilds.cuberite.org%2Fjob%2Fcuberite%2Fjob%2Fmaster%2Fjob%2Fandroid%2Fjob%2Frelease)](https://builds.cuberite.org/job/cuberite/job/master/job/android/job/release/)
 
 ## License
 
