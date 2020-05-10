@@ -200,7 +200,7 @@ public class CuberiteService extends IntentService {
 
             // Update notification IP if network changes
             IntentFilter intentFilter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-            LocalBroadcastManager.getInstance(this).registerReceiver(updateIp, intentFilter);
+            registerReceiver(updateIp, intentFilter);
 
             // Communication with the activity
             LocalBroadcastManager.getInstance(this).registerReceiver(executeCommand, new IntentFilter("executeCommand"));
