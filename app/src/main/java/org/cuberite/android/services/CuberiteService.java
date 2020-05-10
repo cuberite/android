@@ -219,8 +219,9 @@ public class CuberiteService extends IntentService {
             }
 
             // Shutdown
+            unregisterReceiver(updateIp);
+
             LocalBroadcastManager.getInstance(this).unregisterReceiver(executeCommand);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(updateIp);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(stop);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(kill);
 
