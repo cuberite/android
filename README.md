@@ -24,7 +24,7 @@ APK files are available on the [release page](https://github.com/cuberite/androi
 - Android App:
 [![](https://github.com/cuberite/android/workflows/Android%20CI/badge.svg)](https://github.com/cuberite/android/actions?query=workflow:"Android+CI")
 - Android Builds:
-[![](https://img.shields.io/jenkins/build.svg?jobUrl=https%3A%2F%2Fbuilds.cuberite.org%2Fjob%2Fcuberite%2Fjob%2Fmaster%2Fjob%2Fandroid%2Fjob%2Frelease)](https://builds.cuberite.org/job/cuberite/job/master/job/android/job/release/)
+[![](https://img.shields.io/jenkins/build.svg?jobUrl=https%3A%2F%2Fbuilds.cuberite.org%2Fjob%2Fandroid)](https://builds.cuberite.org/job/android/)
 
 ## License
 
