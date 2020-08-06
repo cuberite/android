@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="do_install_cuberite">安装Cuberite</string>
+    <string name="do_start_cuberite">启动服务器</string>
+    <string name="do_stop_cuberite">停止服务器</string>
+    <string name="do_kill_cuberite">杀死服务器\n（如果停止不起作用）</string>
+    <string name="do_execute_line">执行</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="enabled">已启用</string>
+    <string name="disabled">已关闭</string>
+    <string name="do_open_control">开关</string>
+    <string name="do_open_log">控制台</string>
+    <string name="do_open_settings">设置</string>
+
+    <string name="status_downloading_cuberite">正在下载Cuberite…</string>
+    <string name="status_shasum_error">SHA-1验证错误</string>
+    <string name="status_installing_cuberite">正在安装Cuberite…</string>
+    <string name="status_install_success">成功安装Cuberite！</string>
+    <string name="status_unzip_error">无法解压缩服务器文件</string>
+    <string name="status_update_binary_error">请先停止服务器，然后在更新Libraries</string>
+    <string name="status_failed_start">Cuberite无法启动。确保您的Libraries具有以下ABI: %1$s</string>
+    <string name="status_permissions_needed">需要权限</string>
+    <string name="status_missing_filemanager">找不到文件管理器</string>
+
+    <string name="notification_cuberite_running">Cuberite正在运行！</string>
+
+    <string name="service_description">该服务运行Cuberite，并确保它不会被系统杀死。</string>
+    <string name="installservice_description">该服务下载，解压缩并安装Cuberite。</string>
+
+    <string name="inputLine_hint">输入命令...</string>
+
+    <string name="message_externalstorage_permission">默认情况下，Cuberite将其世界存储在外部存储中，任何应用均可读取和写入。为此，您需要允许Cuberite写入外部存储。如果您不想授予必要的权限，请选择“拒绝”，Cuberite将使用该应用的私有存储</string>
+
+    <string name="title_activity_settings">设置</string>
+
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_choose">选择主题</string>
+    <string name="settings_theme_dark">黑色</string>
+    <string name="settings_theme_light">白色</string>
+    <string name="settings_theme_auto">自动</string>
+
+    <string name="settings_startup_toggle">在启动时启动Cuberite</string>
+    <string name="settings_startup_explanation">启动设备时自动启动Cuberite</string>
+
+
+    <string name="settings_install_update">执行Cuberite更新</string>
+    <string name="settings_install_update_explanation">使用以下选项来更新您的Cuberite\n注意，执行server.zip更新，可能会覆盖服务器设置</string>
+    <string name="settings_install_update_binary">下载并安装Libraries文件</string>
+    <string name="settings_install_update_server">下载并安装server.zip</string>
+    <string name="settings_install_manually">手动安装zip文件</string>
+    <string name="settings_install_manually_explanation">您可以使用自己编译的Libraries文件，无需下载Cuberite</string>
+    <string name="settings_install_manually_abi">设备所需的ABI：%1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
+    <string name="settings_install_select_binary">选择并安装Libraries文件</string>
+    <string name="settings_install_select_server">选择并安装server.zip</string>
+
+    <string name="settings_webadmin_heading">网络管理员</string>
+    <string name="settings_webadmin_explanation">为了对服务器进行微调，您可以使用内置的Webadmin\n使用此处的设置为其设置用户名和密码</string>
+    <string name="settings_webadmin_open">开启Webadmin</string>
+    <string name="settings_webadmin_login">更改登录凭证</string>
+    <string name="settings_webadmin_not_running">您需要先运行Cuberite，然后才能访问Webadmin</string>
+    <string name="settings_webadmin_error">设置Webadmin之前需要安装Cuberite</string>
+    <string name="settings_webadmin_success">成功！下次启动Cuberite时，将激活新的凭证</string>
+
+    <string name="settings_troubleshooting_heading">故障排除</string>
+    <string name="settings_authentication_errors_explanation">如果在连接Cuberite时遇到问题，并收到“无法通过身份验证！”，可以禁用身份验证</string>
+    <string name="settings_authentication_toggle">认证方式</string>
+    <string name="settings_authentication_toggle_error">访问服务器配置时出了点问题</string>
+    <string name="settings_authentication_toggle_success">成功！身份验证现在为 %1$s！重新启动服务器以激活更改</string>
+
+    <string name="settings_info_heading">信息</string>
+    <string name="settings_info_version">版本 %1$s</string>
+    <string name="settings_info_debug">调试信息</string>
+    <string name="settings_info_libraries">第三方Libraries</string>
+
+    <string name="ini4j_license">[ini4j]Libraries的许可证（用于操纵Cuberite设置）</string>
+</resources>
