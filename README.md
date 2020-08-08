@@ -10,7 +10,7 @@ The Android app for Cuberite does not contain source code for the [Cuberite serv
 
 ## Download
 
-APK files are available on the [release page](https://github.com/cuberite/android/releases).
+Cuberite can be installed from the [F-Droid](https://f-droid.org/en/packages/org.cuberite.android/) repository. Alternatively, APK files are available on the [release page](https://github.com/cuberite/android/releases).
 
 ## Useful Links
 
