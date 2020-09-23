@@ -1,0 +1,3 @@
+- The server IP is now updated properly in notifications
+- Fix build process
+
