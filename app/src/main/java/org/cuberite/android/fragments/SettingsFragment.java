@@ -1,5 +1,6 @@
 package org.cuberite.android.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -8,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -61,6 +64,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         // Initialize
         initializeThemeSettings(preferences);
         initializeStartupSettings(preferences);
+        initializeSDCardSettings(preferences);
         initializeWebadminSettings(cuberiteDir);
         initializeInstallSettings();
         initializeAuthenticationSettings(cuberiteDir);
@@ -139,6 +143,68 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         });
     }
+
+
+    // SD Card-related methods
+
+    private void initializeSDCardSettings(final SharedPreferences preferences) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && requireContext().getExternalFilesDirs(null).length > 1
+                && requireContext().getExternalFilesDirs(null)[1] != null) {
+            final String PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
+            final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
+
+            Log.d(LOG, "SD Card found, showing preference");
+            toggleSD.setVisible(true);
+
+            if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
+                toggleSD.setChecked(false);
+            }
+
+            toggleSD.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (CuberiteHelper.isCuberiteRunning(requireContext())) {
+                        MainActivity.showSnackBar(
+                                requireContext(),
+                                getString(R.string.settings_sd_card_running)
+                        );
+                        toggleSD.setChecked(!toggleSD.isChecked());
+                        return true;
+                    }
+
+                    String location = PUBLIC_DIR;
+
+                    if (toggleSD.isChecked()) {
+                        location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();  // SD dir
+                    } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        location = requireContext().getFilesDir().getAbsolutePath();  // Private dir
+                    }
+
+                    preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
+                    return true;
+                }
+            });
+        }
+    }
+
+    private BroadcastReceiver unmountSD = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
+            String location = Environment.getExternalStorageDirectory().getAbsolutePath();  // Public dir
+
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                location = context.getFilesDir().getAbsolutePath();  // Private dir
+            }
+
+            preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
+
+            final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
+            toggleSD.setChecked(false);
+            toggleSD.setVisible(false);
+        }
+    };
 
 
     // Webadmin-related methods
@@ -496,12 +562,25 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onPause() {
         super.onPause();
+        requireContext().unregisterReceiver(unmountSD);
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(installServiceCallback);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        IntentFilter sdIntentFilter = new IntentFilter();
+        sdIntentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);
+        sdIntentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+        sdIntentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
+        sdIntentFilter.addDataScheme("file");
+
+        requireContext().registerReceiver(
+                unmountSD,
+                sdIntentFilter
+        );
+
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
                 installServiceCallback,
                 new IntentFilter("InstallService.callback")
