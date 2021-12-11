@@ -23,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:elevation="10dp" tools:targetApi="lollipop"
-        android:background="@color/bg">
+        android:background="?attr/colorSurface"
+        android:elevation="8dp" tools:targetApi="lollipop">
 
         <EditText
             android:id="@+id/inputLine"

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // Set navigation bar listener
         navigation = findViewById(R.id.bottom_navigation);
-        navigation.setOnNavigationItemSelectedListener(this);
+        navigation.setOnItemSelectedListener(this);
 
         // Initialize settings
         preferences = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);

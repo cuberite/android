@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.cuberite.android.MainActivity;
 import org.cuberite.android.helpers.CuberiteHelper;
 import org.cuberite.android.helpers.InstallHelper;
@@ -42,7 +44,7 @@ public class ControlFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mainButton = view.findViewById(R.id.mainButton);
-        mainButtonColor = ContextCompat.getColor(requireContext(), R.color.bg);
+        mainButtonColor = MaterialColors.getColor(mainButton, R.attr.colorSurface);
     }
 
     private void animateColorChange(final View view, int colorFrom, int colorTo) {
@@ -61,7 +63,7 @@ public class ControlFragment extends Fragment {
     }
 
     private void setInstallButton(final State state) {
-        int colorTo = ContextCompat.getColor(requireContext(), R.color.primary);
+        int colorTo = MaterialColors.getColor(mainButton, R.attr.colorPrimary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_install_cuberite));
         mainButton.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +80,7 @@ public class ControlFragment extends Fragment {
     }
 
     private void setStartButton() {
-        int colorTo = ContextCompat.getColor(requireContext(), R.color.primary);
+        int colorTo = MaterialColors.getColor(mainButton, R.attr.colorPrimary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_start_cuberite));
         mainButton.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +98,7 @@ public class ControlFragment extends Fragment {
     }
 
     private void setStopButton() {
-        int colorTo = ContextCompat.getColor(requireContext(), R.color.warning);
+        int colorTo = MaterialColors.getColor(mainButton, R.attr.colorTertiary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_stop_cuberite));
         mainButton.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +111,7 @@ public class ControlFragment extends Fragment {
     }
 
     private void setKillButton() {
-        int colorTo = ContextCompat.getColor(requireContext(), R.color.danger);
+        int colorTo = MaterialColors.getColor(mainButton, R.attr.colorError);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_kill_cuberite));
         mainButton.setOnClickListener(new View.OnClickListener() {
