@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -52,12 +51,7 @@ public class ControlFragment extends Fragment {
 
         ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.setDuration(300);
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                view.setBackgroundColor((int) animator.getAnimatedValue());
-            }
-        });
+        colorAnimation.addUpdateListener(animator -> view.setBackgroundColor((int) animator.getAnimatedValue()));
         colorAnimation.start();
         mainButtonColor = colorTo;
     }
@@ -66,16 +60,13 @@ public class ControlFragment extends Fragment {
         int colorTo = MaterialColors.getColor(mainButton, R.attr.colorPrimary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_install_cuberite));
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-                        installServiceCallback,
-                        new IntentFilter("InstallService.callback")
-                );
+        mainButton.setOnClickListener(view -> {
+            LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                    installServiceCallback,
+                    new IntentFilter("InstallService.callback")
+            );
 
-                InstallHelper.installCuberiteDownload(requireActivity(), state);
-            }
+            InstallHelper.installCuberiteDownload(requireActivity(), state);
         });
     }
 
@@ -83,17 +74,14 @@ public class ControlFragment extends Fragment {
         int colorTo = MaterialColors.getColor(mainButton, R.attr.colorPrimary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_start_cuberite));
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-                        showStartupError,
-                        new IntentFilter("showStartupError")
-                );
+        mainButton.setOnClickListener(view -> {
+            LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                    showStartupError,
+                    new IntentFilter("showStartupError")
+            );
 
-                CuberiteHelper.startCuberite(requireContext());
-                setStopButton();
-            }
+            CuberiteHelper.startCuberite(requireContext());
+            setStopButton();
         });
     }
 
@@ -101,12 +89,9 @@ public class ControlFragment extends Fragment {
         int colorTo = MaterialColors.getColor(mainButton, R.attr.colorTertiary);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_stop_cuberite));
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CuberiteHelper.stopCuberite(requireContext());
-                setKillButton();
-            }
+        mainButton.setOnClickListener(view -> {
+            CuberiteHelper.stopCuberite(requireContext());
+            setKillButton();
         });
     }
 
@@ -114,12 +99,7 @@ public class ControlFragment extends Fragment {
         int colorTo = MaterialColors.getColor(mainButton, R.attr.colorError);
         animateColorChange(mainButton, mainButtonColor, colorTo);
         mainButton.setText(getText(R.string.do_kill_cuberite));
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CuberiteHelper.killCuberite(requireContext());
-            }
-        });
+        mainButton.setOnClickListener(view -> CuberiteHelper.killCuberite(requireContext()));
     }
 
     private void updateControlButton() {

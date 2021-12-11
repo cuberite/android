@@ -40,28 +40,22 @@ public class ConsoleFragment extends Fragment {
         logView = view.findViewById(R.id.logView);
 
         inputLine = view.findViewById(R.id.inputLine);
-        inputLine.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    String command = inputLine.getText().toString();
-                    sendExecuteCommand(command);
-                    inputLine.setText("");
-                    // return true makes sure the keyboard doesn't close
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        ImageView sendCommandButton = view.findViewById(R.id.executeLine);
-        sendCommandButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        inputLine.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 String command = inputLine.getText().toString();
                 sendExecuteCommand(command);
                 inputLine.setText("");
+                // return true makes sure the keyboard doesn't close
+                return true;
             }
+            return false;
+        });
+
+        ImageView sendCommandButton = view.findViewById(R.id.executeLine);
+        sendCommandButton.setOnClickListener(v -> {
+            String command = inputLine.getText().toString();
+            sendExecuteCommand(command);
+            inputLine.setText("");
         });
         TooltipCompat.setTooltipText(sendCommandButton, getString(R.string.do_execute_line));
     }
@@ -91,12 +85,9 @@ public class ConsoleFragment extends Fragment {
             logView.setText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY));
 
             if (shouldScroll) {
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                        inputLine.requestFocus();
-                    }
+                scrollView.post(() -> {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                    inputLine.requestFocus();
                 });
             }
         }

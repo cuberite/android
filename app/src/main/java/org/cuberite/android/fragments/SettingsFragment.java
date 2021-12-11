@@ -99,28 +99,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 break;
         }
 
-        theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int newTheme;
+        theme.setOnPreferenceChangeListener((preference, newValue) -> {
+            int newTheme;
 
-                switch (newValue.toString()) {
-                    case "light":
-                        newTheme = MODE_NIGHT_NO;
-                        break;
-                    case "dark":
-                        newTheme = MODE_NIGHT_YES;
-                        break;
-                    default:
-                        newTheme = MODE_NIGHT_FOLLOW_SYSTEM;
-                        break;
-                }
-
-                AppCompatDelegate.setDefaultNightMode(newTheme);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt("defaultTheme", newTheme);
-                editor.apply();
-                return true;
+            switch (newValue.toString()) {
+                case "light":
+                    newTheme = MODE_NIGHT_NO;
+                    break;
+                case "dark":
+                    newTheme = MODE_NIGHT_YES;
+                    break;
+                default:
+                    newTheme = MODE_NIGHT_FOLLOW_SYSTEM;
+                    break;
             }
+
+            AppCompatDelegate.setDefaultNightMode(newTheme);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("defaultTheme", newTheme);
+            editor.apply();
+            return true;
         });
     }
 
@@ -129,18 +127,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeStartupSettings(final SharedPreferences preferences) {
         final SwitchPreferenceCompat startupToggle = findPreference("startupToggle");
-        startupToggle.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final boolean newStartOnBoot = !preferences.getBoolean("startOnBoot", false);
+        startupToggle.setOnPreferenceClickListener(preference -> {
+            final boolean newStartOnBoot = !preferences.getBoolean("startOnBoot", false);
 
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("startOnBoot", newStartOnBoot);
-                editor.apply();
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("startOnBoot", newStartOnBoot);
+            editor.apply();
 
-                startupToggle.setChecked(newStartOnBoot);
-                return true;
-            }
+            startupToggle.setChecked(newStartOnBoot);
+            return true;
         });
     }
 
@@ -161,29 +156,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 toggleSD.setChecked(false);
             }
 
-            toggleSD.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (CuberiteHelper.isCuberiteRunning(requireContext())) {
-                        MainActivity.showSnackBar(
-                                requireContext(),
-                                getString(R.string.settings_sd_card_running)
-                        );
-                        toggleSD.setChecked(!toggleSD.isChecked());
-                        return true;
-                    }
-
-                    String location = PUBLIC_DIR;
-
-                    if (toggleSD.isChecked()) {
-                        location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();  // SD dir
-                    } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        location = requireContext().getFilesDir().getAbsolutePath();  // Private dir
-                    }
-
-                    preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
+            toggleSD.setOnPreferenceClickListener(preference -> {
+                if (CuberiteHelper.isCuberiteRunning(requireContext())) {
+                    MainActivity.showSnackBar(
+                            requireContext(),
+                            getString(R.string.settings_sd_card_running)
+                    );
+                    toggleSD.setChecked(!toggleSD.isChecked());
                     return true;
                 }
+
+                String location = PUBLIC_DIR;
+
+                if (toggleSD.isChecked()) {
+                    location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();  // SD dir
+                } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    location = requireContext().getFilesDir().getAbsolutePath();  // Private dir
+                }
+
+                preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
+                return true;
             });
         }
     }
@@ -240,41 +232,35 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final String urlInner = url;
 
         Preference webadminOpen = findPreference("webadminOpen");
-        webadminOpen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (!CuberiteHelper.isCuberiteRunning(requireContext())) {
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            getString(R.string.settings_webadmin_not_running)
-                    );
-                } else if (urlInner != null) {
-                    Log.d(LOG, "Opening Webadmin on " + urlInner);
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlInner));
-                    startActivity(browserIntent);
-                }
-                return true;
+        webadminOpen.setOnPreferenceClickListener(preference -> {
+            if (!CuberiteHelper.isCuberiteRunning(requireContext())) {
+                MainActivity.showSnackBar(
+                        requireContext(),
+                        getString(R.string.settings_webadmin_not_running)
+                );
+            } else if (urlInner != null) {
+                Log.d(LOG, "Opening Webadmin on " + urlInner);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlInner));
+                startActivity(browserIntent);
             }
+            return true;
         });
 
         Preference webadminLogin = findPreference("webadminLogin");
-        webadminLogin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                try {
-                    final Ini ini = createWebadminIni(webadminFile);
-                    ini.put("WebAdmin", "Enabled", 1);
+        webadminLogin.setOnPreferenceClickListener(preference -> {
+            try {
+                final Ini ini = createWebadminIni(webadminFile);
+                ini.put("WebAdmin", "Enabled", 1);
 
-                    showWebadminCredentialPopup(webadminFile, ini);
-                } catch(IOException e) {
-                    Log.e(LOG, "Something went wrong while opening the ini file", e);
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            getString(R.string.settings_webadmin_error)
-                    );
-                }
-                return true;
+                showWebadminCredentialPopup(webadminFile, ini);
+            } catch(IOException e) {
+                Log.e(LOG, "Something went wrong while opening the ini file", e);
+                MainActivity.showSnackBar(
+                        requireContext(),
+                        getString(R.string.settings_webadmin_error)
+                );
             }
+            return true;
         });
     }
 
@@ -311,35 +297,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(layout)
                 .setTitle(R.string.settings_webadmin_login)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        String newUsername = ((EditText) layout.findViewById(R.id.webadminUsername)).getText().toString();
-                        String newPassword = ((EditText) layout.findViewById(R.id.webadminPassword)).getText().toString();
+                .setPositiveButton(R.string.ok, (dialog12, id) -> {
+                    String newUsername = ((EditText) layout.findViewById(R.id.webadminUsername)).getText().toString();
+                    String newPassword = ((EditText) layout.findViewById(R.id.webadminPassword)).getText().toString();
 
-                        ini.remove("User:" + oldUsername);
-                        ini.put("User:" + newUsername, "Password", newPassword);
+                    ini.remove("User:" + oldUsername);
+                    ini.put("User:" + newUsername, "Password", newPassword);
 
-                        try {
-                            ini.store(webadminFile);
-                            MainActivity.showSnackBar(
-                                    requireContext(),
-                                    getString(R.string.settings_webadmin_success)
-                            );
-                        } catch(IOException e) {
-                            Log.e(LOG, "Something went wrong while saving the ini file", e);
-                            MainActivity.showSnackBar(
-                                    requireContext(),
-                                    getString(R.string.settings_webadmin_error)
-                            );
-                        }
+                    try {
+                        ini.store(webadminFile);
+                        MainActivity.showSnackBar(
+                                requireContext(),
+                                getString(R.string.settings_webadmin_success)
+                        );
+                    } catch(IOException e) {
+                        Log.e(LOG, "Something went wrong while saving the ini file", e);
+                        MainActivity.showSnackBar(
+                                requireContext(),
+                                getString(R.string.settings_webadmin_error)
+                        );
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                })
+                .setNegativeButton(R.string.cancel, (dialog1, id) -> dialog1.cancel())
                 .create();
         dialog.show();
     }
@@ -349,21 +328,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeInstallSettings() {
         Preference updateBinary = findPreference("installUpdateBinary");
-        updateBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_BINARY);
-                return true;
-            }
+        updateBinary.setOnPreferenceClickListener(preference -> {
+            InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_BINARY);
+            return true;
         });
 
         Preference updateServer = findPreference("installUpdateServer");
-        updateServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_SERVER);
-                return true;
-            }
+        updateServer.setOnPreferenceClickListener(preference -> {
+            InstallHelper.installCuberiteDownload(requireActivity(), State.NEED_DOWNLOAD_SERVER);
+            return true;
         });
 
         String abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteHelper.getPreferredABI());
@@ -371,21 +344,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setABIText.setSummary(setABIText.getSummary() + "\n\n" + abi);
 
         Preference installBinary = findPreference("installBinary");
-        installBinary.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                pickFile(State.PICK_FILE_BINARY);
-                return true;
-            }
+        installBinary.setOnPreferenceClickListener(preference -> {
+            pickFile(State.PICK_FILE_BINARY);
+            return true;
         });
 
         Preference installServer = findPreference("installServer");
-        installServer.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                pickFile(State.PICK_FILE_SERVER);
-                return true;
-            }
+        installServer.setOnPreferenceClickListener(preference -> {
+            pickFile(State.PICK_FILE_SERVER);
+            return true;
         });
     }
 
@@ -433,35 +400,32 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         updateAuthenticationToggle(settingsFile, toggleAuthentication);
 
-        toggleAuthentication.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
+        toggleAuthentication.setOnPreferenceClickListener(preference -> {
+            try {
+                final Ini ini = new Ini(settingsFile);
+                boolean newEnabled = true;
+
                 try {
-                    final Ini ini = new Ini(settingsFile);
-                    boolean newEnabled = true;
-
-                    try {
-                        newEnabled = Integer.parseInt(ini.get("Authentication", "Authenticate")) == 0;
-                    } catch (NumberFormatException ignored) {
-                    }
-
-                    toggleAuthentication.setChecked(newEnabled);
-
-                    ini.put("Authentication", "Authenticate", newEnabled ? 1 : 0);
-                    ini.store(settingsFile);
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled ? R.string.enabled : R.string.disabled))
-                    );
-                } catch (IOException e) {
-                    Log.e(LOG, "Something went wrong while opening the ini file", e);
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            getString(R.string.settings_authentication_toggle_error)
-                    );
+                    newEnabled = Integer.parseInt(ini.get("Authentication", "Authenticate")) == 0;
+                } catch (NumberFormatException ignored) {
                 }
-                return true;
+
+                toggleAuthentication.setChecked(newEnabled);
+
+                ini.put("Authentication", "Authenticate", newEnabled ? 1 : 0);
+                ini.store(settingsFile);
+                MainActivity.showSnackBar(
+                        requireContext(),
+                        String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled ? R.string.enabled : R.string.disabled))
+                );
+            } catch (IOException e) {
+                Log.e(LOG, "Something went wrong while opening the ini file", e);
+                MainActivity.showSnackBar(
+                        requireContext(),
+                        getString(R.string.settings_authentication_toggle_error)
+                );
             }
+            return true;
         });
     }
 
@@ -498,46 +462,37 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeInfoSettings(final SharedPreferences preferences) {
         Preference infoDebugInfo = findPreference("infoDebugInfo");
-        infoDebugInfo.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final String title = getString(R.string.settings_info_debug);
-                final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
-                        "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
-                        "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
-                        "Private directory: " + requireContext().getFilesDir() + "\n" +
-                        "Public directory: " + Environment.getExternalStorageDirectory() + "\n" +
-                        "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
-                        "Download URL: " + InstallHelper.getDownloadHost();
-                showInfoPopup(title, message);
-                return true;
-            }
+        infoDebugInfo.setOnPreferenceClickListener(preference -> {
+            final String title = getString(R.string.settings_info_debug);
+            final String message = "Running on Android " + Build.VERSION.RELEASE + " (API Level " + Build.VERSION.SDK_INT + ")\n" +
+                    "Using ABI " + CuberiteHelper.getPreferredABI() + "\n" +
+                    "IP: " + CuberiteHelper.getIpAddress(requireContext()) + "\n" +
+                    "Private directory: " + requireContext().getFilesDir() + "\n" +
+                    "Public directory: " + Environment.getExternalStorageDirectory() + "\n" +
+                    "Storage location: " + preferences.getString("cuberiteLocation", "") + "\n" +
+                    "Download URL: " + InstallHelper.getDownloadHost();
+            showInfoPopup(title, message);
+            return true;
         });
 
         Preference thirdPartyLicenses = findPreference("thirdPartyLicenses");
-        thirdPartyLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final String title = getString(R.string.settings_info_libraries);
-                final String message = getString(R.string.ini4j_license) + "\n\n" +
-                        getString(R.string.ini4j_license_description);
-                showInfoPopup(title, message);
-                return true;
-            }
+        thirdPartyLicenses.setOnPreferenceClickListener(preference -> {
+            final String title = getString(R.string.settings_info_libraries);
+            final String message = getString(R.string.ini4j_license) + "\n\n" +
+                    getString(R.string.ini4j_license_description);
+            showInfoPopup(title, message);
+            return true;
         });
 
         Preference version = findPreference("version");
         version.setSummary(String.format(getString(R.string.settings_info_version), BuildConfig.VERSION_NAME));
-        version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final Intent browserIntent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://download.cuberite.org/android")
-                );
-                startActivity(browserIntent);
-                return true;
-            }
+        version.setOnPreferenceClickListener(preference -> {
+            final Intent browserIntent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://download.cuberite.org/android")
+            );
+            startActivity(browserIntent);
+            return true;
         });
     }
 
@@ -545,11 +500,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
+                .setPositiveButton(R.string.ok, (dialog1, id) -> {
+                    if (dialog1 != null) {
+                        dialog1.dismiss();
                     }
                 })
                 .create();

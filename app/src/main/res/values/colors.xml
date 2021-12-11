@@ -51,6 +51,4 @@
     <color name="md_theme_dark_inverseOnSurface">#191C1B</color>
     <color name="md_theme_dark_inverseSurface">#E0E3DF</color>
     <color name="md_theme_dark_primaryInverse">#006C50</color>
-    <color name="seed">#378B6F</color>
-    <color name="error">#BA1B1B</color>
 </resources>

@@ -26,7 +26,7 @@ import org.cuberite.android.fragments.ConsoleFragment;
 import org.cuberite.android.fragments.ControlFragment;
 import org.cuberite.android.fragments.SettingsFragment;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
     // Logging tag
     private final String LOG = "Cuberite/MainActivity";
 
@@ -65,16 +65,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
 
-        switch (item.getItemId()) {
-            case R.id.item_control:
-                fragment = new ControlFragment();
-                break;
-            case R.id.item_console:
-                fragment = new ConsoleFragment();
-                break;
-            case R.id.item_settings:
-                fragment = new SettingsFragment();
-                break;
+        if (item.getItemId() == R.id.item_control) {
+            fragment = new ControlFragment();
+        }
+        else if (item.getItemId() == R.id.item_console) {
+            fragment = new ConsoleFragment();
+        }
+        else if (item.getItemId() == R.id.item_settings) {
+            fragment = new SettingsFragment();
         }
 
         return loadFragment(fragment);
@@ -102,12 +100,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             .setTitle(getString(R.string.status_permissions_needed))
             .setMessage(R.string.message_externalstorage_permission)
             .setCancelable(false)
-            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Log.d(LOG, "Requesting permissions for external storage");
-                    permissionPopup = null;
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-                }
+            .setPositiveButton(R.string.ok, (dialog, id) -> {
+                Log.d(LOG, "Requesting permissions for external storage");
+                permissionPopup = null;
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
             })
             .create();
 
