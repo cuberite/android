@@ -28,7 +28,7 @@
     <string name="service_description">该服务运行Cuberite，并确保它不会被系统杀死。</string>
     <string name="installservice_description">该服务下载，解压缩并安装Cuberite。</string>
 
-    <string name="inputLine_hint">输入命令...</string>
+    <string name="inputLine_hint">输入命令…</string>
 
     <string name="message_externalstorage_permission">默认情况下，Cuberite将其世界存储在外部存储中，任何应用均可读取和写入。为此，您需要允许Cuberite写入外部存储。如果您不想授予必要的权限，请选择“拒绝”，Cuberite将使用该应用的私有存储</string>
 

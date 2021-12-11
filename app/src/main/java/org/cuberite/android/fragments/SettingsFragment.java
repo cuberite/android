@@ -188,7 +188,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private BroadcastReceiver unmountSD = new BroadcastReceiver() {
+    private final BroadcastReceiver unmountSD = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
