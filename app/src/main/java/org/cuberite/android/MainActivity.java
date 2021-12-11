@@ -120,10 +120,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             // User is running Android 6 or above, show permission popup on first run
             // or if user granted permission and later denied it
 
-            if (location.startsWith(PUBLIC_DIR)) {
+            if (!location.startsWith(PRIVATE_DIR)) {
                 showPermissionPopup();
             }
-        } else if (location.startsWith(PRIVATE_DIR)) {
+        } else if (!location.startsWith(PUBLIC_DIR)) {
             preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
         }
     }
