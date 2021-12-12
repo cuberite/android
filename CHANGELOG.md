@@ -1,6 +1,15 @@
 # Changelog
+
+## Version 1.5.3 (2020-08-06)
+- Increment version number in the app
+
+## Version 1.5.2 (2020-08-06)
+- The server IP is now updated properly in notifications
+- Fix build process
+
 ## Version 1.5.1 (2020-05-08)
 - Add fastlane structure for F-Droid inclusion
+
 ## Version 1.5 (2020-05-07)
 - Add option to automatically start Cuberite on device bootup
 - Major code rework and cleanup
