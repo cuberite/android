@@ -1,11 +1,9 @@
 package org.cuberite.android.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -18,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
@@ -32,7 +32,6 @@ import org.cuberite.android.MainActivity;
 import org.cuberite.android.R;
 import org.cuberite.android.helpers.CuberiteHelper;
 import org.cuberite.android.helpers.InstallHelper;
-import org.cuberite.android.helpers.StateHelper;
 import org.cuberite.android.helpers.StateHelper.State;
 import org.ini4j.Config;
 import org.ini4j.Ini;
@@ -345,13 +344,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         Preference installBinary = findPreference("installBinary");
         installBinary.setOnPreferenceClickListener(preference -> {
-            pickFile(State.PICK_FILE_BINARY);
+            pickFile(pickFileBinaryLauncher);
             return true;
         });
 
         Preference installServer = findPreference("installServer");
         installServer.setOnPreferenceClickListener(preference -> {
-            pickFile(State.PICK_FILE_SERVER);
+            pickFile(pickFileServerLauncher);
             return true;
         });
     }
@@ -364,30 +363,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     };
 
-    private void pickFile(StateHelper.State state) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    private final ActivityResultLauncher<String> pickFileBinaryLauncher =
+        registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_BINARY, uri);
+        });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // Only show file sources that support loading content from Uri
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        }
+    private final ActivityResultLauncher<String> pickFileServerLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_SERVER, uri);
+            });
 
-        intent.setType("*/*");
-
+    private void pickFile(ActivityResultLauncher<String> launcher) {
         try {
-            startActivityForResult(intent, state.ordinal());
+            launcher.launch("*/*");
         } catch (ActivityNotFoundException e) {
             MainActivity.showSnackBar(
                     requireContext(),
                     requireContext().getString(R.string.status_missing_filemanager)
             );
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.values()[requestCode], data);
         }
     }
 

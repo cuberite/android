@@ -29,15 +29,13 @@ public class InstallHelper {
         activity.startService(intent);
     }
 
-    public static void installCuberiteLocal(Activity activity, State state, Intent data) {
+    public static void installCuberiteLocal(Activity activity, State state, Uri selectedFileUri) {
         SharedPreferences preferences = activity.getSharedPreferences(activity.getPackageName(), Context.MODE_PRIVATE);
 
-        if (data != null) {
-            Uri selectedFileUri = data.getData();
-
+        if (selectedFileUri != null) {
             Intent intent = new Intent(activity, InstallService.class)
                     .setAction("unzip")
-                    .putExtra("uri", selectedFileUri.toString())
+                    .putExtra("uri", selectedFileUri)
                     .putExtra("state", state)
                     .putExtra("targetFolder", preferences.getString("cuberiteLocation", ""))
                     .putExtra("receiver", new ProgressReceiver(activity, new Handler()));

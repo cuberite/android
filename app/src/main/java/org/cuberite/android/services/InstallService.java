@@ -286,12 +286,11 @@ public class InstallService extends IntentService {
         ) {
             result = getString(R.string.status_update_binary_error);
         } else if ("unzip".equals(intent.getAction())) {
-            final Uri uri = Uri.parse(intent.getStringExtra("uri"));
+            final Uri uri = intent.getParcelableExtra("uri");
             final File targetFolder = new File(
                     state == State.PICK_FILE_BINARY ? this.getFilesDir().getAbsolutePath() : intent.getStringExtra("targetFolder")
             );
             receiver = intent.getParcelableExtra("receiver");
-
             result = unzip(uri, targetFolder);
         } else {
             final String downloadHost = intent.getStringExtra("downloadHost");
