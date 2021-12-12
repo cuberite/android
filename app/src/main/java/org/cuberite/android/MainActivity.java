@@ -10,11 +10,12 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private String PRIVATE_DIR;
     private String PUBLIC_DIR;
-    private final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +94,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .show();
     }
 
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.i(LOG, "Got permissions, using public directory");
+                    preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
+                } else {
+                    Log.i(LOG, "Permissions denied, boo, using private directory");
+                    preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
+                }
+            });
+
     private void showPermissionPopup() {
         permissionPopup = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.status_permissions_needed))
@@ -102,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             .setPositiveButton(R.string.ok, (dialog, id) -> {
                 Log.d(LOG, "Requesting permissions for external storage");
                 permissionPopup = null;
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             })
             .create();
 
@@ -120,22 +131,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         } else if (!location.startsWith(PUBLIC_DIR)) {
             preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(LOG, "Got permissions, using public directory");
-                preferences.edit().putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server").apply();
-            } else {
-                Log.i(LOG, "Permissions denied, boo, using private directory");
-                preferences.edit().putString("cuberiteLocation", PRIVATE_DIR + "/cuberite-server").apply();
-            }
         }
     }
 
