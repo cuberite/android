@@ -43,12 +43,6 @@
     <string name="settings_webadmin_login">Verander gebruikersnaam en wachtwoord</string>
     <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en wachtwoord zijn geldig nadat u Cuberite herstart</string>
 
-    <string name="settings_troubleshooting_heading">Troubleshooting</string>
-    <string name="settings_authentication_errors_explanation">Als u problemen heeft met het verbinden met Cuberite en het bericht \"Authenticatie mislukt!\" krijgt moet u misshien de authenticatie uitschakelen met de knop hieronder.</string>
-    <string name="settings_authentication_toggle">Authenticatie</string>
-    <string name="settings_authentication_toggle_error">Er ging iets fout tijdens het aanpassen van de Server configuratie.</string>
-    <string name="settings_authentication_toggle_success">Success! Authenticatie is nu %1$s! Herstart de server om de verandering toe te passen.</string>
-
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Debug informatie</string>
     <string name="settings_info_libraries">Bibliotheken van derden</string>

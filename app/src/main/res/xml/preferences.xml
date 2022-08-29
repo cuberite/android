@@ -65,14 +65,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/settings_troubleshooting_heading">
-        <SwitchPreferenceCompat
-            app:key="troubleshootingAuthenticationToggle"
-            app:title="@string/settings_authentication_toggle"
-            app:summary="@string/settings_authentication_errors_explanation" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         app:title="@string/settings_info_heading">
         <Preference
             app:key="infoDebugInfo"

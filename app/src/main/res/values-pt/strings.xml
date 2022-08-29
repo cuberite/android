@@ -43,12 +43,6 @@
     <string name="settings_webadmin_login">Alterar credenciais de acesso</string>
     <string name="settings_webadmin_success">Sucesso! As novas credenciais serão ativadas na próxima vez que você iniciar o Cuberite</string>
 
-    <string name="settings_troubleshooting_heading">Solução de problemas</string>
-    <string name="settings_authentication_errors_explanation">Se você tiver problemas para conectar ao Cuberite e recebe a mensagem \"Failed to authenticate!\" você pode querer desativar a autenticação usando o botão abaixo.</string>
-    <string name="settings_authentication_toggle">Ativar/desativar a autenticação</string>
-    <string name="settings_authentication_toggle_error">Algo deu errado ao acessar a configuração do servidor</string>
-    <string name="settings_authentication_toggle_success">Sucesso, %1$s a autenticação! Reinicie o servidor para ativar a alteração</string>
-
     <string name="settings_info_heading">Info</string>
     <string name="settings_info_debug">Informações de Depuração</string>
     <string name="settings_info_libraries">Bibliotecas de terceiros</string>

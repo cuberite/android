@@ -62,12 +62,6 @@
     <string name="settings_webadmin_error">设置Webadmin之前需要安装Cuberite</string>
     <string name="settings_webadmin_success">成功！下次启动Cuberite时，将激活新的凭证</string>
 
-    <string name="settings_troubleshooting_heading">故障排除</string>
-    <string name="settings_authentication_errors_explanation">如果在连接Cuberite时遇到问题，并收到“无法通过身份验证！”，可以禁用身份验证</string>
-    <string name="settings_authentication_toggle">认证方式</string>
-    <string name="settings_authentication_toggle_error">访问服务器配置时出了点问题</string>
-    <string name="settings_authentication_toggle_success">成功！身份验证现在为 %1$s！重新启动服务器以激活更改</string>
-
     <string name="settings_info_heading">信息</string>
     <string name="settings_info_version">版本 %1$s</string>
     <string name="settings_info_debug">调试信息</string>

@@ -66,7 +66,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         initializeSDCardSettings(preferences);
         initializeWebadminSettings(cuberiteDir);
         initializeInstallSettings();
-        initializeAuthenticationSettings(cuberiteDir);
         initializeInfoSettings(preferences);
     }
 
@@ -377,72 +376,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     requireContext(),
                     requireContext().getString(R.string.status_missing_filemanager)
             );
-        }
-    }
-
-
-    // Authentication-related methods
-
-    private void initializeAuthenticationSettings(final File cuberiteDir) {
-        final SwitchPreferenceCompat toggleAuthentication = findPreference("troubleshootingAuthenticationToggle");
-        final File settingsFile = new File(cuberiteDir, "settings.ini");
-
-        updateAuthenticationToggle(settingsFile, toggleAuthentication);
-
-        toggleAuthentication.setOnPreferenceClickListener(preference -> {
-            try {
-                final Ini ini = new Ini(settingsFile);
-                boolean newEnabled = true;
-
-                try {
-                    newEnabled = Integer.parseInt(ini.get("Authentication", "Authenticate")) == 0;
-                } catch (NumberFormatException ignored) {
-                }
-
-                toggleAuthentication.setChecked(newEnabled);
-
-                ini.put("Authentication", "Authenticate", newEnabled ? 1 : 0);
-                ini.store(settingsFile);
-                MainActivity.showSnackBar(
-                        requireContext(),
-                        String.format(getString(R.string.settings_authentication_toggle_success), getString(newEnabled ? R.string.enabled : R.string.disabled))
-                );
-            } catch (IOException e) {
-                Log.e(LOG, "Something went wrong while opening the ini file", e);
-                MainActivity.showSnackBar(
-                        requireContext(),
-                        getString(R.string.settings_authentication_toggle_error)
-                );
-            }
-            return true;
-        });
-    }
-
-    private void updateAuthenticationToggle(File settingsFile, SwitchPreferenceCompat toggle) {
-        try {
-            if (!settingsFile.exists()) {
-                settingsFile.createNewFile();
-            }
-
-            final Ini ini = new Ini(settingsFile);
-
-            try {
-                final int enabled = Integer.parseInt(ini.get("Authentication", "Authenticate"));
-
-                if (enabled == 0) {
-                    toggle.setChecked(false);
-                }
-            } catch (NumberFormatException e) {
-                ini.put("Authentication", "Authenticate", 1);
-                ini.store(settingsFile);
-
-                toggle.setChecked(true);
-            }
-        } catch(IOException e) {
-            Log.e(LOG, "Settings.ini couldn't be created, disabling authentication toggle");
-
-            toggle.setShouldDisableView(true);
-            toggle.setEnabled(false);
         }
     }
 

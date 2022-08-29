@@ -68,12 +68,6 @@
     <string name="settings_webadmin_error">Cuberite needs to be installed before setting the Webadmin credentials</string>
     <string name="settings_webadmin_success">Success! The new credentials are activated the next time you start Cuberite</string>
 
-    <string name="settings_troubleshooting_heading">Troubleshooting</string>
-    <string name="settings_authentication_errors_explanation">If you have troubles connecting to Cuberite and get the message \"Failed to authenticate!\", you might want to disable authentication.</string>
-    <string name="settings_authentication_toggle">Authentication</string>
-    <string name="settings_authentication_toggle_error">Something went wrong while accessing the Server configuration</string>
-    <string name="settings_authentication_toggle_success">Success! Authentication is now %1$s! Restart the server to activate the change</string>
-
     <string name="settings_info_heading">Information</string>
     <string name="settings_info_version">Version %1$s</string>
     <string name="settings_info_debug">Debug information</string>
