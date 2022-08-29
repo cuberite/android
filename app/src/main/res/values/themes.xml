@@ -1,7 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="AppTheme" parent="BaseTheme" />
 
-    <style name="BaseTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="BaseTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -27,6 +27,15 @@
         <item name="colorOutline">@color/md_theme_light_outline</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_light_primaryInverse</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+
+        <item name="android:indeterminateTint" tools:targetApi="lollipop">?attr/colorSecondary</item>
+        <item name="android:progressTint" tools:targetApi="lollipop">?attr/colorSecondary</item>
+
+        <item name="android:statusBarColor" tools:targetApi="m">@color/android:transparent</item>
+        <item name="android:navigationBarColor" tools:targetApi="o_mr1">@color/android:transparent</item>
+
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 </resources>

@@ -4,7 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +21,10 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.TooltipCompat;
-import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.color.MaterialColors;
 
 import org.cuberite.android.R;
 import org.cuberite.android.helpers.CuberiteHelper;
@@ -76,12 +81,51 @@ public class ConsoleFragment extends Fragment {
     private final BroadcastReceiver updateLog = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Extract data included in the Intent
-            String message = CuberiteHelper.getConsoleOutput();
             final ScrollView scrollView = (ScrollView) logView.getParent();
-
             boolean shouldScroll = (logView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= 0;
-            logView.setText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY));
+            String output = CuberiteHelper.getConsoleOutput();
+            SpannableStringBuilder formattedOutput = new SpannableStringBuilder();
+
+            for (String line : output.split("\\n")) {
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                if (formattedOutput.length() > 0) {
+                    // Line break
+                    formattedOutput.append("\n");
+                }
+
+                int color = -1;
+
+                if (line.toLowerCase().startsWith("log: ")) {
+                    line = line.replaceFirst("(?i)log: ", "");
+                }
+                else if (line.toLowerCase().startsWith("info: ")) {
+                    line = line.replaceFirst("(?i)info: ", "");
+                    color = R.attr.colorSecondary;
+                }
+                else if (line.toLowerCase().startsWith("warning: ")) {
+                    line = line.replaceFirst("(?i)warning: ", "");
+                    color = R.attr.colorError;
+                }
+                else if (line.toLowerCase().startsWith("error: ")) {
+                    line = line.replaceFirst("(?i)error: ", "");
+                    color = R.attr.colorOnErrorContainer;
+                }
+
+                SpannableStringBuilder logLine = new SpannableStringBuilder(line);
+
+                if (color >= 0) {
+                    int start = 0;
+                    int end = logLine.length();
+                    color = MaterialColors.getColor(requireContext(), color, Color.BLACK);
+
+                    logLine.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                formattedOutput.append(logLine);
+            }
+            logView.setText(formattedOutput);
 
             if (shouldScroll) {
                 scrollView.post(() -> {

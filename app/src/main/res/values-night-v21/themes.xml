@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="AppTheme" parent="BaseTheme.v21" />
-
-    <style name="BaseTheme.v21" parent="BaseTheme">
-        <item name="android:indeterminateTint">?attr/colorSecondary</item>
-        <item name="android:progressTint">?attr/colorSecondary</item>
-    </style>
-</resources>

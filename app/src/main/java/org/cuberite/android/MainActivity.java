@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -20,6 +21,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.cuberite.android.fragments.ConsoleFragment;
@@ -45,6 +48,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         if (savedInstanceState == null) {
             loadFragment(new ControlFragment());
+        }
+
+        // Set colors
+        DynamicColors.applyToActivityIfAvailable(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().setStatusBarColor(SurfaceColors.SURFACE_0.getColor(this));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            getWindow().setNavigationBarColor(SurfaceColors.SURFACE_2.getColor(this));
         }
 
         // Set navigation bar listener

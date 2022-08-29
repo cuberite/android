@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
@@ -25,36 +24,8 @@ public class CuberiteHelper {
     private static final String EXECUTABLE_NAME = "Cuberite";
 
     public static void addConsoleOutput(Context context, String string) {
-        StringBuilder logLine = new StringBuilder();
-        String[] text = string.split("\\n");
+        consoleOutput.append(string).append("\n");
 
-        for (String line : text) {
-            String curText = TextUtils.htmlEncode(line);
-
-            if (curText.toLowerCase().startsWith("log: ")) {
-                curText = curText.replaceFirst("(?i)log: ", "");
-            }
-            else if (curText.toLowerCase().startsWith("info: ")) {
-                curText = curText.replaceFirst("(?i)info: ", "");
-                curText = "<font color= \"#FFA500\">" + curText + "</font>";
-            }
-            else if (curText.toLowerCase().startsWith("warning: ")) {
-                curText = curText.replaceFirst("(?i)warning: ", "");
-                curText = "<font color= \"#FF0000\">" + curText + "</font>";
-            }
-            else if (curText.toLowerCase().startsWith("error: ")) {
-                curText = curText.replaceFirst("(?i)error: ", "");
-                curText = "<font color=\"#8B0000\">" + curText + "</font>";
-            }
-
-            if (consoleOutput.length() > 0) {
-                // Line break
-                logLine.append("<br/>");
-            }
-
-            logLine.append(curText);
-        }
-        consoleOutput.append(logLine);
         Intent intent = new Intent("updateLog");
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
