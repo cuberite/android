@@ -63,7 +63,7 @@ public class CuberiteService extends IntentService {
 
     private void createNotification() {
         final String channelId = "cuberiteservice";
-        int icon = R.drawable.ic_cuberite;
+        int icon = R.drawable.ic_notification;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             icon = R.mipmap.ic_launcher;
