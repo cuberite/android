@@ -22,6 +22,8 @@ public class CuberiteHelper {
 
     private static StringBuilder consoleOutput = new StringBuilder();
 
+    private static final String EXECUTABLE_NAME = "Cuberite";
+
     public static void addConsoleOutput(Context context, String string) {
         StringBuilder logLine = new StringBuilder();
         String[] text = string.split("\\n");
@@ -66,7 +68,7 @@ public class CuberiteHelper {
     }
 
     public static String getExecutableName() {
-        return "Cuberite";
+        return EXECUTABLE_NAME;
     }
 
     public static String getIpAddress(Context context) {

@@ -364,14 +364,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     };
 
     private final ActivityResultLauncher<String> pickFileBinaryLauncher =
-        registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_BINARY, uri);
-        });
+        registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_BINARY, uri));
 
     private final ActivityResultLauncher<String> pickFileServerLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_SERVER, uri);
-            });
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> InstallHelper.installCuberiteLocal(requireActivity(), State.PICK_FILE_SERVER, uri));
 
     private void pickFile(ActivityResultLauncher<String> launcher) {
         try {

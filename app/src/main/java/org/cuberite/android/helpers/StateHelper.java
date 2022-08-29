@@ -16,8 +16,7 @@ public class StateHelper {
         PICK_FILE_BINARY,
         PICK_FILE_SERVER,
         RUNNING,
-        READY,
-        STOPPING
+        READY
     }
 
     public static boolean isCuberiteInstalled(Context context) {

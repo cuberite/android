@@ -12,8 +12,10 @@ import org.cuberite.android.receivers.ProgressReceiver;
 import org.cuberite.android.services.InstallService;
 
 public class InstallHelper {
+    private static final String DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/";
+
     public static String getDownloadHost() {
-        return "https://download.cuberite.org/androidbinaries/";
+        return DOWNLOAD_HOST;
     }
 
     public static void installCuberiteDownload(final Activity activity, State state) {
@@ -21,7 +23,7 @@ public class InstallHelper {
 
         Intent intent = new Intent(activity, InstallService.class)
                 .setAction("download")
-                .putExtra("downloadHost", getDownloadHost())
+                .putExtra("downloadHost", DOWNLOAD_HOST)
                 .putExtra("state", state)
                 .putExtra("targetFolder", preferences.getString("cuberiteLocation", ""))
                 .putExtra("receiver", new ProgressReceiver(activity, new Handler()));
