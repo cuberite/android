@@ -1,7 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="BaseTheme" />
-
-    <style name="BaseTheme" parent="Theme.Material3.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -37,5 +35,9 @@
 
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="Preference.SwitchPreferenceCompat">
+        <item name="widgetLayout">@layout/preference_switch</item>
     </style>
 </resources>
