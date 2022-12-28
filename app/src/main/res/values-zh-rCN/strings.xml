@@ -55,11 +55,11 @@
     <string name="settings_install_select_server">选择并安装server.zip</string>
 
     <string name="settings_webadmin_heading">网络管理员</string>
-    <string name="settings_webadmin_explanation">为了对服务器进行微调，您可以使用内置的Webadmin\n使用此处的设置为其设置用户名和密码</string>
-    <string name="settings_webadmin_open">开启Webadmin</string>
+    <string name="settings_webadmin_explanation">为了对服务器进行微调，您可以使用内置的WebAdmin\n使用此处的设置为其设置用户名和密码</string>
+    <string name="settings_webadmin_open">开启WebAdmin</string>
     <string name="settings_webadmin_login">更改登录凭证</string>
-    <string name="settings_webadmin_not_running">您需要先运行Cuberite，然后才能访问Webadmin</string>
-    <string name="settings_webadmin_error">设置Webadmin之前需要安装Cuberite</string>
+    <string name="settings_webadmin_not_running">您需要先运行Cuberite，然后才能访问WebAdmin</string>
+    <string name="settings_webadmin_error">设置WebAdmin之前需要安装Cuberite</string>
     <string name="settings_webadmin_success">成功！下次启动Cuberite时，将激活新的凭证</string>
 
     <string name="settings_info_heading">信息</string>

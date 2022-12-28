@@ -38,8 +38,8 @@
     <string name="settings_install_select_binary">Selecteer and installeer binary zip bestand</string>
     <string name="settings_install_select_server">Selecteer and installeer server.zip</string>
 
-    <string name="settings_webadmin_heading">Webadmin instellingen</string>
-    <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde Webadmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de Webadmin in te stellen.</string>
+    <string name="settings_webadmin_heading">WebAdmin instellingen</string>
+    <string name="settings_webadmin_explanation">Voor diepgaande instellingen gebruikt u best de ingebouwde WebAdmin. Gebruik deze optie om een gebruikersnaam en wachtwoord voor de WebAdmin in te stellen.</string>
     <string name="settings_webadmin_login">Verander gebruikersnaam en wachtwoord</string>
     <string name="settings_webadmin_success">Success! De nieuwe gebruikersnaam en wachtwoord zijn geldig nadat u Cuberite herstart</string>
 

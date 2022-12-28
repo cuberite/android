@@ -38,8 +38,8 @@
     <string name="settings_install_select_binary">Wähle und installiere cuberite zip-Datei.</string>
     <string name="settings_install_select_server">Wähle und installiere server.zip</string>
 
-    <string name="settings_webadmin_heading">Webadmin Einstellungen</string>
-    <string name="settings_webadmin_explanation">Für kleinere Einstellungen sollte die Webadmin Funktionion genutzt werden. Hier können Benutzername und Passwort festgelegt werden.</string>
+    <string name="settings_webadmin_heading">WebAdmin Einstellungen</string>
+    <string name="settings_webadmin_explanation">Für kleinere Einstellungen sollte die WebAdmin Funktionion genutzt werden. Hier können Benutzername und Passwort festgelegt werden.</string>
     <string name="settings_webadmin_login">Name und Passwort ändern</string>
     <string name="settings_webadmin_success">Fertig! Einstellungen werden nach einem Neustart von Cuberite aktiv.</string>
 

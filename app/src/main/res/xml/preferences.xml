@@ -26,11 +26,11 @@
             app:enableCopying="true"
             app:selectable="false" />
         <Preference
-            app:key="webadminOpen"
-            app:title="@string/settings_webadmin_open" />
-        <Preference
             app:key="webadminLogin"
             app:title="@string/settings_webadmin_login" />
+        <Preference
+            app:key="webadminOpen"
+            app:title="@string/settings_webadmin_open" />
     </PreferenceCategory>
 
     <PreferenceCategory

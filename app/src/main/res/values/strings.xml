@@ -2,10 +2,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">Cuberite</string>
     <string name="do_install_cuberite">Install Cuberite</string>
-    <string name="do_start_cuberite">Start Server</string>
-    <string name="do_stop_cuberite">Stop Server</string>
-    <string name="do_kill_cuberite">Kill Server\n(If stopping doesn\'t work)</string>
-    <string name="do_execute_line">Execute</string>
+    <string name="do_start_cuberite">Start Cuberite</string>
+    <string name="do_stop_cuberite">Stop Cuberite</string>
+    <string name="do_kill_cuberite">Kill Cuberite\n(If stopping failed)</string>
     <string name="cancel" translatable="false">@android:string/cancel</string>
     <string name="ok" translatable="false">@android:string/ok</string>
     <string name="username">Username</string>
@@ -20,18 +19,19 @@
     <string name="status_shasum_error">SHA-1 validation error</string>
     <string name="status_installing_cuberite">Installing Cuberite…</string>
     <string name="status_install_success">Successfully installed Cuberite!</string>
-    <string name="status_unzip_error">Failed to unzip the server files</string>
-    <string name="status_update_binary_error">Please stop the server before updating the binary</string>
-    <string name="status_failed_start">Cuberite failed to start. Ensure that your binary has the following ABI: %1$s</string>
+    <string name="status_unzip_error">Failed to extract server files</string>
+    <string name="status_update_binary_error">Please stop Cuberite before updating the executable</string>
+    <string name="status_failed_start">Cuberite failed to start. Ensure the executable uses the following ABI: %1$s</string>
     <string name="status_permissions_needed">Permissions needed</string>
-    <string name="status_missing_filemanager">No filemanager found: Please install one</string>
+    <string name="status_missing_filemanager">No file manager found, please install one</string>
 
-    <string name="notification_cuberite_running">Cuberite is running!</string>
+    <string name="notification_cuberite_running">Cuberite is running</string>
 
-    <string name="service_description">This service runs Cuberite and ensures that it is not killed by the system.</string>
-    <string name="installservice_description">This service downloads, unzips and installs Cuberite.</string>
+    <string name="service_description">This service runs Cuberite and ensures that it is not killed by the system</string>
+    <string name="installservice_description">This service downloads, extracts and installs Cuberite</string>
 
-    <string name="inputLine_hint">Enter commands…</string>
+    <string name="inputLine_hint">Enter command…</string>
+    <string name="do_execute_line">Run command</string>
 
     <string name="message_externalstorage_permission">Cuberite stores its worlds on the external storage by default, which is readable and writable by any app. For this, you need to allow Cuberite to write to the external storage. If you don\'t want to give the necessary permission, please select the \"Deny\" option and Cuberite will use the app\'s private storage.</string>
 
@@ -44,34 +44,34 @@
     <string name="settings_theme_auto">Automatic</string>
 
     <string name="settings_startup_toggle">Start Cuberite on boot</string>
-    <string name="settings_startup_explanation">Start Cuberite automatically when you boot up your device</string>
+    <string name="settings_startup_explanation">Automatically start Cuberite when your device starts</string>
 
-    <string name="settings_sd_card">Use SD card for storage</string>
-    <string name="settings_sd_card_explanation">Store server files on your external SD card. Your existing Cuberite installation will not be moved to the SD card.</string>
-    <string name="settings_sd_card_running">Please stop the server before changing the storage location</string>
+    <string name="settings_sd_card">Use SD card</string>
+    <string name="settings_sd_card_explanation">Use server files stored on an external SD card</string>
+    <string name="settings_sd_card_running">Please stop Cuberite before changing the storage location</string>
 
-    <string name="settings_install_update">Perform Cuberite update</string>
-    <string name="settings_install_update_explanation">Use this section from time to time to update your installation of Cuberite. Please note that if you perform a server.zip update this may overwrite custom server settings.</string>
-    <string name="settings_install_update_binary">Download and install Cuberite binary</string>
-    <string name="settings_install_update_server">Download and install server.zip</string>
-    <string name="settings_install_manually">Install zip files manually</string>
-    <string name="settings_install_manually_explanation">Instead of downloading Cuberite you can choose to use your own compiled binaries. Use this only if you understand what you are doing.</string>
+    <string name="settings_install_update">Update Cuberite</string>
+    <string name="settings_install_update_explanation">Use this section from time to time to update your Cuberite installation</string>
+    <string name="settings_install_update_binary">Update Cuberite executable</string>
+    <string name="settings_install_update_server">Update server files</string>
+    <string name="settings_install_manually">Install Cuberite manually</string>
+    <string name="settings_install_manually_explanation">Instead of downloading Cuberite, you can use your own compiled executable. Use this only if you understand what you are doing.</string>
     <string name="settings_install_manually_abi">Required ABI for your device: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
-    <string name="settings_install_select_binary">Select and install binary zip file</string>
-    <string name="settings_install_select_server">Select and install server.zip</string>
+    <string name="settings_install_select_binary">Select Cuberite executable zip file</string>
+    <string name="settings_install_select_server">Select server.zip file</string>
 
-    <string name="settings_webadmin_heading">Webadmin</string>
-    <string name="settings_webadmin_explanation">For fine-tuning your server, you are entitled to use the built-in Webadmin. Use the settings here to set a username and password for it</string>
-    <string name="settings_webadmin_open">Open Webadmin</string>
+    <string name="settings_webadmin_heading">WebAdmin</string>
+    <string name="settings_webadmin_explanation">Use the WebAdmin to customize your server. A username and password is required, which you can choose below.</string>
+    <string name="settings_webadmin_open">Open WebAdmin</string>
     <string name="settings_webadmin_login">Change login credentials</string>
-    <string name="settings_webadmin_not_running">Cuberite needs to be running before you can access the Webadmin</string>
-    <string name="settings_webadmin_error">Cuberite needs to be installed before setting the Webadmin credentials</string>
-    <string name="settings_webadmin_success">Success! The new credentials are activated the next time you start Cuberite</string>
+    <string name="settings_webadmin_not_running">Please start Cuberite before using the WebAdmin</string>
+    <string name="settings_webadmin_error">Please install Cuberite before configuring the WebAdmin</string>
+    <string name="settings_webadmin_success">Restart Cuberite to apply the new login credentials</string>
 
-    <string name="settings_info_heading">Information</string>
+    <string name="settings_info_heading">About</string>
     <string name="settings_info_version">Version %1$s</string>
     <string name="settings_info_debug">Debug information</string>
-    <string name="settings_info_libraries">Third-party Libraries</string>
+    <string name="settings_info_libraries">Third-party libraries</string>
 
     <string name="ini4j_license">License for the [ini4j] library (used for manipulating Cuberite settings)</string>
     <string name="ini4j_license_description" translatable="false">Copyright 2005,2009 Ivan SZKIBA\n\n
