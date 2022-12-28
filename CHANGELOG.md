@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.6 (unreleased)
+- Use Material Design 3
+- Add option to store server files on SD card
+
 ## Version 1.5.3 (2020-08-06)
 - Increment version number in the app
 
