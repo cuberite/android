@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
         // Set colors
-        DynamicColors.applyToActivityIfAvailable(this);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(SurfaceColors.SURFACE_0.getColor(this));
         }
