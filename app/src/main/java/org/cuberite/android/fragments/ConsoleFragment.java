@@ -103,7 +103,7 @@ public class ConsoleFragment extends Fragment {
                 }
                 else if (line.toLowerCase().startsWith("info: ")) {
                     line = line.replaceFirst("(?i)info: ", "");
-                    color = R.attr.colorSecondary;
+                    color = R.attr.colorTertiary;
                 }
                 else if (line.toLowerCase().startsWith("warning: ")) {
                     line = line.replaceFirst("(?i)warning: ", "");
