@@ -125,14 +125,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void initializeStartupSettings(final SharedPreferences preferences) {
         final SwitchPreferenceCompat startupToggle = findPreference("startupToggle");
-        startupToggle.setOnPreferenceClickListener(preference -> {
-            final boolean newStartOnBoot = !preferences.getBoolean("startOnBoot", false);
-
+        startupToggle.setOnPreferenceChangeListener((preference, newValue) -> {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("startOnBoot", newStartOnBoot);
+            editor.putBoolean("startOnBoot", (boolean) newValue);
             editor.apply();
-
-            startupToggle.setChecked(newStartOnBoot);
             return true;
         });
     }
@@ -154,19 +150,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 toggleSD.setChecked(false);
             }
 
-            toggleSD.setOnPreferenceClickListener(preference -> {
+            toggleSD.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (CuberiteHelper.isCuberiteRunning(requireContext())) {
                     MainActivity.showSnackBar(
                             requireContext(),
                             getString(R.string.settings_sd_card_running)
                     );
-                    toggleSD.setChecked(!toggleSD.isChecked());
-                    return true;
+                    return false;
                 }
 
                 String location = PUBLIC_DIR;
 
-                if (toggleSD.isChecked()) {
+                if ((boolean) newValue) {
                     location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();  // SD dir
                 } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     location = requireContext().getFilesDir().getAbsolutePath();  // Private dir
