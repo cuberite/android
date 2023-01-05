@@ -7,8 +7,6 @@
     <string name="do_execute_line">执行</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
-    <string name="enabled">已启用</string>
-    <string name="disabled">已关闭</string>
     <string name="do_open_control">开关</string>
     <string name="do_open_log">控制台</string>
     <string name="do_open_settings">设置</string>

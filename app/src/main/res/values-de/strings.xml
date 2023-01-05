@@ -7,8 +7,6 @@
     <string name="do_execute_line">Ausführen</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
-    <string name="enabled">aktiv</string>
-    <string name="disabled">inaktiv</string>
     <string name="do_open_log">Console öffnen</string>
     <string name="do_open_settings">Einstellungen</string>
 

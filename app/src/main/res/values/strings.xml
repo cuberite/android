@@ -9,8 +9,6 @@
     <string name="ok" translatable="false">@android:string/ok</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="enabled">enabled</string>
-    <string name="disabled">disabled</string>
     <string name="do_open_control">Control</string>
     <string name="do_open_log">Console</string>
     <string name="do_open_settings">Settings</string>
