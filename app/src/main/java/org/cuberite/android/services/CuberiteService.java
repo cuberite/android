@@ -63,15 +63,13 @@ public class CuberiteService extends IntentService {
 
     private void createNotification() {
         final String channelId = "cuberiteservice";
-        int icon = R.drawable.ic_notification;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            icon = R.mipmap.ic_launcher;
-        }
-
+        final int icon = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.ic_notification : R.mipmap.ic_launcher;
         final CharSequence text = getText(R.string.notification_cuberite_running);
         final String ip = CuberiteHelper.getIpAddress(getApplicationContext());
-        final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+
+        final int flags = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? PendingIntent.FLAG_IMMUTABLE : 0;
+        final Intent notificationIntent = new Intent(this, MainActivity.class);
+        final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags);
 
         createNotificationChannel();
 
@@ -82,6 +80,7 @@ public class CuberiteService extends IntentService {
                 .setContentText(ip)
                 .setContentIntent(contentIntent)
                 .setOnlyAlertOnce(true)
+                .setOngoing(true)
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         startForeground(1, notification.build());
