@@ -162,12 +162,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 String location = PUBLIC_DIR;
 
                 if ((boolean) newValue) {
-                    location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();  // SD dir
+                    // SD dir
+                    location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();
                 } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    location = requireContext().getFilesDir().getAbsolutePath();  // Private dir
+                    // Private dir
+                    location = requireContext().getFilesDir().getAbsolutePath();
                 }
 
-                preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("cuberiteLocation", location + "/cuberite-server");
+                editor.apply();
                 return true;
             });
         }
