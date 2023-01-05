@@ -81,7 +81,8 @@ public class CuberiteService extends IntentService {
                 .setContentTitle(text)
                 .setContentText(ip)
                 .setContentIntent(contentIntent)
-                .setOnlyAlertOnce(true);
+                .setOnlyAlertOnce(true)
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         startForeground(1, notification.build());
     }
