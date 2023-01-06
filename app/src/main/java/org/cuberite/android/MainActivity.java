@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -67,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         PRIVATE_DIR = this.getFilesDir().getAbsolutePath();
         PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-        AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
     }
 
     @Override

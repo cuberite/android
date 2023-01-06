@@ -42,25 +42,6 @@ public class CuberiteService extends IntentService {
 
     // Notification-related methods
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final String channelId = "cuberiteservice";
-            final CharSequence name = getString(R.string.app_name);
-
-            final NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    name,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setSound(null, null);
-            channel.setVibrationPattern(new long[]{0});
-            channel.enableVibration(true);
-
-            final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
     private void createNotification() {
         final String channelId = "cuberiteservice";
         final int icon = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.ic_notification : R.mipmap.ic_launcher;
@@ -70,8 +51,6 @@ public class CuberiteService extends IntentService {
         final int flags = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? PendingIntent.FLAG_IMMUTABLE : 0;
         final Intent notificationIntent = new Intent(this, MainActivity.class);
         final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags);
-
-        createNotificationChannel();
 
         notification = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(icon)
