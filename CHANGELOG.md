@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.6 (unreleased)
+## Version 1.6 (2023-04-19)
 - Use Material Design 3
 - Add option to store server files on SD card
 
