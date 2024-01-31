@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "org.cuberite.android"
         resourceConfigurations += ['en', 'de', 'nl', 'pt', 'zh_CN']
-        minSdk 16
+        minSdk 19
         //noinspection ExpiredTargetSdkVersion
         targetSdk 28
         versionCode 12
@@ -21,8 +21,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'org.cuberite.android'
 }
@@ -33,10 +33,7 @@ dependencies {
     implementation 'androidx.core:core:1.12.0'
     implementation 'androidx.fragment:fragment:1.6.2'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
-    implementation('androidx.preference:preference:1.2.1') {
-        exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel'
-        exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel-ktx'
-    }
+    implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'org.ini4j:ini4j:0.5.4'
