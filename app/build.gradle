@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
     defaultConfig {
         applicationId "org.cuberite.android"
-        resConfigs 'en', 'de', 'nl', 'pt', 'zh_CN'
-        minSdkVersion 16
+        resourceConfigurations += ['en', 'de', 'nl', 'pt', 'zh_CN']
+        minSdk 16
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 28
+        targetSdk 28
         versionCode 12
         versionName "1.6.0"
         vectorDrawables.useSupportLibrary = true
@@ -30,14 +30,14 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core:1.9.0'
-    implementation 'androidx.fragment:fragment:1.5.6'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'androidx.fragment:fragment:1.6.2'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
-    implementation('androidx.preference:preference:1.2.0') {
+    implementation('androidx.preference:preference:1.2.1') {
         exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel'
         exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel-ktx'
     }
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-    implementation 'com.google.android.material:material:1.9.0-beta01'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'org.ini4j:ini4j:0.5.4'
 }

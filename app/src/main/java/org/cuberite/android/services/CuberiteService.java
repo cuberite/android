@@ -1,7 +1,6 @@
 package org.cuberite.android.services;
 
 import android.app.IntentService;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
