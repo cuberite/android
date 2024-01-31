@@ -25,7 +25,7 @@ public class ProgressReceiver extends ResultReceiver {
     public void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
         switch (resultCode) {
-            case PROGRESS_START_INDETERMINATE: {
+            case PROGRESS_START_INDETERMINATE -> {
                 String title = resultData.getString("title");
                 progressDialog = new ProgressDialog(cont);
                 progressDialog.setTitle(title);
@@ -35,10 +35,8 @@ public class ProgressReceiver extends ResultReceiver {
 
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.setCancelable(false);
-                break;
             }
-
-            case PROGRESS_START: {
+            case PROGRESS_START -> {
                 String title = resultData.getString("title");
                 progressDialog = new ProgressDialog(cont);
                 progressDialog.setTitle(title);
@@ -48,21 +46,16 @@ public class ProgressReceiver extends ResultReceiver {
 
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.setCancelable(false);
-                break;
             }
-
-            case PROGRESS_NEW_DATA: {
+            case PROGRESS_NEW_DATA -> {
                 int progress = resultData.getInt("progress");
                 int max = resultData.getInt("max");
                 progressDialog.setIndeterminate(false);
                 progressDialog.setProgress(progress);
                 progressDialog.setMax(max);
-                break;
             }
-
-            case PROGRESS_END: {
+            case PROGRESS_END -> {
                 progressDialog.dismiss();
-                break;
             }
         }
     }

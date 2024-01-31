@@ -86,31 +86,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         theme.setEntryValues(new CharSequence[]{"light", "dark", "auto"});
 
         switch (getCurrentTheme) {
-            case MODE_NIGHT_NO:
-                theme.setValue("light");
-                break;
-            case MODE_NIGHT_YES:
-                theme.setValue("dark");
-                break;
-            default:
-                theme.setValue("auto");
-                break;
+            case MODE_NIGHT_NO -> theme.setValue("light");
+            case MODE_NIGHT_YES -> theme.setValue("dark");
+            default -> theme.setValue("auto");
         }
 
         theme.setOnPreferenceChangeListener((preference, newValue) -> {
-            int newTheme;
-
-            switch (newValue.toString()) {
-                case "light":
-                    newTheme = MODE_NIGHT_NO;
-                    break;
-                case "dark":
-                    newTheme = MODE_NIGHT_YES;
-                    break;
-                default:
-                    newTheme = MODE_NIGHT_FOLLOW_SYSTEM;
-                    break;
-            }
+            int newTheme = switch (newValue.toString()) {
+                case "light" -> MODE_NIGHT_NO;
+                case "dark" -> MODE_NIGHT_YES;
+                default -> MODE_NIGHT_FOLLOW_SYSTEM;
+            };
 
             AppCompatDelegate.setDefaultNightMode(newTheme);
             SharedPreferences.Editor editor = preferences.edit();
@@ -137,9 +123,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // SD Card-related methods
 
     private void initializeSDCardSettings(final SharedPreferences preferences) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                && requireContext().getExternalFilesDirs(null).length > 1
-                && requireContext().getExternalFilesDirs(null)[1] != null) {
+        if (requireContext().getExternalFilesDirs(null).length > 1 && requireContext().getExternalFilesDirs(null)[1] != null) {
             final String PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
             final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
 

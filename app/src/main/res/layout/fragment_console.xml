@@ -36,7 +36,6 @@
             android:padding="12dp"
             android:hint="@string/inputLine_hint"
             android:layout_toStartOf="@+id/executeLine"
-            android:layout_toLeftOf="@+id/executeLine"
             android:singleLine="true"
             tools:ignore="Autofill"
             android:inputType="textNoSuggestions" />
@@ -48,7 +47,6 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/do_execute_line"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             app:srcCompat="@drawable/ic_execute" />
     </RelativeLayout>
 </RelativeLayout>
