@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="AppTheme" parent="BaseTheme" />
+    <style name="BaseTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
@@ -29,11 +30,5 @@
 
         <item name="android:indeterminateTint" tools:targetApi="lollipop">?attr/colorSecondary</item>
         <item name="android:progressTint" tools:targetApi="lollipop">?attr/colorSecondary</item>
-
-        <item name="android:statusBarColor" tools:targetApi="m">@android:color/transparent</item>
-        <item name="android:navigationBarColor" tools:targetApi="o_mr1">@android:color/transparent</item>
-
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
     </style>
 </resources>
