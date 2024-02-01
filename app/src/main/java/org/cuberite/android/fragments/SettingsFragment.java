@@ -123,7 +123,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // SD Card-related methods
 
     private void initializeSDCardSettings(final SharedPreferences preferences) {
-        if (requireContext().getExternalFilesDirs(null).length > 1 && requireContext().getExternalFilesDirs(null)[1] != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && requireContext().getExternalFilesDirs(null).length > 1
+                && requireContext().getExternalFilesDirs(null)[1] != null) {
             final String PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
             final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
 
