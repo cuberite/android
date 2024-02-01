@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             if (location.isEmpty() || location.startsWith(PUBLIC_DIR)) {
                 showPermissionPopup();
             }
-        } else if (location.startsWith(PRIVATE_DIR)) {
+        } else if (location.isEmpty() || location.startsWith(PRIVATE_DIR)) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("cuberiteLocation", PUBLIC_DIR + "/cuberite-server");
             editor.apply();
