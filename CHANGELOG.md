@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.6.1 (Unreleased)
+- Fixed Cuberite installer on older Android versions
+- Fixed incorrect theme colors on older Android versions
+
 ## Version 1.6 (2023-04-19)
 - Use Material Design 3
 - Add option to store server files on SD card
