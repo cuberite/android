@@ -12,6 +12,9 @@ android {
         versionName "1.6.0"
         vectorDrawables.useSupportLibrary = true
     }
+    buildFeatures {
+        buildConfig true
+    }
     buildTypes {
         release {
             minifyEnabled true
