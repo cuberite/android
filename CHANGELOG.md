@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.6.1 (Unreleased)
+## Version 1.6.1 (2024-02-20)
 - Fixed Cuberite installer on older Android versions
 - Fixed incorrect theme colors on older Android versions
 
