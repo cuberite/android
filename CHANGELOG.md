@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.6.2 (2024-03-05)
+- Add missing app icon for F-Droid
+
 ## Version 1.6.1 (2024-02-20)
 - Fixed Cuberite installer on older Android versions
 - Fixed incorrect theme colors on older Android versions
