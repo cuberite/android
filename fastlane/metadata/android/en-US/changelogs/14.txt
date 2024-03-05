@@ -1,0 +1,1 @@
+- Add missing app icon for F-Droid
