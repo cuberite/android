@@ -123,63 +123,56 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // SD Card-related methods
 
     private void initializeSDCardSettings(final SharedPreferences preferences) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                && requireContext().getExternalFilesDirs(null).length > 1
-                && requireContext().getExternalFilesDirs(null)[1] != null) {
-            final String PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
-            final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return;
+        }
 
-            Log.d(LOG, "SD Card found, showing preference");
-            toggleSD.setVisible(true);
+        final String PUBLIC_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final String PRIVATE_DIR = requireContext().getFilesDir().getAbsolutePath();
+        final String location = preferences.getString("cuberiteLocation", "");
+        final boolean isSDAvailable = requireContext().getExternalFilesDirs(null).length > 1
+                && requireContext().getExternalFilesDirs(null)[1] != null;
+        final boolean isSDEnabled = !(location.startsWith(PUBLIC_DIR) || location.startsWith(PRIVATE_DIR));
+        final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
 
-            if (preferences.getString("cuberiteLocation", "").startsWith(PUBLIC_DIR)) {
-                toggleSD.setChecked(false);
+        if (!(isSDAvailable || isSDEnabled)) {
+            return;
+        }
+
+        Log.d(LOG, "SD Card found or location set, showing preference");
+        toggleSD.setVisible(true);
+        toggleSD.setChecked(isSDEnabled);
+
+        toggleSD.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (CuberiteHelper.isCuberiteRunning(requireContext())) {
+                MainActivity.showSnackBar(
+                        requireContext(),
+                        getString(R.string.settings_sd_card_running)
+                );
+                return false;
             }
 
-            toggleSD.setOnPreferenceChangeListener((preference, newValue) -> {
-                if (CuberiteHelper.isCuberiteRunning(requireContext())) {
-                    MainActivity.showSnackBar(
-                            requireContext(),
-                            getString(R.string.settings_sd_card_running)
-                    );
-                    return false;
-                }
+            final boolean isSDAvailableInner = requireContext().getExternalFilesDirs(null).length > 1
+                    && requireContext().getExternalFilesDirs(null)[1] != null;
+            String newLocation = PUBLIC_DIR;
 
-                String location = PUBLIC_DIR;
-
-                if ((boolean) newValue) {
-                    // SD dir
-                    location = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();
-                } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if ((boolean) newValue && isSDAvailableInner) {
+                // SD dir
+                newLocation = requireContext().getExternalFilesDirs(null)[1].getAbsolutePath();
+            } else {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     // Private dir
-                    location = requireContext().getFilesDir().getAbsolutePath();
+                    newLocation = requireContext().getFilesDir().getAbsolutePath();
                 }
-
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("cuberiteLocation", location + "/cuberite-server");
-                editor.apply();
-                return true;
-            });
-        }
-    }
-
-    private final BroadcastReceiver unmountSD = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
-            String location = Environment.getExternalStorageDirectory().getAbsolutePath();  // Public dir
-
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                location = context.getFilesDir().getAbsolutePath();  // Private dir
+                toggleSD.setVisible(isSDAvailableInner);
             }
 
-            preferences.edit().putString("cuberiteLocation", location + "/cuberite-server").apply();
-
-            final SwitchPreferenceCompat toggleSD = findPreference("saveToSDToggle");
-            toggleSD.setChecked(false);
-            toggleSD.setVisible(false);
-        }
-    };
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("cuberiteLocation", newLocation + "/cuberite-server");
+            editor.apply();
+            return true;
+        });
+    }
 
 
     // Webadmin-related methods
@@ -422,24 +415,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onPause() {
         super.onPause();
-        requireContext().unregisterReceiver(unmountSD);
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(installServiceCallback);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        IntentFilter sdIntentFilter = new IntentFilter();
-        sdIntentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);
-        sdIntentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
-        sdIntentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
-        sdIntentFilter.addDataScheme("file");
-
-        requireContext().registerReceiver(
-                unmountSD,
-                sdIntentFilter
-        );
 
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
                 installServiceCallback,
