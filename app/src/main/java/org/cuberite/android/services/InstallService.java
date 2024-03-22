@@ -193,7 +193,9 @@ public class InstallService extends IntentService {
             }
         }
 
-        receiver.send(ProgressReceiver.PROGRESS_END, null);
+        if (result != null) {
+            receiver.send(ProgressReceiver.PROGRESS_END, null);
+        }
 
         Log.d(LOG, "Releasing wakeLock");
         wakeLock.release();
@@ -219,7 +221,7 @@ public class InstallService extends IntentService {
 
         Bundle bundleInit = new Bundle();
         bundleInit.putString("title", getString(R.string.status_installing_cuberite));
-        receiver.send(ProgressReceiver.PROGRESS_START_INDETERMINATE, bundleInit);
+        receiver.send(ProgressReceiver.PROGRESS_START, bundleInit);
 
         try {
             unzipStream(fileUri, targetLocation);

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             });
 
     private void showPermissionPopup() {
-        permissionPopup = new AlertDialog.Builder(this)
+        permissionPopup = new MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.status_permissions_needed))
             .setMessage(R.string.message_externalstorage_permission)
             .setCancelable(false)

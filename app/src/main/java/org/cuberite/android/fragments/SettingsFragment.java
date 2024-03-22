@@ -44,6 +44,8 @@ import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 public class SettingsFragment extends PreferenceFragmentCompat {
     // Logging tag
     private final String LOG = "Cuberite/Settings";
@@ -67,7 +69,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         initializeInstallSettings();
         initializeInfoSettings(preferences);
     }
-
 
 
     // Theme-related methods
@@ -283,7 +284,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         ((EditText) layout.findViewById(R.id.webadminUsername)).setText(username);
         ((EditText) layout.findViewById(R.id.webadminPassword)).setText(password);
 
-        final AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(layout)
                 .setTitle(R.string.settings_webadmin_login)
                 .setPositiveButton(R.string.ok, (dialog12, id) -> {
@@ -410,7 +411,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void showInfoPopup(String title, String message) {
-        final AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, (dialog1, id) -> {
@@ -418,8 +419,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         dialog1.dismiss();
                     }
                 })
-                .create();
-        dialog.show();
+                .show();
     }
 
 
