@@ -1,0 +1,2 @@
+- Fixed crash when opening settings
+- Fixed disabling SD card storage after unmounting it
