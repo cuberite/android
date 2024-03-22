@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.6.3 (Unreleased)
+## Version 1.6.3 (2024-03-22)
 - Fixed crash when opening settings
 - Fixed disabling SD card storage after unmounting it
 - Use Material Design 3 alert dialogs
