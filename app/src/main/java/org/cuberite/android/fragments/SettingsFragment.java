@@ -53,7 +53,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         addPreferencesFromResource(R.xml.preferences);
 
         final SharedPreferences preferences = requireContext().getSharedPreferences(requireContext().getPackageName(), MODE_PRIVATE);
-        final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
 
         // Ini4j config
         Config config = Config.getGlobal();
@@ -64,7 +63,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         initializeThemeSettings(preferences);
         initializeStartupSettings(preferences);
         initializeSDCardSettings(preferences);
-        initializeWebadminSettings(cuberiteDir);
+        initializeWebadminSettings(preferences);
         initializeInstallSettings();
         initializeInfoSettings(preferences);
     }
@@ -177,35 +176,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     // Webadmin-related methods
 
-    private void initializeWebadminSettings(final File cuberiteDir) {
-        final File webadminFile = new File(cuberiteDir, "webadmin.ini");
+    private void initializeWebadminSettings(final SharedPreferences preferences) {
+        final File webadminFile = getWebadminFile(preferences);
+        final String url = getWebadminUrl(webadminFile);
 
-        String url = null;
-
-        if (cuberiteDir.exists()) {
-            try {
-                final Ini ini = createWebadminIni(webadminFile);
-                final String ip = CuberiteHelper.getIpAddress(requireContext());
-                int port;
-
-                try {
-                    port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
-                } catch (NumberFormatException e) {
-                    ini.put("WebAdmin", "Ports", 8080);
-                    ini.store(webadminFile);
-                    port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
-                }
-
-                url = "http://" + ip + ":" + port;
-
-                Preference webadminDescription = findPreference("webadminDescription");
-                webadminDescription.setSummary(webadminDescription.getSummary() + "\n\n" + "URL: " + url);
-            } catch (IOException e) {
-                Log.e(LOG, "Something went wrong while opening the ini file", e);
-            }
+        if (url != null) {
+            Preference webadminDescription = findPreference("webadminDescription");
+            webadminDescription.setSummary(webadminDescription.getSummary() + "\n\n" + "URL: " + url);
         }
-
-        final String urlInner = url;
 
         Preference webadminOpen = findPreference("webadminOpen");
         webadminOpen.setOnPreferenceClickListener(preference -> {
@@ -214,7 +192,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         requireContext(),
                         getString(R.string.settings_webadmin_not_running)
                 );
-            } else if (urlInner != null) {
+                return true;
+            }
+
+            final File webadminFileInner = getWebadminFile(preferences);
+            final String urlInner = getWebadminUrl(webadminFileInner);
+
+            if (urlInner != null) {
                 Log.d(LOG, "Opening Webadmin on " + urlInner);
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlInner));
                 startActivity(browserIntent);
@@ -225,10 +209,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference webadminLogin = findPreference("webadminLogin");
         webadminLogin.setOnPreferenceClickListener(preference -> {
             try {
-                final Ini ini = createWebadminIni(webadminFile);
+                final File webadminFileInner = getWebadminFile(preferences);
+                final Ini ini = createWebadminIni(webadminFileInner);
                 ini.put("WebAdmin", "Enabled", 1);
 
-                showWebadminCredentialPopup(webadminFile, ini);
+                showWebadminCredentialPopup(webadminFileInner, ini);
             } catch(IOException e) {
                 Log.e(LOG, "Something went wrong while opening the ini file", e);
                 MainActivity.showSnackBar(
@@ -252,6 +237,34 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         return ini;
+    }
+
+    private File getWebadminFile(final SharedPreferences preferences) {
+        final File cuberiteDir = new File(preferences.getString("cuberiteLocation", ""));
+        return new File(cuberiteDir, "webadmin.ini");
+    }
+
+    private String getWebadminUrl(final File webadminFile) {
+        String url = null;
+
+        try {
+            final Ini ini = createWebadminIni(webadminFile);
+            final String ip = CuberiteHelper.getIpAddress(requireContext());
+            int port;
+
+            try {
+                port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
+            } catch (NumberFormatException e) {
+                ini.put("WebAdmin", "Ports", 8080);
+                ini.store(webadminFile);
+                port = Integer.parseInt(ini.get("WebAdmin", "Ports"));
+            }
+
+            url = "http://" + ip + ":" + port;
+        } catch (IOException e) {
+            Log.e(LOG, "Something went wrong while opening the ini file", e);
+        }
+        return url;
     }
 
     private void showWebadminCredentialPopup(final File webadminFile, final Ini ini) {
