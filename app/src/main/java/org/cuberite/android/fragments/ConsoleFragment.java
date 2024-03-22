@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.cuberite.android.R;
 import org.cuberite.android.helpers.CuberiteHelper;
@@ -55,13 +56,12 @@ public class ConsoleFragment extends Fragment {
             return false;
         });
 
-        ImageView sendCommandButton = view.findViewById(R.id.executeLine);
-        sendCommandButton.setOnClickListener(v -> {
+        final TextInputLayout textInputLayout = view.findViewById(R.id.inputWrapper);
+        textInputLayout.setEndIconOnClickListener(v -> {
             String command = inputLine.getText().toString();
             sendExecuteCommand(command);
             inputLine.setText("");
         });
-        TooltipCompat.setTooltipText(sendCommandButton, getString(R.string.do_execute_line));
     }
 
     private void sendExecuteCommand(String command) {
