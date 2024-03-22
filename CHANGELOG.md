@@ -3,6 +3,7 @@
 ## Version 1.6.3 (Unreleased)
 - Fixed crash when opening settings
 - Fixed disabling SD card storage after unmounting it
+- Use Material Design 3 alert dialogs
 
 ## Version 1.6.2 (2024-03-05)
 - Add missing app icon for F-Droid
