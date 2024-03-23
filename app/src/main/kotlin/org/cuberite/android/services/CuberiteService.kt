@@ -11,7 +11,6 @@ import android.net.NetworkInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
@@ -62,7 +61,7 @@ class CuberiteService : IntentService("CuberiteService") {
         // Clear previous output
         consoleOutput = StringBuilder()
         consoleOutput.append("Info: Cuberite is starting...").append("\n")
-        Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
+        updateLogLiveData.postValue(consoleOutput)
 
         // Make sure we can execute the binary
         File(filesDir, EXECUTABLE_NAME).setExecutable(true, true)
@@ -84,7 +83,7 @@ class CuberiteService : IntentService("CuberiteService") {
             while (processScanner.nextLine().also { line = it } != null) {
                 Log.i(LOG, line!!)
                 consoleOutput.append(line).append("\n")
-                Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
+                updateLogLiveData.postValue(consoleOutput)
             }
         } catch (e: NoSuchElementException) {
             // Do nothing. Workaround for issues in older Android versions.
@@ -144,7 +143,7 @@ class CuberiteService : IntentService("CuberiteService") {
                 process.destroy()
                 MainActivity.killCuberiteLiveData.postValue(false)
             }
-            Handler(Looper.getMainLooper()).post {
+            Handler(applicationContext.mainLooper).post {
                 MainActivity.executeCommandLiveData.observeForever(executeObserver)
                 MainActivity.killCuberiteLiveData.observeForever(killObserver)
             }
@@ -156,14 +155,12 @@ class CuberiteService : IntentService("CuberiteService") {
             // Logic waits here until Cuberite has stopped. Everything after that is cleanup for the next run
             val logTimeEnd = System.currentTimeMillis()
             if (logTimeEnd - logTimeStart < 100) {
-                Handler(Looper.getMainLooper()).post {
-                    startupErrorLiveData.postValue(true)
-                }
+                startupErrorLiveData.postValue(true)
             }
 
             // Shutdown
             unregisterReceiver(updateIp)
-            Handler(Looper.getMainLooper()).post {
+            Handler(applicationContext.mainLooper).post {
                 MainActivity.executeCommandLiveData.removeObserver(executeObserver)
                 MainActivity.killCuberiteLiveData.removeObserver(killObserver)
             }
@@ -172,10 +169,11 @@ class CuberiteService : IntentService("CuberiteService") {
             Log.e(LOG, "An error occurred when starting Cuberite", e)
 
             // Send error to user
-            Handler(Looper.getMainLooper()).post { startupErrorLiveData.postValue(true) }
+            startupErrorLiveData.postValue(true)
         }
         stopSelf()
-        Handler(Looper.getMainLooper()).post { endedLiveData.postValue(true) }
+        isRunning = false
+        endedLiveData.postValue(true)
     }
 
     @Deprecated("Deprecated in Java")

@@ -146,11 +146,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val url = getWebadminUrl(webadminFile)
         if (url != null) {
             val webadminDescription = findPreference<Preference>("webadminDescription")
-            webadminDescription!!.setSummary("""
-    ${webadminDescription.getSummary().toString()}
+            webadminDescription!!.setSummary("""${webadminDescription.summary}
     
-    URL: $url
-    """.trimIndent())
+URL: $url""")
         }
         val webadminOpen = findPreference<Preference>("webadminOpen")
         webadminOpen!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -237,14 +235,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val oldUsername = username
         val layout = View.inflate(requireContext(), R.layout.dialog_webadmin_credentials, null)
-        (layout.findViewById<View>(R.id.webadminUsername) as EditText).setText(username)
-        (layout.findViewById<View>(R.id.webadminPassword) as EditText).setText(password)
+        layout.findViewById<EditText>(R.id.webadminUsername).setText(username)
+        layout.findViewById<EditText>(R.id.webadminPassword).setText(password)
         val dialog = MaterialAlertDialogBuilder(requireContext())
                 .setView(layout)
                 .setTitle(R.string.settings_webadmin_login)
                 .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                    val newUsername = (layout.findViewById<View>(R.id.webadminUsername) as EditText).getText().toString()
-                    val newPassword = (layout.findViewById<View>(R.id.webadminPassword) as EditText).getText().toString()
+                    val newUsername = layout.findViewById<EditText>(R.id.webadminUsername).text.toString()
+                    val newPassword = layout.findViewById<EditText>(R.id.webadminPassword).text.toString()
                     ini.remove("User:$oldUsername")
                     ini.put("User:$newUsername", "Password", newPassword)
                     try {
@@ -280,11 +278,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteService.preferredABI)
         val setABIText = findPreference<Preference>("abiText")
-        setABIText!!.setSummary("""
-    ${setABIText.getSummary().toString()}
-    
-    $abi
-    """.trimIndent())
+        setABIText!!.setSummary("""${setABIText.summary}
+
+$abi""")
         val installBinary = findPreference<Preference>("installBinary")
         installBinary!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             pickFile(pickFileBinaryLauncher)
@@ -328,11 +324,9 @@ Download URL: ${InstallService.DOWNLOAD_HOST}"""
         val thirdPartyLicenses = findPreference<Preference>("thirdPartyLicenses")
         thirdPartyLicenses!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val title = getString(R.string.settings_info_libraries)
-            val message = """
-                ${getString(R.string.ini4j_license)}
-                
-                ${getString(R.string.ini4j_license_description)}
-                """.trimIndent()
+            val message = """${getString(R.string.ini4j_license)}
+
+${getString(R.string.ini4j_license_description)}"""
             showInfoPopup(title, message)
             true
         }

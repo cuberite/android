@@ -30,6 +30,7 @@ class ConsoleFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         CuberiteService.updateLogLiveData.observe(viewLifecycleOwner) { result ->
             if (result == null) {
                 return@observe
@@ -40,7 +41,7 @@ class ConsoleFragment : Fragment() {
         inputLine = view.findViewById(R.id.inputLine)
         inputLine.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val command = inputLine.getText().toString()
+                val command = inputLine.text.toString()
                 sendExecuteCommand(command)
                 inputLine.setText("")
                 // return true makes sure the keyboard doesn't close
@@ -50,7 +51,7 @@ class ConsoleFragment : Fragment() {
         }
         val textInputLayout = view.findViewById<TextInputLayout>(R.id.inputWrapper)
         textInputLayout.setEndIconOnClickListener {
-            val command = inputLine.getText().toString()
+            val command = inputLine.text.toString()
             sendExecuteCommand(command)
             inputLine.setText("")
         }

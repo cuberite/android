@@ -24,6 +24,7 @@ class ControlFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         CuberiteService.endedLiveData.observe(viewLifecycleOwner) { ended ->
             if (!ended) {
                 return@observe
@@ -68,7 +69,7 @@ class ControlFragment : Fragment() {
         Log.d(LOG, "Changing color from " + Integer.toHexString(colorFrom) + " to " + Integer.toHexString(colorTo))
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         colorAnimation.setDuration(300)
-        colorAnimation.addUpdateListener { animator: ValueAnimator -> button.setBackgroundColor(animator.getAnimatedValue() as Int) }
+        colorAnimation.addUpdateListener { animator: ValueAnimator -> button.setBackgroundColor(animator.animatedValue as Int) }
         colorAnimation.start()
         mainButtonColor = colorTo
     }

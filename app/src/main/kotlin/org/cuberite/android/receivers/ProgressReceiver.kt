@@ -10,14 +10,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import org.cuberite.android.R
 
-class ProgressReceiver(private val cont: Context, handler: Handler?) : ResultReceiver(handler) {
+class ProgressReceiver(private val context: Context, handler: Handler?) : ResultReceiver(handler) {
     private var progressDialog: AlertDialog? = null
     private lateinit var progressBar: LinearProgressIndicator
 
     private fun createDialog(title: String?) {
-        val layout = View.inflate(cont, R.layout.dialog_progress, null)
-        progressBar = layout.findViewById<View>(R.id.progressBar) as LinearProgressIndicator
-        progressDialog = MaterialAlertDialogBuilder(cont)
+        val layout = View.inflate(context, R.layout.dialog_progress, null)
+        progressBar = layout.findViewById(R.id.progressBar)
+        progressDialog = MaterialAlertDialogBuilder(context)
                 .setTitle(title)
                 .setView(layout)
                 .setCancelable(false)

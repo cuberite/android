@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.os.ResultReceiver
@@ -48,7 +47,7 @@ class InstallService : IntentService("InstallService") {
     private fun acquireWakelock(): WakeLock {
         Log.d(LOG, "Acquiring wakeLock")
         val pm = getSystemService(POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.getName())
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this::class.simpleName)
         wakeLock.acquire(300000) // 5 min timeout
         return wakeLock
     }
@@ -131,14 +130,14 @@ class InstallService : IntentService("InstallService") {
         try {
             connection.setConnectTimeout(10000) // 10 secs
             connection.connect()
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                val error = "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage()
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                val error = "Server returned HTTP " + connection.responseCode + " " + connection.responseMessage
                 Log.e(LOG, error)
                 result = error
             } else {
                 inputStream = connection.inputStream
                 outputStream = FileOutputStream(targetLocation)
-                val length = connection.getContentLength()
+                val length = connection.contentLength
                 val data = ByteArray(4096)
                 var total: Long = 0
                 var count: Int
@@ -204,7 +203,7 @@ class InstallService : IntentService("InstallService") {
         val inputStream = contentResolver.openInputStream(fileUri!!)
         val zipInputStream = ZipInputStream(inputStream)
         var zipEntry: ZipEntry
-        while (zipInputStream.getNextEntry().also { zipEntry = it } != null) {
+        while (zipInputStream.nextEntry.also { zipEntry = it } != null) {
             if (zipEntry.isDirectory) {
                 File(targetLocation, zipEntry.name).mkdir()
             } else {
@@ -242,20 +241,29 @@ class InstallService : IntentService("InstallService") {
             result = getString(R.string.status_update_binary_error)
         } else if ("unzip" == intent.action) {
             val uri = intent.parcelable("uri") as Uri?
-            val targetFolder = File(
-                    if (state == State.PICK_FILE_BINARY) MainApplication.privateDir else intent.getStringExtra("targetFolder")!!
-            )
+            val filePath = if (state == State.PICK_FILE_BINARY) {
+                MainApplication.privateDir
+            } else {
+                MainApplication.preferences.getString("cuberiteLocation", "")!!
+            }
+            val targetFolder = File(filePath)
             receiver = intent.parcelable("receiver")
             result = unzip(uri, targetFolder)
         } else {
-            val downloadHost = intent.getStringExtra("downloadHost")
             val abi = CuberiteService.preferredABI
-            val targetFileName = (if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) abi else "server") + ".zip"
-            val downloadUrl = downloadHost + targetFileName
+            val targetFileName = if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
+                "$abi.zip"
+            } else {
+                "server.zip"
+            }
+            val downloadUrl = DOWNLOAD_HOST + targetFileName
             val tempZip = File(cacheDir, targetFileName) // Zip files are temporary
-            val targetFolder = File(
-                    if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) MainApplication.privateDir else intent.getStringExtra("targetFolder")!!
-            )
+            val filePath = if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
+                MainApplication.privateDir
+            } else {
+                MainApplication.preferences.getString("cuberiteLocation", "")!!
+            }
+            val targetFolder = File(filePath)
             receiver = intent.parcelable("receiver")
 
             // Download
@@ -274,7 +282,7 @@ class InstallService : IntentService("InstallService") {
             }
         }
         stopSelf()
-        Handler(Looper.getMainLooper()).post { endedLiveData.setValue(result) }
+        endedLiveData.postValue(result)
     }
 
     companion object {
@@ -309,23 +317,21 @@ class InstallService : IntentService("InstallService") {
         fun download(activity: Activity, state: State = this.state) {
             val intent = Intent(activity, InstallService::class.java)
                 .setAction("download")
-                .putExtra("downloadHost", DOWNLOAD_HOST)
                 .putExtra("state", state)
-                .putExtra("targetFolder", MainApplication.preferences.getString("cuberiteLocation", ""))
-                .putExtra("receiver", ProgressReceiver(activity, Handler(Looper.getMainLooper())))
+                .putExtra("receiver", ProgressReceiver(activity, Handler(activity.mainLooper)))
             activity.startService(intent)
         }
 
         fun installLocal(activity: Activity, selectedFileUri: Uri?, state: State = this.state) {
-            if (selectedFileUri != null) {
-                val intent = Intent(activity, InstallService::class.java)
-                    .setAction("unzip")
-                    .putExtra("uri", selectedFileUri)
-                    .putExtra("state", state)
-                    .putExtra("targetFolder", MainApplication.preferences.getString("cuberiteLocation", ""))
-                    .putExtra("receiver", ProgressReceiver(activity, Handler(Looper.getMainLooper())))
-                activity.startService(intent)
+            if (selectedFileUri == null) {
+                return
             }
+            val intent = Intent(activity, InstallService::class.java)
+                .setAction("unzip")
+                .putExtra("uri", selectedFileUri)
+                .putExtra("state", state)
+                .putExtra("receiver", ProgressReceiver(activity, Handler(activity.mainLooper)))
+            activity.startService(intent)
         }
     }
 }

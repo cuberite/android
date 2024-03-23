@@ -74,10 +74,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             Log.i(LOG, "Got permissions, using public directory")
-            MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.publicDir/cuberite-server").apply()
+            MainApplication.preferences.edit().putString("cuberiteLocation", "${MainApplication.publicDir}/cuberite-server").apply()
         } else {
             Log.i(LOG, "Permissions denied, boo, using private directory")
-            MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.privateDir/cuberite-server").apply()
+            MainApplication.preferences.edit().putString("cuberiteLocation", "${MainApplication.privateDir}/cuberite-server").apply()
         }
     }
 
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
             }
         } else if (location!!.isEmpty() || location.startsWith(MainApplication.privateDir)) {
             val editor = MainApplication.preferences.edit()
-            editor.putString("cuberiteLocation", "$MainApplication.publicDir/cuberite-server")
+            editor.putString("cuberiteLocation", "${MainApplication.publicDir}/cuberite-server")
             editor.apply()
         }
     }
