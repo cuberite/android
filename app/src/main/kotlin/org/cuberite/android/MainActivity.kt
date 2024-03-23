@@ -1,8 +1,6 @@
 package org.cuberite.android
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -16,11 +14,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationBarView
-import com.google.android.material.snackbar.Snackbar
 import org.cuberite.android.fragments.ConsoleFragment
 import org.cuberite.android.fragments.ControlFragment
 import org.cuberite.android.fragments.SettingsFragment
@@ -135,5 +133,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     public override fun onResume() {
         super.onResume()
         checkPermissions()
+    }
+
+    companion object {
+        val executeCommandLiveData = MutableLiveData<String?>()
+        val killCuberiteLiveData = MutableLiveData<Boolean>()
     }
 }

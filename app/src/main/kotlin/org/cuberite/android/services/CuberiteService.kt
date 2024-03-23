@@ -10,9 +10,12 @@ import android.content.IntentFilter
 import android.net.NetworkInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import org.cuberite.android.MainActivity
 import org.cuberite.android.R
 import org.cuberite.android.helpers.CuberiteHelper
@@ -21,9 +24,11 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.Scanner
 
+
 class CuberiteService : IntentService("CuberiteService") {
     // Logging tag
     private val log = "Cuberite/ServerService"
+    private var consoleOutput = StringBuilder()
     private lateinit var notification: NotificationCompat.Builder
     private lateinit var process: Process
     private lateinit var cuberiteSTDIN: OutputStream
@@ -57,7 +62,9 @@ class CuberiteService : IntentService("CuberiteService") {
         val location = preferences.getString("cuberiteLocation", "")
 
         // Clear previous output
-        CuberiteHelper.resetConsoleOutput()
+        consoleOutput = StringBuilder()
+        consoleOutput.append("Info: Cuberite is starting...").append("\n")
+        Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
 
         // Make sure we can execute the binary
         File(this.filesDir, executableName).setExecutable(true, true)
@@ -66,7 +73,6 @@ class CuberiteService : IntentService("CuberiteService") {
         val processBuilder = ProcessBuilder(this.filesDir.toString() + "/" + executableName, "--no-output-buffering")
         processBuilder.directory(File(location!!))
         processBuilder.redirectErrorStream(true)
-        CuberiteHelper.addConsoleOutput(applicationContext, "Info: Cuberite is starting...")
         Log.d(log, "Starting process...")
         process = processBuilder.start()
         cuberiteSTDIN = process.outputStream
@@ -79,7 +85,8 @@ class CuberiteService : IntentService("CuberiteService") {
         try {
             while (processScanner.nextLine().also { line = it } != null) {
                 Log.i(log, line!!)
-                CuberiteHelper.addConsoleOutput(applicationContext, line)
+                consoleOutput.append(line).append("\n")
+                Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
             }
         } catch (e: NoSuchElementException) {
             // Do nothing. Workaround for issues in older Android versions.
@@ -88,17 +95,6 @@ class CuberiteService : IntentService("CuberiteService") {
     }
 
     // Broadcast receivers
-    private val executeCommand: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val command = intent.getStringExtra("message")
-            try {
-                cuberiteSTDIN.write((command + "\n").toByteArray())
-                cuberiteSTDIN.flush()
-            } catch (e: Exception) {
-                Log.e(log, "An error occurred when writing $command to the STDIN", e)
-            }
-        }
-    }
     private val updateIp: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
@@ -112,21 +108,6 @@ class CuberiteService : IntentService("CuberiteService") {
                     notificationManager.notify(1, notification.build())
                 }
             }
-        }
-    }
-    private val stop: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            try {
-                cuberiteSTDIN.write("stop\n".toByteArray())
-                cuberiteSTDIN.flush()
-            } catch (e: Exception) {
-                Log.e(log, "An error occurred when writing stop to the STDIN", e)
-            }
-        }
-    }
-    private val kill: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            process.destroy()
         }
     }
 
@@ -146,9 +127,29 @@ class CuberiteService : IntentService("CuberiteService") {
             registerReceiver(updateIp, intentFilter)
 
             // Communication with the activity
-            LocalBroadcastManager.getInstance(this).registerReceiver(executeCommand, IntentFilter("executeCommand"))
-            LocalBroadcastManager.getInstance(this).registerReceiver(stop, IntentFilter("stop"))
-            LocalBroadcastManager.getInstance(this).registerReceiver(kill, IntentFilter("kill"))
+            val executeObserver = Observer<String?> { command ->
+                if (command == null) {
+                    return@Observer
+                }
+                try {
+                    cuberiteSTDIN.write((command + "\n").toByteArray())
+                    cuberiteSTDIN.flush()
+                } catch (e: Exception) {
+                    Log.e(log, "An error occurred when writing $command to the STDIN", e)
+                }
+                MainActivity.executeCommandLiveData.postValue(null)
+            }
+            val killObserver = Observer<Boolean> { kill ->
+                if (!kill) {
+                    return@Observer
+                }
+                process.destroy()
+                MainActivity.killCuberiteLiveData.postValue(false)
+            }
+            Handler(Looper.getMainLooper()).post {
+                MainActivity.executeCommandLiveData.observeForever(executeObserver)
+                MainActivity.killCuberiteLiveData.observeForever(killObserver)
+            }
 
             // Log to console
             val logTimeStart = System.currentTimeMillis()
@@ -157,22 +158,31 @@ class CuberiteService : IntentService("CuberiteService") {
             // Logic waits here until Cuberite has stopped. Everything after that is cleanup for the next run
             val logTimeEnd = System.currentTimeMillis()
             if (logTimeEnd - logTimeStart < 100) {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("showStartupError"))
+                Handler(Looper.getMainLooper()).post {
+                    startupErrorLiveData.postValue(true)
+                }
             }
 
             // Shutdown
             unregisterReceiver(updateIp)
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(executeCommand)
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(stop)
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(kill)
+            Handler(Looper.getMainLooper()).post {
+                MainActivity.executeCommandLiveData.removeObserver(executeObserver)
+                MainActivity.killCuberiteLiveData.removeObserver(killObserver)
+            }
             cuberiteSTDIN.close()
         } catch (e: Exception) {
             Log.e(log, "An error occurred when starting Cuberite", e)
 
             // Send error to user
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("showStartupError"))
+            Handler(Looper.getMainLooper()).post { startupErrorLiveData.postValue(true) }
         }
         stopSelf()
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("CuberiteService.callback"))
+        Handler(Looper.getMainLooper()).post { endedLiveData.postValue(true) }
+    }
+
+    companion object {
+        val endedLiveData = MutableLiveData<Boolean>()
+        val startupErrorLiveData = MutableLiveData<Boolean>()
+        val updateLogLiveData = MutableLiveData<StringBuilder>()
     }
 }
