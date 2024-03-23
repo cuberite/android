@@ -7,28 +7,13 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.text.format.Formatter
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import org.cuberite.android.MainActivity
 import org.cuberite.android.services.CuberiteService
 
 object CuberiteHelper {
     // Logging tag
     private const val LOG = "Cuberite/CuberiteHelper"
-    private var consoleOutput = StringBuilder()
     const val EXECUTABLE_NAME = "Cuberite"
-
-    fun addConsoleOutput(context: Context?, string: String?) {
-        consoleOutput.append(string).append("\n")
-        val intent = Intent("updateLog")
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(intent)
-    }
-
-    fun getConsoleOutput(): String {
-        return consoleOutput.toString()
-    }
-
-    fun resetConsoleOutput() {
-        consoleOutput = StringBuilder()
-    }
 
     fun getIpAddress(context: Context): String {
         val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -64,12 +49,12 @@ object CuberiteHelper {
         }
     }
 
-    fun stopCuberite(context: Context?) {
+    fun stopCuberite() {
         Log.d(LOG, "Stopping Cuberite")
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(Intent("stop"))
+        MainActivity.executeCommandLiveData.postValue("stop")
     }
 
-    fun killCuberite(context: Context?) {
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(Intent("kill"))
+    fun killCuberite() {
+        MainActivity.killCuberiteLiveData.postValue(true)
     }
 }

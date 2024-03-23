@@ -2,11 +2,9 @@ package org.cuberite.android.fragments
 
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -20,7 +18,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -32,6 +29,7 @@ import org.cuberite.android.R
 import org.cuberite.android.helpers.CuberiteHelper
 import org.cuberite.android.helpers.InstallHelper
 import org.cuberite.android.helpers.StateHelper
+import org.cuberite.android.services.InstallService
 import org.ini4j.Config
 import org.ini4j.Ini
 import java.io.File
@@ -57,6 +55,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         initializeWebadminSettings(preferences)
         initializeInstallSettings()
         initializeInfoSettings(preferences)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        InstallService.endedLiveData.observe(viewLifecycleOwner) { result ->
+            if (result == null) {
+                return@observe
+            }
+            Snackbar.make(requireActivity().findViewById(R.id.fragment_container), result, Snackbar.LENGTH_LONG)
+                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
+                .show()
+            InstallService.endedLiveData.postValue(null)
+        }
     }
 
     // Theme-related methods
@@ -301,14 +312,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private val installServiceCallback: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val result = intent.getStringExtra("result")
-            Snackbar.make(requireActivity().findViewById(R.id.fragment_container), result!!, Snackbar.LENGTH_LONG)
-                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
-                .show()
-        }
-    }
     private val pickFileBinaryLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.PICK_FILE_BINARY, uri) }
     private val pickFileServerLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.PICK_FILE_SERVER, uri) }
     private fun pickFile(launcher: ActivityResultLauncher<String>) {
@@ -366,19 +369,5 @@ Download URL: ${InstallHelper.DOWNLOAD_HOST}"""
                 .setMessage(message)
                 .setPositiveButton(R.string.ok) { dialog1: DialogInterface?, _: Int -> dialog1?.dismiss() }
                 .show()
-    }
-
-    // Listeners
-    override fun onPause() {
-        super.onPause()
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(installServiceCallback)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-                installServiceCallback,
-                IntentFilter("InstallService.callback")
-        )
     }
 }

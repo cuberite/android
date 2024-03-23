@@ -4,11 +4,13 @@ import android.app.IntentService
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.os.ResultReceiver
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.MutableLiveData
 import org.cuberite.android.R
 import org.cuberite.android.helpers.CuberiteHelper
 import org.cuberite.android.helpers.StateHelper
@@ -267,9 +269,10 @@ class InstallService : IntentService("InstallService") {
             }
         }
         stopSelf()
-        LocalBroadcastManager.getInstance(this).sendBroadcast(
-                Intent("InstallService.callback")
-                        .putExtra("result", result)
-        )
+        Handler(Looper.getMainLooper()).post { endedLiveData.setValue(result) }
+    }
+
+    companion object {
+        val endedLiveData = MutableLiveData<String?>()
     }
 }
