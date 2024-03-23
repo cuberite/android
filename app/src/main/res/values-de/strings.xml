@@ -28,8 +28,6 @@
 
     <string name="settings_install_update">Cuberite aktualisieren</string>
     <string name="settings_install_update_explanation">An automatischen Aktualisierungen wird noch gearbeitet. Bis dahin kann über diese Funktion Cuberite aktualisiert werden. Achten Sie drauf, dass eine Aktualisierung Servereinstellungen überschreiben kann.</string>
-    <string name="settings_install_update_binary">Cuberite Programmdatei herunterladen und installieren</string>
-    <string name="settings_install_update_server">Cuberite Daten herunter laden und entpacken</string>
     <string name="settings_install_manually">Daten manuell installieren</string>
     <string name="settings_install_manually_explanation">Sie können eigene Dateien auswählen, statt diese automatisch herunterzuladen. Tun Sie dies nur, wenn sie wissen, was sie tun.</string>
     <string name="settings_install_manually_abi">Benötigte ABI: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->

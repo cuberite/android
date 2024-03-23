@@ -28,8 +28,6 @@
 
     <string name="settings_install_update">Update Cuberite</string>
     <string name="settings_install_update_explanation">Gebruike deze sectie van tijd tot tijd om uw Cuberite installatie te updaten. Opmerking: als u een server.zip update uitvoert is er een kans dat uw server instellingen verloren gaan.</string>
-    <string name="settings_install_update_binary">Download en installeer de Cuberite binary</string>
-    <string name="settings_install_update_server">Download en installeer server.zip</string>
     <string name="settings_install_manually">Installeer zip bestanden manueel</string>
     <string name="settings_install_manually_explanation">In plaats van Cuberite te downloaden kan u ervoor kiezen om uw eigen gecompileerde binaries te gebruiken. Gebruik dit enkel als u weet wat u doet.</string>
     <string name="settings_install_manually_abi">Benodigde ABI voor dit apparaat: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->

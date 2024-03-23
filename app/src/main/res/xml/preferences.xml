@@ -41,11 +41,8 @@
             app:enableCopying="true"
             app:selectable="false" />
         <Preference
-            app:key="installUpdateBinary"
-            app:title="@string/settings_install_update_binary" />
-        <Preference
-            app:key="installUpdateServer"
-            app:title="@string/settings_install_update_server" />
+            app:key="installUpdate"
+            app:title="@string/settings_install_update" />
     </PreferenceCategory>
 
     <PreferenceCategory

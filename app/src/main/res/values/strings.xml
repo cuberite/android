@@ -50,8 +50,6 @@
 
     <string name="settings_install_update">Update Cuberite</string>
     <string name="settings_install_update_explanation">Use this section from time to time to update your Cuberite installation</string>
-    <string name="settings_install_update_binary">Update Cuberite executable</string>
-    <string name="settings_install_update_server">Update server files</string>
     <string name="settings_install_manually">Install Cuberite manually</string>
     <string name="settings_install_manually_explanation">Instead of downloading Cuberite, you can use your own compiled executable. Use this only if you understand what you are doing.</string>
     <string name="settings_install_manually_abi">Required ABI for your device: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->

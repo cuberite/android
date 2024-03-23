@@ -44,8 +44,6 @@
 
     <string name="settings_install_update">执行Cuberite更新</string>
     <string name="settings_install_update_explanation">使用以下选项来更新您的Cuberite\n注意，执行server.zip更新，可能会覆盖服务器设置</string>
-    <string name="settings_install_update_binary">下载并安装Libraries文件</string>
-    <string name="settings_install_update_server">下载并安装server.zip</string>
     <string name="settings_install_manually">手动安装zip文件</string>
     <string name="settings_install_manually_explanation">您可以使用自己编译的Libraries文件，无需下载Cuberite</string>
     <string name="settings_install_manually_abi">设备所需的ABI：%1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->

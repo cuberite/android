@@ -266,14 +266,9 @@ URL: $url""")
 
     // Install-related methods
     private fun initializeInstallSettings() {
-        val updateBinary = findPreference<Preference>("installUpdateBinary")
-        updateBinary!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            InstallService.download(requireActivity(), InstallService.State.NEED_DOWNLOAD_BINARY)
-            true
-        }
-        val updateServer = findPreference<Preference>("installUpdateServer")
-        updateServer!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            InstallService.download(requireActivity(), InstallService.State.NEED_DOWNLOAD_SERVER)
+        val update = findPreference<Preference>("installUpdate")
+        update!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            InstallService.download(requireActivity(), InstallService.State.NEED_DOWNLOAD_BOTH)
             true
         }
         val abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteService.preferredABI)

@@ -28,8 +28,6 @@
 
     <string name="settings_install_update">Atualizar o Cuberite</string>
     <string name="settings_install_update_explanation">Use essa seção de tempos em tempos para atualizar a sua instalação do Cuberite. Por favor note que se você fizer a atualização do server.zip algumas configurações customizadas podem ser perdidas.</string>
-    <string name="settings_install_update_binary">Baixar e instalar o binário do Cuberite</string>
-    <string name="settings_install_update_server">Baixar e instalar o server.zip</string>
     <string name="settings_install_manually">Instalar arquivos zip manualmente</string>
     <string name="settings_install_manually_explanation">Em vez de baixar o Cuberite você pode usar seus próprios binários. Use essa opção apenas se você souber o que você está fazendo.</string>
     <string name="settings_install_manually_abi">ABI exigida pelo seu dispositivo: %1$s</string> <!-- Do not translate %1$s, its the placeholder for the ABI -->
