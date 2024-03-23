@@ -39,7 +39,7 @@ class CuberiteService : IntentService("CuberiteService") {
         val channelId = "cuberiteservice"
         val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) R.drawable.ic_notification else R.mipmap.ic_launcher
         val text = getText(R.string.notification_cuberite_running)
-        val ip = CuberiteHelper.getIpAddress(applicationContext)
+        val ip = CuberiteHelper.getIpAddress()
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val notificationIntent = Intent(this, MainActivity::class.java)
         val contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags)
@@ -103,7 +103,7 @@ class CuberiteService : IntentService("CuberiteService") {
                 val info = intent.parcelable(WifiManager.EXTRA_NETWORK_INFO) as NetworkInfo?
                 if (NetworkInfo.State.CONNECTED == info!!.state || NetworkInfo.State.DISCONNECTED == info.state) {
                     Log.d(log, "Updating notification IP due to network change")
-                    val ip = CuberiteHelper.getIpAddress(context)
+                    val ip = CuberiteHelper.getIpAddress()
                     notification.setContentText(ip)
                     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.notify(1, notification.build())

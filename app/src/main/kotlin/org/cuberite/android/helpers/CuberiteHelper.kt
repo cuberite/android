@@ -3,23 +3,30 @@ package org.cuberite.android.helpers
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.net.wifi.WifiManager
 import android.os.Build
-import android.text.format.Formatter
 import android.util.Log
 import org.cuberite.android.MainActivity
 import org.cuberite.android.services.CuberiteService
+import java.net.Inet4Address
+import java.net.NetworkInterface
+
 
 object CuberiteHelper {
     // Logging tag
     private const val LOG = "Cuberite/CuberiteHelper"
     const val EXECUTABLE_NAME = "Cuberite"
 
-    fun getIpAddress(context: Context): String {
-        val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiInfo = wifiManager.connectionInfo
-        val ip = wifiInfo.getIpAddress()
-        return if (ip == 0) "127.0.0.1" else Formatter.formatIpAddress(ip)
+    fun getIpAddress(): String {
+        try {
+            for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
+                for (inetAddress in networkInterface.getInetAddresses()) {
+                    if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
+                        return inetAddress.hostAddress!!
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+        return "127.0.0.1"
     }
 
     val preferredABI: String

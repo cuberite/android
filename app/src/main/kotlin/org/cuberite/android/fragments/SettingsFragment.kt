@@ -226,7 +226,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         var url: String? = null
         try {
             val ini = createWebadminIni(webadminFile)
-            val ip = CuberiteHelper.getIpAddress(requireContext())
+            val ip = CuberiteHelper.getIpAddress()
             val port: Int = try {
                 ini["WebAdmin", "Ports"].toInt()
             } catch (e: NumberFormatException) {
@@ -332,7 +332,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val title = getString(R.string.settings_info_debug)
             val message = """Running on Android ${Build.VERSION.RELEASE} (API Level ${Build.VERSION.SDK_INT})
 Using ABI ${CuberiteHelper.preferredABI}
-IP: ${CuberiteHelper.getIpAddress(requireContext())}
+IP: ${CuberiteHelper.getIpAddress()}
 Private directory: ${requireContext().filesDir}
 Public directory: ${Environment.getExternalStorageDirectory()}
 Storage location: ${preferences.getString("cuberiteLocation", "")}
