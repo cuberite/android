@@ -185,14 +185,12 @@ class CuberiteService : IntentService("CuberiteService") {
     }
 
     companion object {
+        private const val LOG = "Cuberite/ServerService"
+        const val EXECUTABLE_NAME = "Cuberite"
         var isRunning = false
         val endedLiveData = MutableLiveData<Boolean>()
         val startupErrorLiveData = MutableLiveData<Boolean>()
         val updateLogLiveData = MutableLiveData<StringBuilder>()
-        const val EXECUTABLE_NAME = "Cuberite"
-
-        // Logging tag
-        private const val LOG = "Cuberite/ServerService"
 
         val ipAddress: String
             get() {

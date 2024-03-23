@@ -27,22 +27,13 @@ import org.cuberite.android.MainApplication
 import org.cuberite.android.R
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
-import org.ini4j.Config
 import org.ini4j.Ini
 import java.io.File
 import java.io.IOException
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    // Logging tag
-    private val log = "Cuberite/Settings"
-
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         addPreferencesFromResource(R.xml.preferences)
-
-        // Ini4j config
-        val config = Config.getGlobal()
-        config.isEscape = false
-        config.isStrictOperator = true
 
         // Initialize
         initializeThemeSettings()
@@ -119,7 +110,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (!(isSDAvailable || isSDEnabled)) {
             return
         }
-        Log.d(log, "SD Card found or location set, showing preference")
+        Log.d(LOG, "SD Card found or location set, showing preference")
         toggleSD!!.isVisible = true
         toggleSD.setChecked(isSDEnabled)
         toggleSD.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any ->
@@ -173,7 +164,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val webadminFileInner = getWebadminFile()
             val urlInner = getWebadminUrl(webadminFileInner)
             urlInner?.let {
-                Log.d(log, "Opening Webadmin on $urlInner")
+                Log.d(LOG, "Opening Webadmin on $urlInner")
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(urlInner))
                 startActivity(browserIntent)
             }
@@ -187,7 +178,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 ini.put("WebAdmin", "Enabled", 1)
                 showWebadminCredentialPopup(webadminFileInner, ini)
             } catch (e: IOException) {
-                Log.e(log, "Something went wrong while opening the ini file", e)
+                Log.e(LOG, "Something went wrong while opening the ini file", e)
                 val message = getString(R.string.settings_webadmin_error)
                 Snackbar.make(requireActivity().findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
                     .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
@@ -230,7 +221,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             url = "http://$ip:$port"
         } catch (e: IOException) {
-            Log.e(log, "Something went wrong while opening the ini file", e)
+            Log.e(LOG, "Something went wrong while opening the ini file", e)
         }
         return url
     }
@@ -263,7 +254,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
                             .show()
                     } catch (e: IOException) {
-                        Log.e(log, "Something went wrong while saving the ini file", e)
+                        Log.e(LOG, "Something went wrong while saving the ini file", e)
                         val message = getString(R.string.settings_webadmin_error)
                         Snackbar.make(requireActivity().findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
                             .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
@@ -363,5 +354,9 @@ Download URL: ${InstallService.DOWNLOAD_HOST}"""
                 .setMessage(message)
                 .setPositiveButton(R.string.ok) { dialog1: DialogInterface?, _: Int -> dialog1?.dismiss() }
                 .show()
+    }
+
+    companion object {
+        private const val LOG = "Cuberite/Settings"
     }
 }

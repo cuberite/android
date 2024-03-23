@@ -282,29 +282,24 @@ class InstallService : IntentService("InstallService") {
     }
 
     companion object {
-        val endedLiveData = MutableLiveData<String?>()
-        const val DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/"
-
-        // Logging tag
         private const val LOG = "Cuberite/InstallService"
+        const val DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/"
+        val endedLiveData = MutableLiveData<String?>()
 
         private val state: State
             get() {
-                var state: State = State.DONE
-
-                if (CuberiteService.isRunning) {
-                    return state
-                }
-
                 val hasBinary = File(MainApplication.privateDir + "/" + CuberiteService.EXECUTABLE_NAME).exists()
                 val hasServer = File(MainApplication.preferences.getString("cuberiteLocation", "")!!).exists()
+                var state: State = State.DONE
 
-                if (!hasBinary && !hasServer) {
-                    state = State.NEED_DOWNLOAD_BOTH
-                } else if (!hasBinary) {
-                    state = State.NEED_DOWNLOAD_BINARY
-                } else if (!hasServer) {
-                    state = State.NEED_DOWNLOAD_SERVER
+                if (!CuberiteService.isRunning) {
+                    if (!hasBinary && !hasServer) {
+                        state = State.NEED_DOWNLOAD_BOTH
+                    } else if (!hasBinary) {
+                        state = State.NEED_DOWNLOAD_BINARY
+                    } else if (!hasServer) {
+                        state = State.NEED_DOWNLOAD_SERVER
+                    }
                 }
                 Log.d(LOG, "Getting State: $state")
                 return state

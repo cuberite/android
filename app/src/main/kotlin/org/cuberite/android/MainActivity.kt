@@ -22,8 +22,6 @@ import org.cuberite.android.fragments.ControlFragment
 import org.cuberite.android.fragments.SettingsFragment
 
 class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
-    // Logging tag
-    private val log = "Cuberite/MainActivity"
     private var permissionPopup: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +73,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
-            Log.i(log, "Got permissions, using public directory")
+            Log.i(LOG, "Got permissions, using public directory")
             MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.publicDir/cuberite-server").apply()
         } else {
-            Log.i(log, "Permissions denied, boo, using private directory")
+            Log.i(LOG, "Permissions denied, boo, using private directory")
             MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.privateDir/cuberite-server").apply()
         }
     }
@@ -89,7 +87,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 .setMessage(R.string.message_externalstorage_permission)
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                    Log.d(log, "Requesting permissions for external storage")
+                    Log.d(LOG, "Requesting permissions for external storage")
                     permissionPopup = null
                     requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
@@ -112,7 +110,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         }
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         permissionPopup?.let {
             permissionPopup!!.dismiss()
@@ -120,12 +118,13 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         }
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
         checkPermissions()
     }
 
     companion object {
+        private const val LOG = "Cuberite/MainActivity"
         val executeCommandLiveData = MutableLiveData<String?>()
         val killCuberiteLiveData = MutableLiveData<Boolean>()
     }

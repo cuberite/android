@@ -16,8 +16,6 @@ import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
 
 class ControlFragment : Fragment() {
-    // Logging tag
-    private val log = "Cuberite/Control"
     private var mainButtonColor = 0
     private lateinit var mainButton: Button
 
@@ -37,7 +35,7 @@ class ControlFragment : Fragment() {
             if (!show) {
                 return@observe
             }
-            Log.d(log, "Cuberite exited on process")
+            Log.d(LOG, "Cuberite exited on process")
             val message = String.format(
                 getString(R.string.status_failed_start),
                 CuberiteService.preferredABI
@@ -67,7 +65,7 @@ class ControlFragment : Fragment() {
     }
 
     private fun animateColorChange(button: Button, colorFrom: Int, colorTo: Int) {
-        Log.d(log, "Changing color from " + Integer.toHexString(colorFrom) + " to " + Integer.toHexString(colorTo))
+        Log.d(LOG, "Changing color from " + Integer.toHexString(colorFrom) + " to " + Integer.toHexString(colorTo))
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         colorAnimation.setDuration(300)
         colorAnimation.addUpdateListener { animator: ValueAnimator -> button.setBackgroundColor(animator.getAnimatedValue() as Int) }
@@ -119,5 +117,9 @@ class ControlFragment : Fragment() {
         } else {
             setInstallButton()
         }
+    }
+
+    companion object {
+        private const val LOG = "Cuberite/Control"
     }
 }

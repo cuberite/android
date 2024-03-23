@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
+import org.ini4j.Config
 import java.io.Serializable
 
 class MainApplication : Application() {
@@ -21,6 +22,11 @@ class MainApplication : Application() {
         preferences = getSharedPreferences(packageName, MODE_PRIVATE)
         privateDir = filesDir.absolutePath
         publicDir = Environment.getExternalStorageDirectory().absolutePath
+
+        // Ini4j config
+        val config = Config.getGlobal()
+        config.isEscape = false
+        config.isStrictOperator = true
 
         // Application theme
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))

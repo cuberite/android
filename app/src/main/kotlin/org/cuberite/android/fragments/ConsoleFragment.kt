@@ -58,9 +58,7 @@ class ConsoleFragment : Fragment() {
 
     private fun sendExecuteCommand(command: String) {
         if (command.isNotEmpty() && CuberiteService.isRunning) {
-            // Logging tag
-            val log = "Cuberite/Console"
-            Log.d(log, "Executing $command")
+            Log.d(LOG, "Executing $command")
             MainActivity.executeCommandLiveData.postValue(command)
         }
     }
@@ -107,5 +105,9 @@ class ConsoleFragment : Fragment() {
                 inputLine.requestFocus()
             }
         }
+    }
+
+    companion object {
+        private const val LOG = "Cuberite/Console"
     }
 }

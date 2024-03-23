@@ -24,7 +24,7 @@ class ProgressReceiver(private val cont: Context, handler: Handler?) : ResultRec
                 .create()
     }
 
-    public override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+    override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
         super.onReceiveResult(resultCode, resultData)
         when (resultCode) {
             PROGRESS_START -> {
