@@ -56,13 +56,13 @@ class InstallService : IntentService("InstallService") {
     // Download verification
     private fun downloadVerify(url: String, targetLocation: File, retryCount: Int): String? {
         val zipFileError = download(url, targetLocation)
-        zipFileError?.let {
+        if (zipFileError != null) {
             return zipFileError
         }
 
         // Verifying file
         val shaError = download("$url.sha1", File("$targetLocation.sha1"))
-        shaError?.let {
+        if (shaError != null) {
             return shaError
         }
         try {
@@ -159,17 +159,13 @@ class InstallService : IntentService("InstallService") {
             Log.e(LOG, "An error occurred when downloading a zip", e)
         } finally {
             try {
-                inputStream?.let {
-                    inputStream.close()
-                }
-                outputStream?.let {
-                    outputStream.close()
-                }
+                inputStream?.close()
+                outputStream?.close()
             } catch (ignored: IOException) {
             }
             connection.disconnect()
         }
-        result?.let {
+        if (result != null) {
             receiver!!.send(ProgressReceiver.PROGRESS_END, null)
         }
         Log.d(LOG, "Releasing wakeLock")
@@ -321,7 +317,7 @@ class InstallService : IntentService("InstallService") {
         }
 
         fun installLocal(activity: Activity, selectedFileUri: Uri?, state: State = this.state) {
-            selectedFileUri?.let {
+            if (selectedFileUri != null) {
                 val intent = Intent(activity, InstallService::class.java)
                     .setAction("unzip")
                     .putExtra("uri", selectedFileUri)

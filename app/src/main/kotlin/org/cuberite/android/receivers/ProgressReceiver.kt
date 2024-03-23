@@ -29,9 +29,9 @@ class ProgressReceiver(private val cont: Context, handler: Handler?) : ResultRec
         when (resultCode) {
             PROGRESS_START -> {
                 val title = resultData!!.getString("title")
-                progressDialog?.let {
+                if (progressDialog != null) {
                     progressDialog!!.setTitle(title)
-                } ?: run {
+                } else {
                     createDialog(title)
                 }
                 progressBar.isIndeterminate = true

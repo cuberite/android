@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     }
 
     private fun loadFragment(fragment: Fragment?): Boolean {
-        fragment?.let {
+        if (fragment != null) {
             supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment)
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
 
     override fun onPause() {
         super.onPause()
-        permissionPopup?.let {
+        if (permissionPopup != null) {
             permissionPopup!!.dismiss()
             permissionPopup = null
         }

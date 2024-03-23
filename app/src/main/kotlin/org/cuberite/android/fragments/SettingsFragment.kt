@@ -144,7 +144,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun initializeWebadminSettings() {
         val webadminFile = getWebadminFile()
         val url = getWebadminUrl(webadminFile)
-        url?.let {
+        if (url != null) {
             val webadminDescription = findPreference<Preference>("webadminDescription")
             webadminDescription!!.setSummary("""
     ${webadminDescription.getSummary().toString()}
@@ -163,7 +163,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             val webadminFileInner = getWebadminFile()
             val urlInner = getWebadminUrl(webadminFileInner)
-            urlInner?.let {
+            if (urlInner != null) {
                 Log.d(LOG, "Opening Webadmin on $urlInner")
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(urlInner))
                 startActivity(browserIntent)
@@ -261,7 +261,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             .show()
                     }
                 }
-                .setNegativeButton(R.string.cancel) { dialog1: DialogInterface, _: Int -> dialog1.cancel() }
+                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.cancel() }
                 .create()
         dialog.show()
     }
@@ -352,7 +352,7 @@ Download URL: ${InstallService.DOWNLOAD_HOST}"""
         MaterialAlertDialogBuilder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok) { dialog1: DialogInterface?, _: Int -> dialog1?.dismiss() }
+                .setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
     }
 
