@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import org.cuberite.android.R
-import org.cuberite.android.helpers.CuberiteHelper
-import org.cuberite.android.helpers.InstallHelper
-import org.cuberite.android.helpers.StateHelper
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
 
@@ -43,7 +40,7 @@ class ControlFragment : Fragment() {
             Log.d(log, "Cuberite exited on process")
             val message = String.format(
                 getString(R.string.status_failed_start),
-                CuberiteHelper.preferredABI
+                CuberiteService.preferredABI
             )
             Snackbar.make(
                 requireActivity().findViewById(R.id.fragment_container),
@@ -78,12 +75,12 @@ class ControlFragment : Fragment() {
         mainButtonColor = colorTo
     }
 
-    private fun setInstallButton(state: StateHelper.State?) {
+    private fun setInstallButton() {
         val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorPrimary)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_install_cuberite)
         mainButton.setOnClickListener {
-            InstallHelper.installCuberiteDownload(requireActivity(), state)
+            InstallService.download(requireActivity())
         }
     }
 
@@ -92,7 +89,7 @@ class ControlFragment : Fragment() {
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_start_cuberite)
         mainButton.setOnClickListener {
-            CuberiteHelper.startCuberite(requireContext())
+            CuberiteService.start(requireActivity())
             setStopButton()
         }
     }
@@ -102,7 +99,7 @@ class ControlFragment : Fragment() {
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_stop_cuberite)
         mainButton.setOnClickListener {
-            CuberiteHelper.stopCuberite()
+            CuberiteService.stop()
             setKillButton()
         }
     }
@@ -111,20 +108,16 @@ class ControlFragment : Fragment() {
         val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorError)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_kill_cuberite)
-        mainButton.setOnClickListener { CuberiteHelper.killCuberite() }
+        mainButton.setOnClickListener { CuberiteService.kill() }
     }
 
     private fun updateControlButton() {
-        when (val state = StateHelper.getState(requireContext())) {
-            StateHelper.State.RUNNING -> {
-                setStopButton()
-            }
-            StateHelper.State.READY -> {
-                setStartButton()
-            }
-            else -> {
-                setInstallButton(state)
-            }
+        if (CuberiteService.isRunning) {
+            setStopButton()
+        } else if (InstallService.isInstalled) {
+            setStartButton()
+        } else {
+            setInstallButton()
         }
     }
 }

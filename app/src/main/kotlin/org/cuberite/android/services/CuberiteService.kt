@@ -17,18 +17,18 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import org.cuberite.android.MainActivity
+import org.cuberite.android.MainApplication
 import org.cuberite.android.R
-import org.cuberite.android.helpers.CuberiteHelper
 import org.cuberite.android.parcelable
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.util.Scanner
 
 
 class CuberiteService : IntentService("CuberiteService") {
-    // Logging tag
-    private val log = "Cuberite/ServerService"
     private var consoleOutput = StringBuilder()
     private lateinit var notification: NotificationCompat.Builder
     private lateinit var process: Process
@@ -39,7 +39,6 @@ class CuberiteService : IntentService("CuberiteService") {
         val channelId = "cuberiteservice"
         val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) R.drawable.ic_notification else R.mipmap.ic_launcher
         val text = getText(R.string.notification_cuberite_running)
-        val ip = CuberiteHelper.getIpAddress()
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val notificationIntent = Intent(this, MainActivity::class.java)
         val contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags)
@@ -47,7 +46,7 @@ class CuberiteService : IntentService("CuberiteService") {
                 .setSmallIcon(icon)
                 .setTicker(text)
                 .setContentTitle(text)
-                .setContentText(ip)
+                .setContentText(ipAddress)
                 .setContentIntent(contentIntent)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
@@ -58,9 +57,7 @@ class CuberiteService : IntentService("CuberiteService") {
     // Process-related methods
     @Throws(IOException::class)
     private fun startProcess() {
-        val preferences = applicationContext.getSharedPreferences(this.packageName, MODE_PRIVATE)
-        val executableName = CuberiteHelper.EXECUTABLE_NAME
-        val location = preferences.getString("cuberiteLocation", "")
+        val location = MainApplication.preferences.getString("cuberiteLocation", "")
 
         // Clear previous output
         consoleOutput = StringBuilder()
@@ -68,24 +65,24 @@ class CuberiteService : IntentService("CuberiteService") {
         Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
 
         // Make sure we can execute the binary
-        File(this.filesDir, executableName).setExecutable(true, true)
+        File(filesDir, EXECUTABLE_NAME).setExecutable(true, true)
 
         // Initiate ProcessBuilder with the command at the given location
-        val processBuilder = ProcessBuilder(this.filesDir.toString() + "/" + executableName, "--no-output-buffering")
+        val processBuilder = ProcessBuilder("$filesDir/$EXECUTABLE_NAME", "--no-output-buffering")
         processBuilder.directory(File(location!!))
         processBuilder.redirectErrorStream(true)
-        Log.d(log, "Starting process...")
+        Log.d(LOG, "Starting process...")
         process = processBuilder.start()
         cuberiteSTDIN = process.outputStream
     }
 
     private fun updateOutput() {
-        Log.d(log, "Starting logging...")
+        Log.d(LOG, "Starting logging...")
         val processScanner = Scanner(process.inputStream)
         var line: String?
         try {
             while (processScanner.nextLine().also { line = it } != null) {
-                Log.i(log, line!!)
+                Log.i(LOG, line!!)
                 consoleOutput.append(line).append("\n")
                 Handler(Looper.getMainLooper()).post { updateLogLiveData.postValue(consoleOutput) }
             }
@@ -102,9 +99,8 @@ class CuberiteService : IntentService("CuberiteService") {
             if (WifiManager.NETWORK_STATE_CHANGED_ACTION == action) {
                 val info = intent.parcelable(WifiManager.EXTRA_NETWORK_INFO) as NetworkInfo?
                 if (NetworkInfo.State.CONNECTED == info!!.state || NetworkInfo.State.DISCONNECTED == info.state) {
-                    Log.d(log, "Updating notification IP due to network change")
-                    val ip = CuberiteHelper.getIpAddress()
-                    notification.setContentText(ip)
+                    Log.d(LOG, "Updating notification IP due to network change")
+                    notification.setContentText(ipAddress)
                     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.notify(1, notification.build())
                 }
@@ -115,7 +111,8 @@ class CuberiteService : IntentService("CuberiteService") {
     // Service startup and cleanup
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
-        Log.d(log, "Starting service...")
+        isRunning = true
+        Log.d(LOG, "Starting service...")
         try {
             // Create and show notification about Cuberite running
             createNotification()
@@ -136,7 +133,7 @@ class CuberiteService : IntentService("CuberiteService") {
                     cuberiteSTDIN.write((command + "\n").toByteArray())
                     cuberiteSTDIN.flush()
                 } catch (e: Exception) {
-                    Log.e(log, "An error occurred when writing $command to the STDIN", e)
+                    Log.e(LOG, "An error occurred when writing $command to the STDIN", e)
                 }
                 MainActivity.executeCommandLiveData.postValue(null)
             }
@@ -172,7 +169,7 @@ class CuberiteService : IntentService("CuberiteService") {
             }
             cuberiteSTDIN.close()
         } catch (e: Exception) {
-            Log.e(log, "An error occurred when starting Cuberite", e)
+            Log.e(LOG, "An error occurred when starting Cuberite", e)
 
             // Send error to user
             Handler(Looper.getMainLooper()).post { startupErrorLiveData.postValue(true) }
@@ -181,9 +178,64 @@ class CuberiteService : IntentService("CuberiteService") {
         Handler(Looper.getMainLooper()).post { endedLiveData.postValue(true) }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onDestroy() {
+        super.onDestroy()
+        isRunning = false
+    }
+
     companion object {
+        var isRunning = false
         val endedLiveData = MutableLiveData<Boolean>()
         val startupErrorLiveData = MutableLiveData<Boolean>()
         val updateLogLiveData = MutableLiveData<StringBuilder>()
+        const val EXECUTABLE_NAME = "Cuberite"
+
+        // Logging tag
+        private const val LOG = "Cuberite/ServerService"
+
+        val ipAddress: String
+            get() {
+                try {
+                    for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
+                        for (inetAddress in networkInterface.getInetAddresses()) {
+                            if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
+                                return inetAddress.hostAddress!!
+                            }
+                        }
+                    }
+                } catch (_: Exception) {}
+                return "127.0.0.1"
+            }
+
+        val preferredABI: String
+            get() {
+                val abi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Build.SUPPORTED_ABIS[0]
+                } else {
+                    @Suppress("deprecation") Build.CPU_ABI
+                }
+                Log.d(LOG, "Getting preferred ABI: $abi")
+                return abi
+            }
+
+        fun start(context: Context) {
+            Log.d(LOG, "Starting Cuberite")
+            val serviceIntent = Intent(context, CuberiteService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent)
+            } else {
+                context.startService(serviceIntent)
+            }
+        }
+
+        fun stop() {
+            Log.d(LOG, "Stopping Cuberite")
+            MainActivity.executeCommandLiveData.postValue("stop")
+        }
+
+        fun kill() {
+            MainActivity.killCuberiteLiveData.postValue(true)
+        }
     }
 }

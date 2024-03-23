@@ -3,16 +3,16 @@ package org.cuberite.android.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import org.cuberite.android.helpers.CuberiteHelper
-import org.cuberite.android.helpers.StateHelper
+import org.cuberite.android.MainApplication
+import org.cuberite.android.services.CuberiteService
+import org.cuberite.android.services.InstallService
 
 class StartupReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
-            val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-            if (preferences.getBoolean("startOnBoot", false)
-                    && StateHelper.isCuberiteInstalled(context)) {
-                CuberiteHelper.startCuberite(context)
+            if (MainApplication.preferences.getBoolean("startOnBoot", false)
+                    && InstallService.isInstalled) {
+                CuberiteService.start(context)
             }
         }
     }

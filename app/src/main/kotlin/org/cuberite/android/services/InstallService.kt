@@ -1,5 +1,6 @@
 package org.cuberite.android.services
 
+import android.app.Activity
 import android.app.IntentService
 import android.content.Intent
 import android.net.Uri
@@ -11,9 +12,8 @@ import android.os.PowerManager.WakeLock
 import android.os.ResultReceiver
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import org.cuberite.android.MainApplication
 import org.cuberite.android.R
-import org.cuberite.android.helpers.CuberiteHelper
-import org.cuberite.android.helpers.StateHelper
 import org.cuberite.android.parcelable
 import org.cuberite.android.receivers.ProgressReceiver
 import org.cuberite.android.serializable
@@ -33,13 +33,20 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 class InstallService : IntentService("InstallService") {
-    // Logging tag
-    private val log = "Cuberite/InstallService"
+    enum class State {
+        NEED_DOWNLOAD_SERVER,
+        NEED_DOWNLOAD_BINARY,
+        NEED_DOWNLOAD_BOTH,
+        PICK_FILE_BINARY,
+        PICK_FILE_SERVER,
+        DONE
+    }
+
     private var receiver: ResultReceiver? = null
 
     // Wakelock
     private fun acquireWakelock(): WakeLock {
-        Log.d(log, "Acquiring wakeLock")
+        Log.d(LOG, "Acquiring wakeLock")
         val pm = getSystemService(POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.getName())
         wakeLock.acquire(300000) // 5 min timeout
@@ -68,15 +75,15 @@ class InstallService : IntentService("InstallService") {
                     .split(" ".toRegex(), limit = 2).toTypedArray()[0]
             File("$targetLocation.sha1").delete()
             if (downloadedSha != generatedSha) {
-                Log.d(log, "SHA-1 check didn't pass")
+                Log.d(LOG, "SHA-1 check didn't pass")
                 return if (retryCount > 0) {
                     // Retry if verification failed
                     downloadVerify(url, targetLocation, retryCount - 1)
                 } else getString(R.string.status_shasum_error)
             }
-            Log.d(log, "SHA-1 check passed successfully with checksum $generatedSha")
+            Log.d(LOG, "SHA-1 check passed successfully with checksum $generatedSha")
         } catch (e: FileNotFoundException) {
-            Log.e(log, "Something went wrong while generating checksum", e)
+            Log.e(LOG, "Something went wrong while generating checksum", e)
             return getString(R.string.status_shasum_error)
         }
         return null
@@ -118,15 +125,15 @@ class InstallService : IntentService("InstallService") {
 
         bundleInit.putString("title", getString(R.string.status_downloading_cuberite))
         receiver!!.send(ProgressReceiver.PROGRESS_START, bundleInit)
-        Log.d(log, "Started downloading $stringUrl")
-        Log.d(log, "Downloading to $targetLocation")
+        Log.d(LOG, "Started downloading $stringUrl")
+        Log.d(LOG, "Downloading to $targetLocation")
 
         try {
             connection.setConnectTimeout(10000) // 10 secs
             connection.connect()
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 val error = "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage()
-                Log.e(log, error)
+                Log.e(LOG, error)
                 result = error
             } else {
                 inputStream = connection.inputStream
@@ -145,11 +152,11 @@ class InstallService : IntentService("InstallService") {
                     }
                     outputStream.write(data, 0, count)
                 }
-                Log.d(log, "Finished downloading")
+                Log.d(LOG, "Finished downloading")
             }
         } catch (e: Exception) {
             result = e.message
-            Log.e(log, "An error occurred when downloading a zip", e)
+            Log.e(LOG, "An error occurred when downloading a zip", e)
         } finally {
             try {
                 inputStream?.let {
@@ -165,7 +172,7 @@ class InstallService : IntentService("InstallService") {
         result?.let {
             receiver!!.send(ProgressReceiver.PROGRESS_END, null)
         }
-        Log.d(log, "Releasing wakeLock")
+        Log.d(LOG, "Releasing wakeLock")
         wakeLock.release()
         return result
     }
@@ -173,7 +180,7 @@ class InstallService : IntentService("InstallService") {
     // Unzip
     private fun unzip(fileUri: Uri?, targetLocation: File): String {
         var result = getString(R.string.status_install_success)
-        Log.i(log, "Unzipping $fileUri to $targetLocation")
+        Log.i(LOG, "Unzipping $fileUri to $targetLocation")
         val wakeLock = acquireWakelock()
         if (!targetLocation.exists()) {
             targetLocation.mkdir()
@@ -188,10 +195,10 @@ class InstallService : IntentService("InstallService") {
             unzipStream(fileUri, targetLocation)
         } catch (e: IOException) {
             result = getString(R.string.status_unzip_error)
-            Log.e(log, "An error occurred while installing Cuberite", e)
+            Log.e(LOG, "An error occurred while installing Cuberite", e)
         }
         receiver!!.send(ProgressReceiver.PROGRESS_END, null)
-        Log.d(log, "Releasing wakeLock")
+        Log.d(LOG, "Releasing wakeLock")
         wakeLock.release()
         return result
     }
@@ -225,48 +232,48 @@ class InstallService : IntentService("InstallService") {
         try {
             noMedia.createNewFile()
         } catch (e: IOException) {
-            Log.e(log, "Something went wrong while creating the .nomedia file", e)
+            Log.e(LOG, "Something went wrong while creating the .nomedia file", e)
         }
     }
 
     // Service handler
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
-        val state = intent!!.serializable("state") as StateHelper.State?
+        val state = intent!!.serializable("state") as State?
         var result: String?
-        if ((state == StateHelper.State.NEED_DOWNLOAD_BINARY || state == StateHelper.State.NEED_DOWNLOAD_BOTH || state == StateHelper.State.PICK_FILE_BINARY)
-                && CuberiteHelper.isCuberiteRunning(applicationContext)) {
+        if ((state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH || state == State.PICK_FILE_BINARY)
+                && CuberiteService.isRunning) {
             result = getString(R.string.status_update_binary_error)
         } else if ("unzip" == intent.action) {
             val uri = intent.parcelable("uri") as Uri?
             val targetFolder = File(
-                    if (state == StateHelper.State.PICK_FILE_BINARY) this.filesDir.absolutePath else intent.getStringExtra("targetFolder")!!
+                    if (state == State.PICK_FILE_BINARY) MainApplication.privateDir else intent.getStringExtra("targetFolder")!!
             )
             receiver = intent.parcelable("receiver")
             result = unzip(uri, targetFolder)
         } else {
             val downloadHost = intent.getStringExtra("downloadHost")
-            val abi = CuberiteHelper.preferredABI
-            val targetFileName = (if (state == StateHelper.State.NEED_DOWNLOAD_BINARY || state == StateHelper.State.NEED_DOWNLOAD_BOTH) abi else "server") + ".zip"
+            val abi = CuberiteService.preferredABI
+            val targetFileName = (if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) abi else "server") + ".zip"
             val downloadUrl = downloadHost + targetFileName
-            val tempZip = File(this.cacheDir, targetFileName) // Zip files are temporary
+            val tempZip = File(cacheDir, targetFileName) // Zip files are temporary
             val targetFolder = File(
-                    if (state == StateHelper.State.NEED_DOWNLOAD_BINARY || state == StateHelper.State.NEED_DOWNLOAD_BOTH) this.filesDir.absolutePath else intent.getStringExtra("targetFolder")!!
+                    if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) MainApplication.privateDir else intent.getStringExtra("targetFolder")!!
             )
             receiver = intent.parcelable("receiver")
 
             // Download
-            Log.i(log, "Downloading $state")
+            Log.i(LOG, "Downloading $state")
             val retryCount = 1
             result = downloadVerify(downloadUrl, tempZip, retryCount)
             if (result == null) {
                 result = unzip(Uri.fromFile(tempZip), targetFolder)
                 if (!tempZip.delete()) {
-                    Log.w(log, "Failed to delete downloaded zip file")
+                    Log.w(LOG, "Failed to delete downloaded zip file")
                 }
             }
-            if (state == StateHelper.State.NEED_DOWNLOAD_BOTH) {
-                intent.putExtra("state", StateHelper.State.NEED_DOWNLOAD_SERVER)
+            if (state == State.NEED_DOWNLOAD_BOTH) {
+                intent.putExtra("state", State.NEED_DOWNLOAD_SERVER)
                 onHandleIntent(intent)
             }
         }
@@ -276,5 +283,58 @@ class InstallService : IntentService("InstallService") {
 
     companion object {
         val endedLiveData = MutableLiveData<String?>()
+        const val DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/"
+
+        // Logging tag
+        private const val LOG = "Cuberite/InstallService"
+
+        private val state: State
+            get() {
+                var state: State = State.DONE
+
+                if (CuberiteService.isRunning) {
+                    return state
+                }
+
+                val hasBinary = File(MainApplication.privateDir + "/" + CuberiteService.EXECUTABLE_NAME).exists()
+                val hasServer = File(MainApplication.preferences.getString("cuberiteLocation", "")!!).exists()
+
+                if (!hasBinary && !hasServer) {
+                    state = State.NEED_DOWNLOAD_BOTH
+                } else if (!hasBinary) {
+                    state = State.NEED_DOWNLOAD_BINARY
+                } else if (!hasServer) {
+                    state = State.NEED_DOWNLOAD_SERVER
+                }
+                Log.d(LOG, "Getting State: $state")
+                return state
+            }
+
+        val isInstalled: Boolean
+            get() {
+                return state == State.DONE
+            }
+
+        fun download(activity: Activity, state: State = this.state) {
+            val intent = Intent(activity, InstallService::class.java)
+                .setAction("download")
+                .putExtra("downloadHost", DOWNLOAD_HOST)
+                .putExtra("state", state)
+                .putExtra("targetFolder", MainApplication.preferences.getString("cuberiteLocation", ""))
+                .putExtra("receiver", ProgressReceiver(activity, Handler(Looper.getMainLooper())))
+            activity.startService(intent)
+        }
+
+        fun installLocal(activity: Activity, selectedFileUri: Uri?, state: State = this.state) {
+            selectedFileUri?.let {
+                val intent = Intent(activity, InstallService::class.java)
+                    .setAction("unzip")
+                    .putExtra("uri", selectedFileUri)
+                    .putExtra("state", state)
+                    .putExtra("targetFolder", MainApplication.preferences.getString("cuberiteLocation", ""))
+                    .putExtra("receiver", ProgressReceiver(activity, Handler(Looper.getMainLooper())))
+                activity.startService(intent)
+            }
+        }
     }
 }

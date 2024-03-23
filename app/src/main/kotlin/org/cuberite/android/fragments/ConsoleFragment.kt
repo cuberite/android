@@ -19,7 +19,6 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.textfield.TextInputLayout
 import org.cuberite.android.MainActivity
 import org.cuberite.android.R
-import org.cuberite.android.helpers.CuberiteHelper
 import org.cuberite.android.services.CuberiteService
 
 class ConsoleFragment : Fragment() {
@@ -58,8 +57,7 @@ class ConsoleFragment : Fragment() {
     }
 
     private fun sendExecuteCommand(command: String) {
-        if (command.isNotEmpty()
-                && CuberiteHelper.isCuberiteRunning(requireActivity())) {
+        if (command.isNotEmpty() && CuberiteService.isRunning) {
             // Logging tag
             val log = "Cuberite/Console"
             Log.d(log, "Executing $command")

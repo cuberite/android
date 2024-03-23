@@ -4,8 +4,10 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Build.VERSION_CODES.TIRAMISU
+import android.os.Environment
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
@@ -15,8 +17,12 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // Initialize settings
+        preferences = getSharedPreferences(packageName, MODE_PRIVATE)
+        privateDir = filesDir.absolutePath
+        publicDir = Environment.getExternalStorageDirectory().absolutePath
+
         // Application theme
-        val preferences = getSharedPreferences(this.packageName, MODE_PRIVATE)
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
         DynamicColors.applyToActivitiesIfAvailable(this)
 
@@ -40,6 +46,12 @@ class MainApplication : Application() {
         channel.enableVibration(true)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+    }
+
+    companion object {
+        lateinit var preferences: SharedPreferences
+        lateinit var privateDir: String
+        lateinit var publicDir: String
     }
 }
 

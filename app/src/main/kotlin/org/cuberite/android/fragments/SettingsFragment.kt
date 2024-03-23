@@ -2,10 +2,8 @@ package org.cuberite.android.fragments
 
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -25,10 +23,9 @@ import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.cuberite.android.BuildConfig
+import org.cuberite.android.MainApplication
 import org.cuberite.android.R
-import org.cuberite.android.helpers.CuberiteHelper
-import org.cuberite.android.helpers.InstallHelper
-import org.cuberite.android.helpers.StateHelper
+import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
 import org.ini4j.Config
 import org.ini4j.Ini
@@ -41,7 +38,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         addPreferencesFromResource(R.xml.preferences)
-        val preferences = requireContext().getSharedPreferences(requireContext().packageName, Context.MODE_PRIVATE)
 
         // Ini4j config
         val config = Config.getGlobal()
@@ -49,12 +45,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         config.isStrictOperator = true
 
         // Initialize
-        initializeThemeSettings(preferences)
-        initializeStartupSettings(preferences)
-        initializeSDCardSettings(preferences)
-        initializeWebadminSettings(preferences)
+        initializeThemeSettings()
+        initializeStartupSettings()
+        initializeSDCardSettings()
+        initializeWebadminSettings()
         initializeInstallSettings()
-        initializeInfoSettings(preferences)
+        initializeInfoSettings()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,8 +67,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     // Theme-related methods
-    private fun initializeThemeSettings(preferences: SharedPreferences) {
-        val getCurrentTheme = preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    private fun initializeThemeSettings() {
+        val getCurrentTheme = MainApplication.preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         val theme = findPreference<ListPreference>("theme")
         theme!!.dialogTitle = getString(R.string.settings_theme_choose)
         theme.entries = arrayOf<CharSequence>(
@@ -93,7 +89,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
             AppCompatDelegate.setDefaultNightMode(newTheme)
-            val editor = preferences.edit()
+            val editor = MainApplication.preferences.edit()
             editor.putInt("defaultTheme", newTheme)
             editor.apply()
             true
@@ -101,10 +97,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     // Startup-related methods
-    private fun initializeStartupSettings(preferences: SharedPreferences) {
+    private fun initializeStartupSettings() {
         val startupToggle = findPreference<SwitchPreferenceCompat>("startupToggle")
         startupToggle!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any ->
-            val editor = preferences.edit()
+            val editor = MainApplication.preferences.edit()
             editor.putBoolean("startOnBoot", newValue as Boolean)
             editor.apply()
             true
@@ -112,15 +108,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     // SD Card-related methods
-    private fun initializeSDCardSettings(preferences: SharedPreferences) {
+    private fun initializeSDCardSettings() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return
         }
-        val privateDir = requireActivity().filesDir.absolutePath
-        val publicDir = Environment.getExternalStorageDirectory().absolutePath
-        val location = preferences.getString("cuberiteLocation", "")
+        val location = MainApplication.preferences.getString("cuberiteLocation", "")
         val isSDAvailable = (requireContext().getExternalFilesDirs(null).size > 1)
-        val isSDEnabled = !(location!!.startsWith(publicDir) || location.startsWith(privateDir))
+        val isSDEnabled = !(location!!.startsWith(MainApplication.publicDir) || location.startsWith(MainApplication.privateDir))
         val toggleSD = findPreference<SwitchPreferenceCompat>("saveToSDToggle")
         if (!(isSDAvailable || isSDEnabled)) {
             return
@@ -129,7 +123,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         toggleSD!!.isVisible = true
         toggleSD.setChecked(isSDEnabled)
         toggleSD.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any ->
-            if (CuberiteHelper.isCuberiteRunning(requireContext())) {
+            if (CuberiteService.isRunning) {
                 val message = getString(R.string.settings_sd_card_running)
                 Snackbar.make(requireActivity().findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
                     .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
@@ -137,18 +131,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@OnPreferenceChangeListener false
             }
             val isSDAvailableInner = (requireContext().getExternalFilesDirs(null).size > 1)
-            var newLocation = publicDir
+            var newLocation = MainApplication.publicDir
             if (newValue as Boolean && isSDAvailableInner) {
                 // SD dir
                 newLocation = requireContext().getExternalFilesDirs(null)[1].absolutePath
             } else {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     // Private dir
-                    newLocation = requireContext().filesDir.absolutePath
+                    newLocation = MainApplication.privateDir
                 }
                 toggleSD.isVisible = isSDAvailableInner
             }
-            val editor = preferences.edit()
+            val editor = MainApplication.preferences.edit()
             editor.putString("cuberiteLocation", "$newLocation/cuberite-server")
             editor.apply()
             true
@@ -156,8 +150,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     // Webadmin-related methods
-    private fun initializeWebadminSettings(preferences: SharedPreferences) {
-        val webadminFile = getWebadminFile(preferences)
+    private fun initializeWebadminSettings() {
+        val webadminFile = getWebadminFile()
         val url = getWebadminUrl(webadminFile)
         url?.let {
             val webadminDescription = findPreference<Preference>("webadminDescription")
@@ -169,14 +163,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val webadminOpen = findPreference<Preference>("webadminOpen")
         webadminOpen!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            if (!CuberiteHelper.isCuberiteRunning(requireContext())) {
+            if (!CuberiteService.isRunning) {
                 val message = getString(R.string.settings_webadmin_not_running)
                 Snackbar.make(requireActivity().findViewById(R.id.fragment_container), message, Snackbar.LENGTH_LONG)
                     .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
                     .show()
                 return@OnPreferenceClickListener true
             }
-            val webadminFileInner = getWebadminFile(preferences)
+            val webadminFileInner = getWebadminFile()
             val urlInner = getWebadminUrl(webadminFileInner)
             urlInner?.let {
                 Log.d(log, "Opening Webadmin on $urlInner")
@@ -188,7 +182,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val webadminLogin = findPreference<Preference>("webadminLogin")
         webadminLogin!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             try {
-                val webadminFileInner = getWebadminFile(preferences)
+                val webadminFileInner = getWebadminFile()
                 val ini = createWebadminIni(webadminFileInner)
                 ini.put("WebAdmin", "Enabled", 1)
                 showWebadminCredentialPopup(webadminFileInner, ini)
@@ -217,8 +211,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         return ini
     }
 
-    private fun getWebadminFile(preferences: SharedPreferences): File {
-        val cuberiteDir = File(preferences.getString("cuberiteLocation", "")!!)
+    private fun getWebadminFile(): File {
+        val cuberiteDir = File(MainApplication.preferences.getString("cuberiteLocation", "")!!)
         return File(cuberiteDir, "webadmin.ini")
     }
 
@@ -226,7 +220,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         var url: String? = null
         try {
             val ini = createWebadminIni(webadminFile)
-            val ip = CuberiteHelper.getIpAddress()
+            val ip = CuberiteService.ipAddress
             val port: Int = try {
                 ini["WebAdmin", "Ports"].toInt()
             } catch (e: NumberFormatException) {
@@ -285,15 +279,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun initializeInstallSettings() {
         val updateBinary = findPreference<Preference>("installUpdateBinary")
         updateBinary!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            InstallHelper.installCuberiteDownload(requireActivity(), StateHelper.State.NEED_DOWNLOAD_BINARY)
+            InstallService.download(requireActivity(), InstallService.State.NEED_DOWNLOAD_BINARY)
             true
         }
         val updateServer = findPreference<Preference>("installUpdateServer")
         updateServer!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            InstallHelper.installCuberiteDownload(requireActivity(), StateHelper.State.NEED_DOWNLOAD_SERVER)
+            InstallService.download(requireActivity(), InstallService.State.NEED_DOWNLOAD_SERVER)
             true
         }
-        val abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteHelper.preferredABI)
+        val abi = String.format(getString(R.string.settings_install_manually_abi), CuberiteService.preferredABI)
         val setABIText = findPreference<Preference>("abiText")
         setABIText!!.setSummary("""
     ${setABIText.getSummary().toString()}
@@ -312,8 +306,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private val pickFileBinaryLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.PICK_FILE_BINARY, uri) }
-    private val pickFileServerLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallHelper.installCuberiteLocal(requireActivity(), StateHelper.State.PICK_FILE_SERVER, uri) }
+    private val pickFileBinaryLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallService.installLocal(requireActivity(), uri, InstallService.State.PICK_FILE_BINARY) }
+    private val pickFileServerLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { uri: Uri? -> InstallService.installLocal(requireActivity(), uri, InstallService.State.PICK_FILE_SERVER) }
     private fun pickFile(launcher: ActivityResultLauncher<String>) {
         try {
             launcher.launch("*/*")
@@ -326,17 +320,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     // Info-related methods
-    private fun initializeInfoSettings(preferences: SharedPreferences) {
+    private fun initializeInfoSettings() {
         val infoDebugInfo = findPreference<Preference>("infoDebugInfo")
         infoDebugInfo!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val title = getString(R.string.settings_info_debug)
             val message = """Running on Android ${Build.VERSION.RELEASE} (API Level ${Build.VERSION.SDK_INT})
-Using ABI ${CuberiteHelper.preferredABI}
-IP: ${CuberiteHelper.getIpAddress()}
+Using ABI ${CuberiteService.preferredABI}
+IP: ${CuberiteService.ipAddress}
 Private directory: ${requireContext().filesDir}
 Public directory: ${Environment.getExternalStorageDirectory()}
-Storage location: ${preferences.getString("cuberiteLocation", "")}
-Download URL: ${InstallHelper.DOWNLOAD_HOST}"""
+Storage location: ${MainApplication.preferences.getString("cuberiteLocation", "")}
+Download URL: ${InstallService.DOWNLOAD_HOST}"""
             showInfoPopup(title, message)
             true
         }

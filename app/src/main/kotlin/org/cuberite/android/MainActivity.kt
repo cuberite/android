@@ -2,11 +2,9 @@ package org.cuberite.android
 
 import android.Manifest
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,9 +25,6 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     // Logging tag
     private val log = "Cuberite/MainActivity"
     private var permissionPopup: AlertDialog? = null
-    private lateinit var preferences: SharedPreferences
-    private lateinit var privateDir: String
-    private lateinit var publicDir: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +44,6 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         // Set navigation bar listener
         val navigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         navigation.setOnItemSelectedListener(this)
-
-        // Initialize settings
-        preferences = getSharedPreferences(this.packageName, MODE_PRIVATE)
-        privateDir = this.filesDir.absolutePath
-        publicDir = Environment.getExternalStorageDirectory().absolutePath
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -86,10 +76,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             Log.i(log, "Got permissions, using public directory")
-            preferences.edit().putString("cuberiteLocation", "$publicDir/cuberite-server").apply()
+            MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.publicDir/cuberite-server").apply()
         } else {
             Log.i(log, "Permissions denied, boo, using private directory")
-            preferences.edit().putString("cuberiteLocation", "$privateDir/cuberite-server").apply()
+            MainApplication.preferences.edit().putString("cuberiteLocation", "$MainApplication.privateDir/cuberite-server").apply()
         }
     }
 
@@ -108,16 +98,16 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     }
 
     private fun checkPermissions() {
-        val location = preferences.getString("cuberiteLocation", "")
+        val location = MainApplication.preferences.getString("cuberiteLocation", "")
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // User is running Android 6 or above, show permission popup on first run
             // or if user granted permission and later denied it
-            if (location!!.isEmpty() || location.startsWith(publicDir)) {
+            if (location!!.isEmpty() || location.startsWith(MainApplication.publicDir)) {
                 showPermissionPopup()
             }
-        } else if (location!!.isEmpty() || location.startsWith(privateDir)) {
-            val editor = preferences.edit()
-            editor.putString("cuberiteLocation", "$publicDir/cuberite-server")
+        } else if (location!!.isEmpty() || location.startsWith(MainApplication.privateDir)) {
+            val editor = MainApplication.preferences.edit()
+            editor.putString("cuberiteLocation", "$MainApplication.publicDir/cuberite-server")
             editor.apply()
         }
     }
