@@ -19,6 +19,7 @@ import androidx.lifecycle.Observer
 import org.cuberite.android.MainActivity
 import org.cuberite.android.R
 import org.cuberite.android.helpers.CuberiteHelper
+import org.cuberite.android.parcelable
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
@@ -99,7 +100,7 @@ class CuberiteService : IntentService("CuberiteService") {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
             if (WifiManager.NETWORK_STATE_CHANGED_ACTION == action) {
-                val info = intent.getParcelableExtra<NetworkInfo>(WifiManager.EXTRA_NETWORK_INFO)
+                val info = intent.parcelable(WifiManager.EXTRA_NETWORK_INFO) as NetworkInfo?
                 if (NetworkInfo.State.CONNECTED == info!!.state || NetworkInfo.State.DISCONNECTED == info.state) {
                     Log.d(log, "Updating notification IP due to network change")
                     val ip = CuberiteHelper.getIpAddress(context)

@@ -14,7 +14,9 @@ import androidx.lifecycle.MutableLiveData
 import org.cuberite.android.R
 import org.cuberite.android.helpers.CuberiteHelper
 import org.cuberite.android.helpers.StateHelper
+import org.cuberite.android.parcelable
 import org.cuberite.android.receivers.ProgressReceiver
+import org.cuberite.android.serializable
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -230,17 +232,17 @@ class InstallService : IntentService("InstallService") {
     // Service handler
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
-        val state = intent!!.getSerializableExtra("state") as StateHelper.State?
+        val state = intent!!.serializable("state") as StateHelper.State?
         var result: String?
         if ((state == StateHelper.State.NEED_DOWNLOAD_BINARY || state == StateHelper.State.NEED_DOWNLOAD_BOTH || state == StateHelper.State.PICK_FILE_BINARY)
                 && CuberiteHelper.isCuberiteRunning(applicationContext)) {
             result = getString(R.string.status_update_binary_error)
         } else if ("unzip" == intent.action) {
-            val uri = intent.getParcelableExtra<Uri>("uri")
+            val uri = intent.parcelable("uri") as Uri?
             val targetFolder = File(
                     if (state == StateHelper.State.PICK_FILE_BINARY) this.filesDir.absolutePath else intent.getStringExtra("targetFolder")!!
             )
-            receiver = intent.getParcelableExtra("receiver")
+            receiver = intent.parcelable("receiver")
             result = unzip(uri, targetFolder)
         } else {
             val downloadHost = intent.getStringExtra("downloadHost")
@@ -251,7 +253,7 @@ class InstallService : IntentService("InstallService") {
             val targetFolder = File(
                     if (state == StateHelper.State.NEED_DOWNLOAD_BINARY || state == StateHelper.State.NEED_DOWNLOAD_BOTH) this.filesDir.absolutePath else intent.getStringExtra("targetFolder")!!
             )
-            receiver = intent.getParcelableExtra("receiver")
+            receiver = intent.parcelable("receiver")
 
             // Download
             Log.i(log, "Downloading $state")

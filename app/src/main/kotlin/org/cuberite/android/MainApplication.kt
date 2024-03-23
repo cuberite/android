@@ -3,9 +3,13 @@ package org.cuberite.android
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
+import android.os.Build.VERSION_CODES.TIRAMISU
+import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
+import java.io.Serializable
 
 class MainApplication : Application() {
     override fun onCreate() {
@@ -37,4 +41,14 @@ class MainApplication : Application() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
+}
+
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    Build.VERSION.SDK_INT >= TIRAMISU -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("deprecation") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
+    Build.VERSION.SDK_INT >= TIRAMISU -> getSerializableExtra(key, T::class.java)
+    else -> @Suppress("deprecation") getSerializableExtra(key) as? T
 }

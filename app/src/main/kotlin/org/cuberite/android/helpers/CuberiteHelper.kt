@@ -27,7 +27,7 @@ object CuberiteHelper {
             val abi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Build.SUPPORTED_ABIS[0]
             } else {
-                Build.CPU_ABI
+                @Suppress("deprecation") Build.CPU_ABI
             }
             Log.d(LOG, "Getting preferred ABI: $abi")
             return abi
