@@ -23,11 +23,8 @@ fun List<String>.formatLog(): List<AnnotatedString> {
     val errorColor = MaterialTheme.colorScheme.errorContainer
     val typography = MaterialTheme.typography
     return remember(this) {
-        mapNotNull { line ->
-            if (line.isEmpty()) {
-                return@mapNotNull null
-            }
-            val format = line.logFormat()
+        filter { it.isNotBlank() }.map { line ->
+            val format = line.logFormat
             val color = when (format) {
                 LogFormat.LOG -> logColor
                 LogFormat.INFO -> infoColor
@@ -35,31 +32,25 @@ fun List<String>.formatLog(): List<AnnotatedString> {
                 LogFormat.ERROR -> errorColor
                 null -> logColor
             }
-            val trimmedLine = line.trim()
-                .run {
-                    if (format != null) {
-                        replaceFirst(format.identifier, "", ignoreCase = true)
-                    } else {
-                        this
-                    }
-                }
+            val trimmedLine = line
+                .trim()
+                .replaceFirst(
+                    oldValue = format?.identifier ?: "",
+                    newValue = "",
+                    ignoreCase = true
+                )
             buildAnnotatedString {
-                if (format == null) {
+                withStyle(
+                    typography
+                        .log(color = color)
+                        .toSpanStyle()
+                ) {
                     append(trimmedLine)
-                } else {
-                    withStyle(
-                        typography
-                            .log(color = color)
-                            .toSpanStyle()
-                    ) {
-                        append(trimmedLine)
-                    }
                 }
             }
         }
     }
 }
 
-fun String.logFormat(): LogFormat? {
-    return LogFormat.entries.find { startsWith(it.identifier, ignoreCase = true) }
-}
+private val String.logFormat: LogFormat?
+    get() = LogFormat.entries.find { startsWith(it.identifier, ignoreCase = true) }
