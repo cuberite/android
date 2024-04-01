@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "org.cuberite.android"
         resourceConfigurations += listOf("en", "de", "nl", "pt", "zh_CN")
-        minSdk = 16
+        minSdk = 21
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
         versionCode = 15
