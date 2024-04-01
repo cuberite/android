@@ -2,6 +2,7 @@ package org.cuberite.android.ui.console
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +43,7 @@ fun ConsoleScreen(
         LazyColumn(
             modifier = Modifier.weight(1f),
             state = state,
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp),
         ) {
             items(items = logList) {
                 Text(text = it)
