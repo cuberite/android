@@ -36,9 +36,33 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        //...
+        compose = true
+    }
+    composeOptions {
+        // For support for Kotlin-2.0.0-Beta5
+        kotlinCompilerExtensionVersion = "1.5.11-dev-k2.0.0-Beta5-b5a216d0ac6"
+    }
+
 }
 
 dependencies {
+
+    val composeBom = platform("androidx.compose:compose-bom:2024.03.00")
+
+    // Compose
+    implementation(composeBom)
+    implementation("androidx.compose.runtime:runtime")
+    // Should be removed once migration to Kotlin-Flows in done
+    implementation("androidx.compose.runtime:runtime-livedata")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.foundation:foundation-layout")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
