@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,13 +27,9 @@ import org.cuberite.android.R
 import org.cuberite.android.ui.formatter.formatLog
 
 @Composable
-fun ConsoleScreen(
-    logs: String,
-    command: String,
-    onCommandChange: (String) -> Unit,
-    onSendCommand: () -> Unit,
-) {
-    val logList = logs.lines().formatLog()
+fun ConsoleScreen(viewModel: ConsoleViewModel) {
+    val logs by viewModel.logs.collectAsState()
+    val logList = logs.formatLog()
     val state = rememberLazyListState()
     LaunchedEffect(logs) {
         state.animateScrollToItem(logList.size)
@@ -53,14 +51,14 @@ fun ConsoleScreen(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
                 .fillMaxWidth(),
-            value = command,
-            onValueChange = onCommandChange,
-            keyboardActions = KeyboardActions(onDone = { onSendCommand() }),
+            value = viewModel.command,
+            onValueChange = viewModel::updateCommand,
+            keyboardActions = KeyboardActions(onDone = { viewModel.invokeCommand() }),
             placeholder = {
                 Text(text = stringResource(R.string.inputLine_hint))
             },
             trailingIcon = {
-                IconButton(onClick = onSendCommand) {
+                IconButton(onClick = viewModel::invokeCommand) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.Send,
                         contentDescription = stringResource(R.string.do_execute_line)
