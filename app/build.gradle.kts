@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("com.google.android.material:material:1.10.0")
