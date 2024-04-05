@@ -10,7 +10,14 @@ import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.os.ResultReceiver
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.cuberite.android.MainApplication
 import org.cuberite.android.R
 import org.cuberite.android.parcelable
@@ -41,6 +48,9 @@ class InstallService : IntentService("InstallService") {
         DONE
     }
 
+    private val serviceJob = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.Main + serviceJob)
+
     private var receiver: ResultReceiver? = null
 
     // Wakelock
@@ -67,11 +77,11 @@ class InstallService : IntentService("InstallService") {
         try {
             val generatedSha = generateSha1(targetLocation)
             val downloadedSha = Scanner(
-                    File("$targetLocation.sha1")
+                File("$targetLocation.sha1")
             )
-                    .useDelimiter("\\Z")
-                    .next()
-                    .split(" ".toRegex(), limit = 2).toTypedArray()[0]
+                .useDelimiter("\\Z")
+                .next()
+                .split(" ".toRegex(), limit = 2).toTypedArray()[0]
             File("$targetLocation.sha1").delete()
             if (downloadedSha != generatedSha) {
                 Log.d(LOG, "SHA-1 check didn't pass")
@@ -131,7 +141,8 @@ class InstallService : IntentService("InstallService") {
             connection.setConnectTimeout(10000) // 10 secs
             connection.connect()
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                val error = "Server returned HTTP " + connection.responseCode + " " + connection.responseMessage
+                val error =
+                    "Server returned HTTP " + connection.responseCode + " " + connection.responseMessage
                 Log.e(LOG, error)
                 result = error
             } else {
@@ -237,7 +248,8 @@ class InstallService : IntentService("InstallService") {
         val state = intent!!.serializable("state") as State?
         var result: String?
         if ((state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH || state == State.PICK_FILE_BINARY)
-                && CuberiteService.isRunning) {
+            && CuberiteService.isRunning
+        ) {
             result = getString(R.string.status_update_binary_error)
         } else if ("unzip" == intent.action) {
             val uri = intent.parcelable("uri") as Uri?
@@ -251,18 +263,20 @@ class InstallService : IntentService("InstallService") {
             result = unzip(uri, targetFolder)
         } else {
             val abi = CuberiteService.preferredABI
-            val targetFileName = if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
-                "$abi.zip"
-            } else {
-                "server.zip"
-            }
+            val targetFileName =
+                if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
+                    "$abi.zip"
+                } else {
+                    "server.zip"
+                }
             val downloadUrl = DOWNLOAD_HOST + targetFileName
             val tempZip = File(cacheDir, targetFileName) // Zip files are temporary
-            val filePath = if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
-                MainApplication.privateDir
-            } else {
-                MainApplication.preferences.getString("cuberiteLocation", "")!!
-            }
+            val filePath =
+                if (state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH) {
+                    MainApplication.privateDir
+                } else {
+                    MainApplication.preferences.getString("cuberiteLocation", "")!!
+                }
             val targetFolder = File(filePath)
             receiver = intent.parcelable("receiver")
 
@@ -281,19 +295,30 @@ class InstallService : IntentService("InstallService") {
                 onHandleIntent(intent)
             }
         }
+        scope.launch {
+            _serviceResult.emit(result)
+        }
         stopSelf()
-        endedLiveData.postValue(result)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceJob.cancelChildren()
     }
 
     companion object {
         private const val LOG = "Cuberite/InstallService"
         const val DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/"
-        val endedLiveData = MutableLiveData<String?>()
+
+        private val _serviceResult: MutableStateFlow<String?> = MutableStateFlow(null)
+        val serviceResult: StateFlow<String?> = _serviceResult.asStateFlow()
 
         private val state: State
             get() {
-                val hasBinary = File(MainApplication.privateDir + "/" + CuberiteService.EXECUTABLE_NAME).exists()
-                val hasServer = File(MainApplication.preferences.getString("cuberiteLocation", "")!!).exists()
+                val hasBinary =
+                    File(MainApplication.privateDir + "/" + CuberiteService.EXECUTABLE_NAME).exists()
+                val hasServer =
+                    File(MainApplication.preferences.getString("cuberiteLocation", "")!!).exists()
                 var state: State = State.DONE
 
                 if (!CuberiteService.isRunning) {
@@ -320,6 +345,10 @@ class InstallService : IntentService("InstallService") {
                 .putExtra("state", state)
                 .putExtra("receiver", ProgressReceiver(activity, Handler(activity.mainLooper)))
             activity.startService(intent)
+        }
+
+        fun resultConsumed() {
+            _serviceResult.value = null
         }
 
         fun installLocal(activity: Activity, selectedFileUri: Uri?, state: State = this.state) {

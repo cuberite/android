@@ -9,8 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import org.cuberite.android.R
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
@@ -19,7 +24,11 @@ class ControlFragment : Fragment() {
     private var mainButtonColor = 0
     private lateinit var mainButton: Button
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         return inflater.inflate(R.layout.fragment_control, container, false)
     }
 
@@ -50,32 +59,48 @@ class ControlFragment : Fragment() {
                 .show()
             CuberiteService.startupErrorLiveData.postValue(false)
         }
-        InstallService.endedLiveData.observe(viewLifecycleOwner) { result ->
-            if (result == null) {
-                return@observe
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    InstallService.serviceResult
+                        .filterNotNull()
+                        .collect { result ->
+                            Snackbar.make(view.parent as View, result, Snackbar.LENGTH_LONG)
+                                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
+                                .show()
+                            updateControlButton()
+                            InstallService.resultConsumed()
+                        }
+                }
             }
-            Snackbar.make(requireActivity().findViewById(R.id.fragment_container), result, Snackbar.LENGTH_LONG)
-                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
-                .show()
-            updateControlButton()
-            InstallService.endedLiveData.postValue(null)
         }
         mainButton = view.findViewById(R.id.mainButton)
-        mainButtonColor = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorSurface)
+        mainButtonColor =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorSurface)
         updateControlButton()
     }
 
     private fun animateColorChange(button: Button, colorFrom: Int, colorTo: Int) {
-        Log.d(LOG, "Changing color from " + Integer.toHexString(colorFrom) + " to " + Integer.toHexString(colorTo))
+        Log.d(
+            LOG,
+            "Changing color from " + Integer.toHexString(colorFrom) + " to " + Integer.toHexString(
+                colorTo
+            )
+        )
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         colorAnimation.setDuration(300)
-        colorAnimation.addUpdateListener { animator: ValueAnimator -> button.setBackgroundColor(animator.animatedValue as Int) }
+        colorAnimation.addUpdateListener { animator: ValueAnimator ->
+            button.setBackgroundColor(
+                animator.animatedValue as Int
+            )
+        }
         colorAnimation.start()
         mainButtonColor = colorTo
     }
 
     private fun setInstallButton() {
-        val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorPrimary)
+        val colorTo =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorPrimary)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_install_cuberite)
         mainButton.setOnClickListener {
@@ -84,7 +109,8 @@ class ControlFragment : Fragment() {
     }
 
     private fun setStartButton() {
-        val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorPrimary)
+        val colorTo =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorPrimary)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_start_cuberite)
         mainButton.setOnClickListener {
@@ -94,7 +120,8 @@ class ControlFragment : Fragment() {
     }
 
     private fun setStopButton() {
-        val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorTertiary)
+        val colorTo =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorTertiary)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_stop_cuberite)
         mainButton.setOnClickListener {
@@ -104,7 +131,8 @@ class ControlFragment : Fragment() {
     }
 
     private fun setKillButton() {
-        val colorTo = MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorError)
+        val colorTo =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorError)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_kill_cuberite)
         mainButton.setOnClickListener { CuberiteService.kill() }
