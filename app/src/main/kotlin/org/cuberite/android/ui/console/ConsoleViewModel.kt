@@ -19,9 +19,8 @@ class ConsoleViewModel : ViewModel() {
     var command: String by mutableStateOf("")
         private set
 
-    val logs: StateFlow<List<String>> = CuberiteService.updateLogLiveData
-        .asFlow()
-        .map { it.toString().lines() }
+    val logs: StateFlow<List<String>> = CuberiteService.logs
+        .map { it.lines() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

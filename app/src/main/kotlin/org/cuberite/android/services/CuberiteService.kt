@@ -15,6 +15,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.cuberite.android.MainActivity
 import org.cuberite.android.MainApplication
 import org.cuberite.android.R
@@ -38,18 +40,19 @@ class CuberiteService : IntentService("CuberiteService") {
         val channelId = "cuberiteservice"
         val icon = R.drawable.ic_notification
         val text = getText(R.string.notification_cuberite_running)
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val notificationIntent = Intent(this, MainActivity::class.java)
         val contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags)
         notification = NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(icon)
-                .setTicker(text)
-                .setContentTitle(text)
-                .setContentText(ipAddress)
-                .setContentIntent(contentIntent)
-                .setOnlyAlertOnce(true)
-                .setOngoing(true)
-                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            .setSmallIcon(icon)
+            .setTicker(text)
+            .setContentTitle(text)
+            .setContentText(ipAddress)
+            .setContentIntent(contentIntent)
+            .setOnlyAlertOnce(true)
+            .setOngoing(true)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
         startForeground(1, notification.build())
     }
 
@@ -61,7 +64,7 @@ class CuberiteService : IntentService("CuberiteService") {
         // Clear previous output
         consoleOutput = StringBuilder()
         consoleOutput.append("Info: Cuberite is starting...").append("\n")
-        updateLogLiveData.postValue(consoleOutput)
+        _logs.value = consoleOutput.toString()
 
         // Make sure we can execute the binary
         File(filesDir, EXECUTABLE_NAME).setExecutable(true, true)
@@ -83,7 +86,7 @@ class CuberiteService : IntentService("CuberiteService") {
             while (processScanner.nextLine().also { line = it } != null) {
                 Log.i(LOG, line!!)
                 consoleOutput.append(line).append("\n")
-                updateLogLiveData.postValue(consoleOutput)
+                _logs.value = consoleOutput.toString()
             }
         } catch (e: NoSuchElementException) {
             // Do nothing. Workaround for issues in older Android versions.
@@ -100,7 +103,8 @@ class CuberiteService : IntentService("CuberiteService") {
                 if (NetworkInfo.State.CONNECTED == info!!.state || NetworkInfo.State.DISCONNECTED == info.state) {
                     Log.d(LOG, "Updating notification IP due to network change")
                     notification.setContentText(ipAddress)
-                    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    val notificationManager =
+                        getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.notify(1, notification.build())
                 }
             }
@@ -192,7 +196,8 @@ class CuberiteService : IntentService("CuberiteService") {
 
         val startupErrorLiveData = MutableLiveData<Boolean>()
 
-        val updateLogLiveData = MutableLiveData<StringBuilder>()
+        private val _logs: MutableStateFlow<String> = MutableStateFlow("")
+        val logs: StateFlow<String> = _logs
 
         private val executeCommandLiveData = MutableLiveData<String?>()
 
@@ -208,7 +213,8 @@ class CuberiteService : IntentService("CuberiteService") {
                             }
                         }
                     }
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
                 return "127.0.0.1"
             }
 
