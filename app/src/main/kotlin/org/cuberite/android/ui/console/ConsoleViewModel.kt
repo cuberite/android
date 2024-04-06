@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +32,7 @@ class ConsoleViewModel : ViewModel() {
 
     fun invokeCommand() {
         viewModelScope.launch {
-            if (CuberiteService.isRunning && command.isNotEmpty()) {
+            if (CuberiteService.isRunning.value && command.isNotEmpty()) {
                 Log.d(LOG, "Executing $command")
                 CuberiteService.executeCommand(command)
                 command = ""

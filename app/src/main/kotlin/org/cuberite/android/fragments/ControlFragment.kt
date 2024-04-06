@@ -34,33 +34,16 @@ class ControlFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        CuberiteService.endedLiveData.observe(viewLifecycleOwner) { ended ->
-            if (!ended) {
-                return@observe
-            }
-            updateControlButton()
-            CuberiteService.endedLiveData.postValue(false)
-        }
-        CuberiteService.startupErrorLiveData.observe(viewLifecycleOwner) { show ->
-            if (!show) {
-                return@observe
-            }
-            Log.d(LOG, "Cuberite exited on process")
-            val message = String.format(
-                getString(R.string.status_failed_start),
-                CuberiteService.preferredABI
-            )
-            Snackbar.make(
-                requireActivity().findViewById(R.id.fragment_container),
-                message,
-                Snackbar.LENGTH_LONG
-            )
-                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
-                .show()
-            CuberiteService.startupErrorLiveData.postValue(false)
-        }
+        mainButton = view.findViewById(R.id.mainButton)
+        mainButtonColor =
+            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorSurface)
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    CuberiteService.isRunning.collect {
+                        updateControlButton()
+                    }
+                }
                 launch {
                     InstallService.serviceResult
                         .filterNotNull()
@@ -72,11 +55,27 @@ class ControlFragment : Fragment() {
                             InstallService.resultConsumed()
                         }
                 }
+                launch {
+                    CuberiteService.result.collect { result ->
+                        result?.onFailure {
+                            Log.d(LOG, "Cuberite exited on process")
+                            val message = String.format(
+                                getString(R.string.status_failed_start),
+                                CuberiteService.preferredABI
+                            )
+                            Snackbar.make(
+                                requireActivity().findViewById(R.id.fragment_container),
+                                message,
+                                Snackbar.LENGTH_LONG
+                            )
+                                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
+                                .show()
+                        }
+                        updateControlButton()
+                    }
+                }
             }
         }
-        mainButton = view.findViewById(R.id.mainButton)
-        mainButtonColor =
-            MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorSurface)
         updateControlButton()
     }
 
@@ -125,8 +124,10 @@ class ControlFragment : Fragment() {
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_stop_cuberite)
         mainButton.setOnClickListener {
-            CuberiteService.stop()
-            setKillButton()
+            viewLifecycleOwner.lifecycleScope.launch {
+                CuberiteService.stop()
+                setKillButton()
+            }
         }
     }
 
@@ -135,11 +136,15 @@ class ControlFragment : Fragment() {
             MaterialColors.getColor(mainButton, com.google.android.material.R.attr.colorError)
         animateColorChange(mainButton, mainButtonColor, colorTo)
         mainButton.text = getText(R.string.do_kill_cuberite)
-        mainButton.setOnClickListener { CuberiteService.kill() }
+        mainButton.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                CuberiteService.kill()
+            }
+        }
     }
 
     private fun updateControlButton() {
-        if (CuberiteService.isRunning) {
+        if (CuberiteService.isRunning.value) {
             setStopButton()
         } else if (InstallService.isInstalled) {
             setStartButton()

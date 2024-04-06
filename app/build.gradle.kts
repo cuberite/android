@@ -51,8 +51,6 @@ dependencies {
     // Compose
     implementation(composeBom)
     implementation("androidx.compose.runtime:runtime")
-    // Should be removed once migration to Kotlin-Flows in done
-    implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.foundation:foundation-layout")
@@ -63,7 +61,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")

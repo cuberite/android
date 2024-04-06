@@ -129,7 +129,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         toggleSD.setChecked(isSDEnabled)
         toggleSD.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any ->
-                if (CuberiteService.isRunning) {
+                if (CuberiteService.isRunning.value) {
                     val message = getString(R.string.settings_sd_card_running)
                     Snackbar.make(
                         requireActivity().findViewById(R.id.fragment_container),
@@ -177,7 +177,7 @@ URL: $url"""
         }
         val webadminOpen = findPreference<Preference>("webadminOpen")
         webadminOpen!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            if (!CuberiteService.isRunning) {
+            if (!CuberiteService.isRunning.value) {
                 val message = getString(R.string.settings_webadmin_not_running)
                 Snackbar.make(
                     requireActivity().findViewById(R.id.fragment_container),

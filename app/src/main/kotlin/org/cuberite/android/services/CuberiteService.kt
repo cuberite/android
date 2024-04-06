@@ -10,13 +10,17 @@ import android.content.IntentFilter
 import android.net.NetworkInfo
 import android.net.wifi.WifiManager
 import android.os.Build
-import android.os.Handler
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.cuberite.android.MainActivity
 import org.cuberite.android.MainApplication
 import org.cuberite.android.R
@@ -34,6 +38,9 @@ class CuberiteService : IntentService("CuberiteService") {
     private lateinit var notification: NotificationCompat.Builder
     private lateinit var process: Process
     private lateinit var cuberiteSTDIN: OutputStream
+
+    private val serviceJob = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.Main + serviceJob)
 
     // Notification-related methods
     private fun createNotification() {
@@ -114,7 +121,7 @@ class CuberiteService : IntentService("CuberiteService") {
     // Service startup and cleanup
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
-        isRunning = true
+        _isRunning.value = true
         Log.d(LOG, "Starting service...")
         try {
             // Create and show notification about Cuberite running
@@ -128,28 +135,22 @@ class CuberiteService : IntentService("CuberiteService") {
             registerReceiver(updateIp, intentFilter)
 
             // Communication with the activity
-            val executeObserver = Observer<String?> { command ->
-                if (command == null) {
-                    return@Observer
+            val observerJob = scope.launch {
+                launch {
+                    killEvent.collect {
+                        process.destroy()
+                    }
                 }
-                try {
-                    cuberiteSTDIN.write((command + "\n").toByteArray())
-                    cuberiteSTDIN.flush()
-                } catch (e: Exception) {
-                    Log.e(LOG, "An error occurred when writing $command to the STDIN", e)
+                launch(Dispatchers.IO) {
+                    commandQueue.collect { command ->
+                        try {
+                            cuberiteSTDIN.write((command + "\n").toByteArray())
+                            cuberiteSTDIN.flush()
+                        } catch (e: Exception) {
+                            Log.e(LOG, "An error occurred when writing $command to the STDIN", e)
+                        }
+                    }
                 }
-                executeCommandLiveData.postValue(null)
-            }
-            val killObserver = Observer<Boolean> { kill ->
-                if (!kill) {
-                    return@Observer
-                }
-                process.destroy()
-                killCuberiteLiveData.postValue(false)
-            }
-            Handler(applicationContext.mainLooper).post {
-                executeCommandLiveData.observeForever(executeObserver)
-                killCuberiteLiveData.observeForever(killObserver)
             }
 
             // Log to console
@@ -159,49 +160,56 @@ class CuberiteService : IntentService("CuberiteService") {
             // Logic waits here until Cuberite has stopped. Everything after that is cleanup for the next run
             val logTimeEnd = System.currentTimeMillis()
             if (logTimeEnd - logTimeStart < 100) {
-                startupErrorLiveData.postValue(true)
+                scope.launch(Dispatchers.Main.immediate) {
+                    _result.emit(Result.failure(Throwable("")))
+                }
             }
 
             // Shutdown
+            observerJob.cancel()
             unregisterReceiver(updateIp)
-            Handler(applicationContext.mainLooper).post {
-                executeCommandLiveData.removeObserver(executeObserver)
-                killCuberiteLiveData.removeObserver(killObserver)
-            }
             cuberiteSTDIN.close()
         } catch (e: Exception) {
             Log.e(LOG, "An error occurred when starting Cuberite", e)
 
             // Send error to user
-            startupErrorLiveData.postValue(true)
+            scope.launch(Dispatchers.Main.immediate) {
+                _result.emit(Result.failure(Throwable("")))
+            }
         }
         stopSelf()
-        isRunning = false
-        endedLiveData.postValue(true)
+        scope.launch(Dispatchers.Main.immediate) {
+            _isRunning.emit(false)
+            _result.emit(Result.success(Unit))
+        }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onDestroy() {
         super.onDestroy()
-        isRunning = false
+        _isRunning.value = false
+        serviceJob.cancelChildren()
+        serviceJob.cancel()
     }
 
     companion object {
         private const val LOG = "Cuberite/ServerService"
         const val EXECUTABLE_NAME = "Cuberite"
 
-        var isRunning = false
+        private val _result: MutableSharedFlow<Result<Unit>?> = MutableSharedFlow()
+        val result: SharedFlow<Result<Unit>?> = _result
 
-        val endedLiveData = MutableLiveData<Boolean>()
+        private val _command: MutableSharedFlow<String> = MutableSharedFlow()
+        val commandQueue: SharedFlow<String> = _command
 
-        val startupErrorLiveData = MutableLiveData<Boolean>()
+        private val _killEvent: MutableSharedFlow<Unit> = MutableSharedFlow()
+        val killEvent: SharedFlow<Unit> = _killEvent
 
         private val _logs: MutableStateFlow<String> = MutableStateFlow("")
         val logs: StateFlow<String> = _logs
 
-        private val executeCommandLiveData = MutableLiveData<String?>()
-
-        val killCuberiteLiveData = MutableLiveData<Boolean>()
+        private val _isRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        val isRunning: StateFlow<Boolean> = _isRunning
 
         val ipAddress: String
             get() {
@@ -225,8 +233,8 @@ class CuberiteService : IntentService("CuberiteService") {
                 return abi
             }
 
-        fun executeCommand(command: String) {
-            executeCommandLiveData.postValue(command)
+        suspend fun executeCommand(command: String) {
+            _command.emit(command)
         }
 
         fun start(context: Context) {
@@ -239,13 +247,13 @@ class CuberiteService : IntentService("CuberiteService") {
             }
         }
 
-        fun stop() {
+        suspend fun stop() {
             Log.d(LOG, "Stopping Cuberite")
-            executeCommandLiveData.postValue("stop")
+            _command.emit("stop")
         }
 
-        fun kill() {
-            killCuberiteLiveData.postValue(true)
+        suspend fun kill() {
+            _killEvent.emit(Unit)
         }
     }
 }

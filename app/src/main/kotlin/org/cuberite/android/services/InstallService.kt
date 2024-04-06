@@ -248,7 +248,7 @@ class InstallService : IntentService("InstallService") {
         val state = intent!!.serializable("state") as State?
         var result: String?
         if ((state == State.NEED_DOWNLOAD_BINARY || state == State.NEED_DOWNLOAD_BOTH || state == State.PICK_FILE_BINARY)
-            && CuberiteService.isRunning
+            && CuberiteService.isRunning.value
         ) {
             result = getString(R.string.status_update_binary_error)
         } else if ("unzip" == intent.action) {
@@ -321,7 +321,7 @@ class InstallService : IntentService("InstallService") {
                     File(MainApplication.preferences.getString("cuberiteLocation", "")!!).exists()
                 var state: State = State.DONE
 
-                if (!CuberiteService.isRunning) {
+                if (!CuberiteService.isRunning.value) {
                     if (!hasBinary && !hasServer) {
                         state = State.NEED_DOWNLOAD_BOTH
                     } else if (!hasBinary) {
