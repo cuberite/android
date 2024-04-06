@@ -12,7 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
@@ -50,9 +49,11 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
             R.id.item_control -> {
                 fragment = ControlFragment()
             }
+
             R.id.item_console -> {
                 fragment = ConsoleFragment()
             }
+
             R.id.item_settings -> {
                 fragment = SettingsFragment()
             }
@@ -63,41 +64,50 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     private fun loadFragment(fragment: Fragment?): Boolean {
         if (fragment != null) {
             supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
             return true
         }
         return false
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
-            Log.i(LOG, "Got permissions, using public directory")
-            MainApplication.preferences.edit().putString("cuberiteLocation", "${MainApplication.publicDir}/cuberite-server").apply()
-        } else {
-            Log.i(LOG, "Permissions denied, boo, using private directory")
-            MainApplication.preferences.edit().putString("cuberiteLocation", "${MainApplication.privateDir}/cuberite-server").apply()
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.i(LOG, "Got permissions, using public directory")
+                MainApplication.preferences.edit()
+                    .putString("cuberiteLocation", "${MainApplication.publicDir}/cuberite-server")
+                    .apply()
+            } else {
+                Log.i(LOG, "Permissions denied, boo, using private directory")
+                MainApplication.preferences.edit()
+                    .putString("cuberiteLocation", "${MainApplication.privateDir}/cuberite-server")
+                    .apply()
+            }
         }
-    }
 
     private fun showPermissionPopup() {
         permissionPopup = MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.status_permissions_needed))
-                .setMessage(R.string.message_externalstorage_permission)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                    Log.d(LOG, "Requesting permissions for external storage")
-                    permissionPopup = null
-                    requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-                .create()
+            .setTitle(getString(R.string.status_permissions_needed))
+            .setMessage(R.string.message_externalstorage_permission)
+            .setCancelable(false)
+            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+                Log.d(LOG, "Requesting permissions for external storage")
+                permissionPopup = null
+                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+            .create()
         permissionPopup!!.show()
     }
 
     private fun checkPermissions() {
         val location = MainApplication.preferences.getString("cuberiteLocation", "")
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // User is running Android 6 or above, show permission popup on first run
             // or if user granted permission and later denied it
             if (location!!.isEmpty() || location.startsWith(MainApplication.publicDir)) {
@@ -125,7 +135,5 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
 
     companion object {
         private const val LOG = "Cuberite/MainActivity"
-        val executeCommandLiveData = MutableLiveData<String?>()
-        val killCuberiteLiveData = MutableLiveData<Boolean>()
     }
 }

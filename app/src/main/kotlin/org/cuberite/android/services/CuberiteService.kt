@@ -36,7 +36,7 @@ class CuberiteService : IntentService("CuberiteService") {
     // Notification-related methods
     private fun createNotification() {
         val channelId = "cuberiteservice"
-        val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) R.drawable.ic_notification else R.mipmap.ic_launcher
+        val icon = R.drawable.ic_notification
         val text = getText(R.string.notification_cuberite_running)
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val notificationIntent = Intent(this, MainActivity::class.java)
@@ -134,18 +134,18 @@ class CuberiteService : IntentService("CuberiteService") {
                 } catch (e: Exception) {
                     Log.e(LOG, "An error occurred when writing $command to the STDIN", e)
                 }
-                MainActivity.executeCommandLiveData.postValue(null)
+                executeCommandLiveData.postValue(null)
             }
             val killObserver = Observer<Boolean> { kill ->
                 if (!kill) {
                     return@Observer
                 }
                 process.destroy()
-                MainActivity.killCuberiteLiveData.postValue(false)
+                killCuberiteLiveData.postValue(false)
             }
             Handler(applicationContext.mainLooper).post {
-                MainActivity.executeCommandLiveData.observeForever(executeObserver)
-                MainActivity.killCuberiteLiveData.observeForever(killObserver)
+                executeCommandLiveData.observeForever(executeObserver)
+                killCuberiteLiveData.observeForever(killObserver)
             }
 
             // Log to console
@@ -161,8 +161,8 @@ class CuberiteService : IntentService("CuberiteService") {
             // Shutdown
             unregisterReceiver(updateIp)
             Handler(applicationContext.mainLooper).post {
-                MainActivity.executeCommandLiveData.removeObserver(executeObserver)
-                MainActivity.killCuberiteLiveData.removeObserver(killObserver)
+                executeCommandLiveData.removeObserver(executeObserver)
+                killCuberiteLiveData.removeObserver(killObserver)
             }
             cuberiteSTDIN.close()
         } catch (e: Exception) {
@@ -185,10 +185,18 @@ class CuberiteService : IntentService("CuberiteService") {
     companion object {
         private const val LOG = "Cuberite/ServerService"
         const val EXECUTABLE_NAME = "Cuberite"
+
         var isRunning = false
+
         val endedLiveData = MutableLiveData<Boolean>()
+
         val startupErrorLiveData = MutableLiveData<Boolean>()
+
         val updateLogLiveData = MutableLiveData<StringBuilder>()
+
+        private val executeCommandLiveData = MutableLiveData<String?>()
+
+        val killCuberiteLiveData = MutableLiveData<Boolean>()
 
         val ipAddress: String
             get() {
@@ -206,14 +214,14 @@ class CuberiteService : IntentService("CuberiteService") {
 
         val preferredABI: String
             get() {
-                val abi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Build.SUPPORTED_ABIS[0]
-                } else {
-                    @Suppress("deprecation") Build.CPU_ABI
-                }
+                val abi = Build.SUPPORTED_ABIS[0]
                 Log.d(LOG, "Getting preferred ABI: $abi")
                 return abi
             }
+
+        fun executeCommand(command: String) {
+            executeCommandLiveData.postValue(command)
+        }
 
         fun start(context: Context) {
             Log.d(LOG, "Starting Cuberite")
@@ -227,11 +235,11 @@ class CuberiteService : IntentService("CuberiteService") {
 
         fun stop() {
             Log.d(LOG, "Stopping Cuberite")
-            MainActivity.executeCommandLiveData.postValue("stop")
+            executeCommandLiveData.postValue("stop")
         }
 
         fun kill() {
-            MainActivity.killCuberiteLiveData.postValue(true)
+            killCuberiteLiveData.postValue(true)
         }
     }
 }

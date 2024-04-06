@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.cuberite.android.MainActivity
 import org.cuberite.android.services.CuberiteService
 
 class ConsoleViewModel : ViewModel() {
@@ -37,7 +36,7 @@ class ConsoleViewModel : ViewModel() {
         viewModelScope.launch {
             if (CuberiteService.isRunning && command.isNotEmpty()) {
                 Log.d(LOG, "Executing $command")
-                MainActivity.executeCommandLiveData.postValue(command)
+                CuberiteService.executeCommand(command)
                 command = ""
             }
         }
