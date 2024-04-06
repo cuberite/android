@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,15 +38,18 @@ import org.cuberite.android.ui.formatter.formatLog
 
 @Composable
 fun ConsoleScreen(viewModel: ConsoleViewModel) {
+
     val logs by viewModel.logs.collectAsStateWithLifecycle()
     val logList = logs.formatLog()
     val state = rememberLazyListState()
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(logList) {
         // To reduce jitter on log update
         delay(50)
         state.animateScrollToItem(logList.size)
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = state,
@@ -62,6 +64,7 @@ fun ConsoleScreen(viewModel: ConsoleViewModel) {
                 Text(text = it)
             }
         }
+
         TextField(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -82,6 +85,7 @@ fun ConsoleScreen(viewModel: ConsoleViewModel) {
                 }
             },
         )
+
         AnimatedVisibility(
             modifier = Modifier
                 .padding(bottom = (24 + 56).dp)

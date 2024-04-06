@@ -14,9 +14,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.cuberite.android.MainApplication
 import org.cuberite.android.R
@@ -310,8 +310,8 @@ class InstallService : IntentService("InstallService") {
         private const val LOG = "Cuberite/InstallService"
         const val DOWNLOAD_HOST = "https://download.cuberite.org/androidbinaries/"
 
-        private val _serviceResult: MutableStateFlow<String?> = MutableStateFlow(null)
-        val serviceResult: StateFlow<String?> = _serviceResult.asStateFlow()
+        private val _serviceResult: MutableSharedFlow<String> = MutableSharedFlow()
+        val serviceResult: SharedFlow<String> = _serviceResult.asSharedFlow()
 
         private val state: State
             get() {
@@ -345,10 +345,6 @@ class InstallService : IntentService("InstallService") {
                 .putExtra("state", state)
                 .putExtra("receiver", ProgressReceiver(activity, Handler(activity.mainLooper)))
             activity.startService(intent)
-        }
-
-        fun resultConsumed() {
-            _serviceResult.value = null
         }
 
         fun installLocal(activity: Activity, selectedFileUri: Uri?, state: State = this.state) {

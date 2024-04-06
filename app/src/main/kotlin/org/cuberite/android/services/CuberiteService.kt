@@ -161,7 +161,8 @@ class CuberiteService : IntentService("CuberiteService") {
             val logTimeEnd = System.currentTimeMillis()
             if (logTimeEnd - logTimeStart < 100) {
                 scope.launch(Dispatchers.Main.immediate) {
-                    _result.emit(Result.failure(Throwable("")))
+                    val failedString = getString(R.string.status_failed_start).format(preferredABI)
+                    _result.emit(Result.failure(Throwable(failedString)))
                 }
             }
 
@@ -174,7 +175,8 @@ class CuberiteService : IntentService("CuberiteService") {
 
             // Send error to user
             scope.launch(Dispatchers.Main.immediate) {
-                _result.emit(Result.failure(Throwable("")))
+                val failedString = getString(R.string.status_failed_start).format(preferredABI)
+                _result.emit(Result.failure(Throwable(failedString)))
             }
         }
         stopSelf()

@@ -25,7 +25,6 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.cuberite.android.BuildConfig
 import org.cuberite.android.MainApplication
@@ -54,12 +53,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         viewLifecycleOwner.lifecycleScope.launch {
             InstallService.serviceResult
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.CREATED)
-                .filterNotNull()
                 .collect { result ->
                     Snackbar.make(view.parent as View, result, Snackbar.LENGTH_LONG)
                         .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation))
                         .show()
-                    InstallService.resultConsumed()
                 }
         }
     }

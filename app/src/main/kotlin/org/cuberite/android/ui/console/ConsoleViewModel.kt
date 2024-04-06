@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.cuberite.android.extension.Default
 import org.cuberite.android.services.CuberiteService
 
 class ConsoleViewModel : ViewModel() {
@@ -22,7 +23,7 @@ class ConsoleViewModel : ViewModel() {
         .map { it.lines() }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Default,
             initialValue = emptyList()
         )
 
