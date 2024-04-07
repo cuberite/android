@@ -56,7 +56,12 @@ fun ControlScreen(viewModel: ControlViewModel) {
         if (it) 32.dp else 74.dp
     }
 
-    val scale: Float by runningTransition.animateFloat(label = "Scale") {
+    val scale: Float by runningTransition.animateFloat(
+        label = "Scale",
+        transitionSpec = {
+            spring(stiffness = Spring.StiffnessLow)
+        }
+    ) {
         if (!it) 0.9F else 1F
     }
 
