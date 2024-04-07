@@ -101,7 +101,7 @@ fun ControlScreen(viewModel: ControlViewModel) {
                             end = 8.dp,
                             start = 8.dp
                         ),
-                        text = "127.0.0.1",
+                        text = (state as? ControlAction.Stop)?.ipAddress ?: "",
                         style = MaterialTheme.typography.headlineMedium
                     )
                 }
