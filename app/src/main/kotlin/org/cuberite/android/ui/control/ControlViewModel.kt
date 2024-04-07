@@ -3,6 +3,7 @@ package org.cuberite.android.ui.control
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.contentColorFor
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.cuberite.android.R
 import org.cuberite.android.extension.Default
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
@@ -24,6 +26,7 @@ class ControlViewModel : ViewModel() {
 
     private val isActionStop: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    // Converted to StateFlow, because otherwise the `combine` function does not work
     private val installServiceStream: StateFlow<String> = InstallService
         .serviceResult
         .stateIn(
@@ -122,6 +125,16 @@ sealed interface ControlAction {
     data object Kill : ControlAction
 
 }
+
+// TODO: Make them smaller
+val ControlAction.stringRes: Int
+    @StringRes
+    get() = when (this) {
+        ControlAction.Install -> R.string.do_install_cuberite
+        ControlAction.Kill -> R.string.do_kill_cuberite
+        ControlAction.Start -> R.string.do_start_cuberite
+        is ControlAction.Stop -> R.string.do_stop_cuberite
+    }
 
 val ControlAction.containerColor: Color
     @Composable
