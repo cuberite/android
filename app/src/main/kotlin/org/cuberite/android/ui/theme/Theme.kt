@@ -110,9 +110,7 @@ fun CuberiteTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.statusBarColor = colorScheme.surface.toArgb()
-            }
+            window.statusBarColor = colorScheme.surface.toArgb()
             with(WindowCompat.getInsetsController(window, view)) {
                 isAppearanceLightStatusBars = !darkTheme
                 isAppearanceLightNavigationBars = !darkTheme
