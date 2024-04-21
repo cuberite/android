@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
-import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +24,9 @@ import org.cuberite.android.extension.isExternalStorageGranted
 import org.cuberite.android.extension.isSDAvailable
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
+import org.cuberite.android.ui.settings.components.Themes
+import org.cuberite.android.ui.settings.components.themesFromInt
+import org.cuberite.android.ui.settings.components.toAndroidTheme
 import org.ini4j.Ini
 import java.io.File
 import java.io.IOException
@@ -32,16 +35,20 @@ class SettingsViewModel : ViewModel() {
 
     private val preferences: SharedPreferences = MainApplication.preferences
 
-    private val isRunning: StateFlow<Boolean> = CuberiteService.isRunning
+    private val isCuberiteRunning: StateFlow<Boolean> = CuberiteService.isRunning
+
+    private val currentTheme
+        get() = preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
     private val currentLocation: String
         get() = preferences.getString("cuberiteLocation", "") ?: ""
 
     private val webAdminFile: File
-        get() {
-            val cuberiteDir = File(currentLocation)
-            return File(cuberiteDir, "webadmin.ini")
-        }
+        get() = File(File(currentLocation), "webadmin.ini")
+
+    private val isSdEnabled: Boolean
+        get() = !(currentLocation.startsWith(MainApplication.publicDir)
+                || currentLocation.startsWith(MainApplication.privateDir))
 
     private val _snackbarMessage: MutableSharedFlow<String> = MutableSharedFlow()
     val snackbarMessage: SharedFlow<String> = _snackbarMessage.asSharedFlow()
@@ -49,19 +56,27 @@ class SettingsViewModel : ViewModel() {
     private val _snackbarStringRes: MutableSharedFlow<Int> = MutableSharedFlow()
     val snackbarStringRes: SharedFlow<Int> = _snackbarStringRes.asSharedFlow()
 
-    private val isSdEnabled = !(currentLocation.startsWith(MainApplication.publicDir)
-            || currentLocation.startsWith(MainApplication.privateDir))
-
     var isUsingSdCard: Boolean by mutableStateOf(isSdEnabled)
         private set
 
     var isStartOnBoot: Boolean by mutableStateOf(preferences.getBoolean("startOnBoot", false))
         private set
 
+    var dialogType: DialogType? by mutableStateOf(null)
+        private set
+
+    var theme: Themes by mutableStateOf(themesFromInt(currentTheme))
+        private set
+
+    var username: String by mutableStateOf("")
+        private set
+
+    var password: String by mutableStateOf("")
+        private set
+
     val webAdminUrl: String?
         get() {
-            var url: String? = null
-            try {
+            return try {
                 val currentFile = webAdminFile
                 val ini = createWebadminIni(currentFile)
                 val ip = CuberiteService.ipAddress
@@ -72,11 +87,11 @@ class SettingsViewModel : ViewModel() {
                     ini.store(currentFile)
                     ini["WebAdmin", "Ports"].toInt()
                 }
-                url = "http://$ip:$port"
+                "http://$ip:$port"
             } catch (e: IOException) {
                 Log.e(LOG, "Something went wrong while opening the ini file", e)
+                null
             }
-            return url
         }
 
     fun setStartUp(value: Boolean) {
@@ -87,7 +102,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun setSdCard(context: Context, value: Boolean) {
-        if (isRunning.value) {
+        if (isCuberiteRunning.value) {
             val message = R.string.settings_sd_card_running
             viewModelScope.launch {
                 _snackbarStringRes.emit(message)
@@ -111,6 +126,65 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
+    fun setNewTheme(value: Themes) {
+        theme = value
+        preferences.edit {
+            putInt("defaultTheme", value.toAndroidTheme)
+        }
+        AppCompatDelegate.setDefaultNightMode(theme.toAndroidTheme)
+        hideDialog()
+    }
+
+    fun setWebAdminLogin(newUsername: String, newPassword: String) {
+        require(webAdminFile.exists()) { "We should not have opened the dialog if this was empty" }
+        val ini = createWebadminIni(webAdminFile)
+        ini.remove("User:${this.username}")
+        ini.put("User:$newUsername", "Password", newPassword)
+        try {
+            ini.store(webAdminFile)
+            viewModelScope.launch {
+                initWebAdmin()
+                _snackbarStringRes.emit(R.string.settings_webadmin_success)
+            }
+        } catch (e: IOException) {
+            Log.e(LOG, "Something went wrong while opening the ini file", e)
+            viewModelScope.launch {
+                _snackbarStringRes.emit(R.string.settings_webadmin_error)
+            }
+        }
+        hideDialog()
+    }
+
+    fun showDialog(type: DialogType) {
+        if (type is DialogType.WebAdminLogin) {
+            initWebAdmin()
+        }
+        dialogType = type
+    }
+
+    // this is launched in `init` because other wise it will lead to recomposition
+    private fun initWebAdmin() {
+        try {
+            val ini = createWebadminIni(webAdminFile)
+            ini.put("WebAdmin", "Enabled", 1)
+            for (sectionName in ini.keys) {
+                if (sectionName.startsWith("User:")) {
+                    username = sectionName.substring(5)
+                    password = ini[sectionName, "Password"]
+                }
+            }
+        } catch (e: IOException) {
+            viewModelScope.launch {
+                Log.e(LOG, "Something went wrong while opening the ini file", e)
+                _snackbarStringRes.emit(R.string.settings_webadmin_error)
+            }
+        }
+    }
+
+    fun hideDialog() {
+        dialogType = null
+    }
+
     fun updateCuberite(context: Context) {
         InstallService.download(context as Activity, InstallService.State.NEED_DOWNLOAD_BOTH)
     }
@@ -124,7 +198,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun openWebAdmin(uriHandler: UriHandler) {
-        if (!isRunning.value) {
+        if (!isCuberiteRunning.value) {
             val message = R.string.settings_webadmin_not_running
             viewModelScope.launch {
                 _snackbarStringRes.emit(message)
@@ -144,7 +218,6 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
-
     @Throws(IOException::class)
     private fun createWebadminIni(webAdminFile: File): Ini {
         return if (!webAdminFile.exists()) {
@@ -158,6 +231,7 @@ class SettingsViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
+            initWebAdmin()
             InstallService.serviceResult
                 .collect { result -> _snackbarMessage.emit(result) }
         }
@@ -170,15 +244,15 @@ class SettingsViewModel : ViewModel() {
 
 sealed interface DialogType {
 
-    data object WebAdminLogin : DialogType
+    data class WebAdminLogin(val username: String, val password: String) : DialogType
 
-    data object Theme : DialogType
+    data class Theme(val selectedTheme: Themes) : DialogType
 
-    sealed class Info(@StringRes val title: Int) : DialogType {
+    sealed interface Info : DialogType {
 
-        data object Debug : Info(R.string.settings_info_debug)
+        data object Debug : Info
 
-        data object License : Info(R.string.settings_info_libraries)
+        data object License : Info
 
     }
 }

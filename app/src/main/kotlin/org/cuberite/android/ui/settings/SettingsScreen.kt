@@ -40,7 +40,9 @@ import org.cuberite.android.services.InstallService.State.PICK_FILE_SERVER
 import org.cuberite.android.ui.settings.components.Category
 import org.cuberite.android.ui.settings.components.CategoryScope
 import org.cuberite.android.ui.settings.components.DialogItem
+import org.cuberite.android.ui.settings.components.SettingDialog
 import org.cuberite.android.ui.settings.components.SwitchItem
+import org.cuberite.android.ui.settings.components.Themes
 import org.cuberite.android.ui.settings.components.rememberCategory
 import org.cuberite.android.ui.theme.CuberiteTheme
 
@@ -93,7 +95,8 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         ) {
             val isSDAvailable = remember { context.isSDAvailable }
             BasicSettings(
-                onEditTheme = {},
+                onEditTheme = viewModel::showDialog,
+                currentTheme = viewModel.theme,
                 startOnStartup = viewModel.isStartOnBoot,
                 onStartupCheck = viewModel::setStartUp,
             ) {
@@ -110,7 +113,9 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             WebAdmin(
                 webAdminUrl = viewModel.webAdminUrl,
                 onOpenWebAdmin = { viewModel.openWebAdmin(uriHandler) },
-                onOpenWebAdminLogin = { }
+                onOpenWebAdminLogin = viewModel::showDialog,
+                username = viewModel.username,
+                password = viewModel.password,
             )
             HorizontalDivider()
             UpdateCuberite {
@@ -121,9 +126,15 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 viewModel.installLocal(context, uri, state)
             }
             HorizontalDivider()
-            About {
-
-            }
+            About(viewModel::showDialog)
+        }
+        if (viewModel.dialogType != null) {
+            SettingDialog(
+                dialogType = requireNotNull(viewModel.dialogType),
+                onSelectTheme = viewModel::setNewTheme,
+                onSetLogin = viewModel::setWebAdminLogin,
+                onDismiss = viewModel::hideDialog
+            )
         }
     }
 }
@@ -131,6 +142,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 @Composable
 private fun BasicSettings(
     onEditTheme: (DialogType) -> Unit,
+    currentTheme: Themes,
     startOnStartup: Boolean,
     onStartupCheck: (Boolean) -> Unit,
     extras: @Composable CategoryScope.() -> Unit,
@@ -142,8 +154,8 @@ private fun BasicSettings(
     Category(data = settings) {
         DialogItem(
             title = stringResource(R.string.settings_theme),
-            description = stringResource(R.string.settings_theme_auto),
-            onClick = { onEditTheme(DialogType.Theme) },
+            description = stringResource(currentTheme.stringRes),
+            onClick = { onEditTheme(DialogType.Theme(currentTheme)) },
         )
         SwitchItem(
             title = stringResource(R.string.settings_startup_toggle),
@@ -157,6 +169,8 @@ private fun BasicSettings(
 
 @Composable
 private fun WebAdmin(
+    username: String,
+    password: String,
     webAdminUrl: String?,
     onOpenWebAdmin: () -> Unit,
     onOpenWebAdminLogin: (DialogType) -> Unit,
@@ -170,7 +184,7 @@ URL:$webAdminUrl""".trimMargin()
     Category(data = webAdmin) {
         DialogItem(
             title = stringResource(R.string.settings_webadmin_login),
-            onClick = { onOpenWebAdminLogin(DialogType.WebAdminLogin) },
+            onClick = { onOpenWebAdminLogin(DialogType.WebAdminLogin(username, password)) },
         )
         DialogItem(
             title = stringResource(R.string.settings_webadmin_open),
