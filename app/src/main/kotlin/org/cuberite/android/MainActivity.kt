@@ -18,7 +18,7 @@ import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationBarView
 import org.cuberite.android.fragments.ConsoleFragment
 import org.cuberite.android.fragments.ControlFragment
-import org.cuberite.android.fragments.SettingsFragment
+import org.cuberite.android.ui.settings.SettingsScreen
 
 class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
     private var permissionPopup: AlertDialog? = null
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
             }
 
             R.id.item_settings -> {
-                fragment = SettingsFragment()
+                fragment = SettingsScreen()
             }
         }
         return loadFragment(fragment)

@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import org.cuberite.android.BuildConfig
 import org.cuberite.android.MainApplication
 import org.cuberite.android.R
+import org.cuberite.android.extension.isExternalStorageGranted
+import org.cuberite.android.extension.isSDAvailable
 import org.cuberite.android.services.CuberiteService
 import org.cuberite.android.services.InstallService
 import org.ini4j.Ini
@@ -109,14 +111,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     // SD Card-related methods
     private fun initializeSDCardSettings() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return
-        }
         val location = MainApplication.preferences.getString("cuberiteLocation", "")
-        val isSDAvailable = (requireContext().getExternalFilesDirs(null).size > 1)
-        val isSDEnabled = !(location!!.startsWith(MainApplication.publicDir) || location.startsWith(
-            MainApplication.privateDir
-        ))
+        val isSDAvailable = context?.isSDAvailable == true
+        val isSDEnabled = !(location!!.startsWith(MainApplication.publicDir)
+                || location.startsWith(MainApplication.privateDir))
         val toggleSD = findPreference<SwitchPreferenceCompat>("saveToSDToggle")
         if (!(isSDAvailable || isSDEnabled)) {
             return
@@ -137,17 +135,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         .show()
                     return@OnPreferenceChangeListener false
                 }
-                val isSDAvailableInner = (requireContext().getExternalFilesDirs(null).size > 1)
+                val isSDAvailableInner = context?.isSDAvailable == true
                 var newLocation = MainApplication.publicDir
                 if (newValue as Boolean && isSDAvailableInner) {
                     // SD dir
                     newLocation = requireContext().getExternalFilesDirs(null)[1].absolutePath
                 } else {
-                    if (ContextCompat.checkSelfPermission(
-                            requireContext(),
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
+                    if (context?.isExternalStorageGranted == true) {
                         // Private dir
                         newLocation = MainApplication.privateDir
                     }

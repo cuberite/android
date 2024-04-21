@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
@@ -29,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.cuberite.android.ui.theme.CuberiteTheme
 
-
 @Immutable
 interface CategoryScope {
 
@@ -47,7 +48,7 @@ interface CategoryScope {
 }
 
 @Composable
-fun SettingsScope.Category(
+fun Category(
     data: CategoryScope,
     modifier: Modifier = Modifier,
     content: @Composable CategoryScope.() -> Unit,
@@ -70,7 +71,7 @@ private fun CategoryScope.Header(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.width(64.dp),
             contentAlignment = Alignment.Center
         ) {
             if (icon != null) {
@@ -136,6 +137,7 @@ fun CategoryScope.SwitchItem(
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(text = description, style = MaterialTheme.typography.bodyMedium)
         }
+        Spacer(modifier = Modifier.width(8.dp))
         Switch(checked = isChecked, onCheckedChange = onCheckedChange)
     }
 }
@@ -191,36 +193,32 @@ class CategoryData(
 @Composable
 private fun HeaderPreview() {
     CuberiteTheme {
-        val scope: SettingsScope = object : SettingsScope {}
-        with(scope) {
+        val data = rememberCategory(
+            title = "Settings",
+            icon = Icons.Rounded.Settings,
+            description = "Use this section from time to time to update your Cuberite installation",
+            footerText = "Version: 1.6.3",
+        )
 
-            val data = rememberCategory(
-                title = "Settings",
-                icon = Icons.Rounded.Settings,
-                description = "Use this section from time to time to update your Cuberite installation",
-                footerText = "Version: 1.6.3",
-            )
-
-            Category(data = data) {
-                var isChecked by remember {
-                    mutableStateOf(false)
-                }
-                SwitchItem(
-                    title = "Start Cuberite on boot",
-                    description = "Automatically start Cuberite when your device starts",
-                    isChecked = isChecked,
-                    onCheckedChange = { isChecked = it }
-                )
-                DialogItem(
-                    title = "Theme",
-                    description = "System",
-                    onClick = { },
-                )
-                DialogItem(
-                    title = "Change login credentials",
-                    onClick = { },
-                )
+        Category(data = data) {
+            var isChecked by remember {
+                mutableStateOf(false)
             }
+            SwitchItem(
+                title = "Start Cuberite on boot",
+                description = "Automatically start Cuberite when your device starts",
+                isChecked = isChecked,
+                onCheckedChange = { isChecked = it }
+            )
+            DialogItem(
+                title = "Theme",
+                description = "System",
+                onClick = { },
+            )
+            DialogItem(
+                title = "Change login credentials",
+                onClick = { },
+            )
         }
     }
 }
