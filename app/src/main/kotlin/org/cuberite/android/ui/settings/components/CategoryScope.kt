@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -40,8 +39,6 @@ interface CategoryScope {
 
     val icon: ImageVector?
 
-    val footerText: String?
-
     @Stable
     fun Modifier.categoryItem(): Modifier
 
@@ -57,7 +54,6 @@ fun Category(
         Column(modifier = modifier) {
             Header()
             content()
-            Footer()
         }
     }
 }
@@ -105,15 +101,16 @@ private fun CategoryScope.Header(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CategoryScope.Footer(modifier: Modifier = Modifier) {
-    if (footerText != null) {
-        Text(
-            modifier = modifier.categoryItem(),
-            text = requireNotNull(footerText),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline
-        )
-    }
+fun CategoryScope.Footer(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        modifier = modifier.categoryItem(),
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.outline
+    )
 }
 
 @Composable
@@ -167,19 +164,16 @@ fun rememberCategory(
     title: String,
     description: String? = null,
     icon: ImageVector? = null,
-    footerText: String? = null,
 ): CategoryScope = CategoryData(
     title = title,
     description = description,
     icon = icon,
-    footerText = footerText
 )
 
 class CategoryData(
     override val title: String,
     override val description: String? = null,
     override val icon: ImageVector? = null,
-    override val footerText: String? = null,
 ) : CategoryScope {
 
     override fun Modifier.categoryItem(): Modifier =
@@ -197,7 +191,6 @@ private fun HeaderPreview() {
             title = "Settings",
             icon = Icons.Rounded.Settings,
             description = "Use this section from time to time to update your Cuberite installation",
-            footerText = "Version: 1.6.3",
         )
 
         Category(data = data) {

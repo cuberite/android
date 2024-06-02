@@ -3,6 +3,7 @@ package org.cuberite.android.ui.settings
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +35,7 @@ import org.cuberite.android.services.InstallService.State.PICK_FILE_SERVER
 import org.cuberite.android.ui.settings.components.Category
 import org.cuberite.android.ui.settings.components.CategoryScope
 import org.cuberite.android.ui.settings.components.DialogItem
+import org.cuberite.android.ui.settings.components.Footer
 import org.cuberite.android.ui.settings.components.SettingDialog
 import org.cuberite.android.ui.settings.components.SwitchItem
 import org.cuberite.android.ui.settings.components.Themes
@@ -99,7 +101,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 viewModel.installLocal(context, uri, state)
             }
             HorizontalDivider()
-            About(viewModel::showDialog)
+            About(
+                onClick = viewModel::showDialog,
+                onVersionClick = { uriHandler.openUri(DownloadCuberite) }
+            )
         }
         if (viewModel.dialogType != null) {
             SettingDialog(
@@ -217,11 +222,9 @@ private fun LocalInstall(
 @Composable
 private fun About(
     onClick: (DialogType) -> Unit,
+    onVersionClick: () -> Unit,
 ) {
-    val about = rememberCategory(
-        title = stringResource(R.string.settings_info_heading),
-        footerText = stringResource(R.string.settings_info_version, BuildConfig.VERSION_NAME),
-    )
+    val about = rememberCategory(title = stringResource(R.string.settings_info_heading))
     Category(data = about) {
         DialogItem(
             title = stringResource(R.string.settings_info_debug),
@@ -231,7 +234,11 @@ private fun About(
             title = stringResource(R.string.settings_info_libraries),
             onClick = { onClick(DialogType.Info.Debug) },
         )
+        Footer(
+            modifier = Modifier.clickable(onClick = onVersionClick),
+            text = stringResource(R.string.settings_info_version, BuildConfig.VERSION_NAME)
+        )
     }
 }
 
-
+private const val DownloadCuberite = "https://download.cuberite.org/android"
