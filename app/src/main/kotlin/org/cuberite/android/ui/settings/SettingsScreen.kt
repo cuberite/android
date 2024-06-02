@@ -1,10 +1,6 @@
 package org.cuberite.android.ui.settings
 
 import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -19,17 +15,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.compose.ui.res.vectorResource
 import kotlinx.coroutines.launch
 import org.cuberite.android.BuildConfig
 import org.cuberite.android.R
@@ -44,27 +38,6 @@ import org.cuberite.android.ui.settings.components.SettingDialog
 import org.cuberite.android.ui.settings.components.SwitchItem
 import org.cuberite.android.ui.settings.components.Themes
 import org.cuberite.android.ui.settings.components.rememberCategory
-import org.cuberite.android.ui.theme.CuberiteTheme
-
-class SettingsScreen : Fragment() {
-    private val viewModel: SettingsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                CuberiteTheme {
-                    Surface {
-                        SettingsScreen(viewModel)
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel) {
@@ -177,6 +150,7 @@ private fun WebAdmin(
 ) {
     val webAdmin = rememberCategory(
         title = stringResource(R.string.settings_webadmin_heading),
+        icon = ImageVector.vectorResource(R.drawable.ic_webadmin),
         description = """${stringResource(R.string.settings_webadmin_explanation)}
             
 URL:$webAdminUrl""".trimMargin()
