@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "org.cuberite.android"
         resourceConfigurations += listOf("en", "de", "nl", "pt", "zh_CN")
-        minSdk = 16
+        minSdk = 21
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
         versionCode = 15
@@ -20,9 +20,6 @@ android {
         buildConfig = true
     }
     buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
-        }
         named("release") {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -36,13 +33,38 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        //...
+        compose = true
+    }
+    composeOptions {
+        // For support for Kotlin-2.0.0-Beta5
+        kotlinCompilerExtensionVersion = "1.5.11-dev-k2.0.0-Beta5-b5a216d0ac6"
+    }
+
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    val composeBom = platform("androidx.compose:compose-bom:2024.04.00")
+
+    // Compose
+    implementation(composeBom)
+    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.foundation:foundation-layout")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    implementation("androidx.activity:activity-compose:1.9.0")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("com.google.android.material:material:1.10.0")
