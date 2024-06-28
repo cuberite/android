@@ -5,7 +5,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -63,10 +62,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHost) }
     ) { paddingValues ->
+        paddingValues
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
         ) {
             val isSDAvailable = remember { context.isSDAvailable }
             BasicSettings(
