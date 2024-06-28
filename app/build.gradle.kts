@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -34,14 +35,8 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        //...
         compose = true
     }
-    composeOptions {
-        // For support for Kotlin-2.0.0-Beta5
-        kotlinCompilerExtensionVersion = "1.5.11-dev-k2.0.0-Beta5-b5a216d0ac6"
-    }
-
 }
 
 dependencies {
