@@ -10,7 +10,6 @@ import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Environment
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.color.DynamicColors
 import org.ini4j.Config
 import java.io.Serializable
 
@@ -30,7 +29,6 @@ class MainApplication : Application() {
 
         // Application theme
         AppCompatDelegate.setDefaultNightMode(preferences.getInt("defaultTheme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
-        DynamicColors.applyToActivitiesIfAvailable(this)
 
         // Notification channel
         createNotificationChannel()
